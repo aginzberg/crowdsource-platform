@@ -1,0 +1,52 @@
+[
+  {
+    "fields": {
+      "created_timestamp": "2015-05-01T00:17:40.085Z",
+      "name": "Translate a document",
+      "last_updated": "2015-05-01T00:17:40.085Z",
+      "parent": null
+    },
+    "model": "crowdsourcing.category",
+    "pk": 0
+  },
+  {
+    "fields": {
+      "created_timestamp": "2015-05-01T00:17:40.085Z",
+      "name": "Create a website",
+      "last_updated": "2015-05-01T00:17:40.085Z",
+      "parent": null
+    },
+    "model": "crowdsourcing.category",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "created_timestamp": "2015-05-01T00:17:40.085Z",
+      "name": "Proofread/edit a document",
+      "last_updated": "2015-05-01T00:17:40.085Z",
+      "parent": null
+    },
+    "model": "crowdsourcing.category",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "created_timestamp": "2015-05-01T00:17:40.085Z",
+      "name": "Design Logo",
+      "last_updated": "2015-05-01T00:17:40.085Z",
+      "parent": null
+    },
+    "model": "crowdsourcing.category",
+    "pk": 3
+  },
+  {
+	    "fields": {
+	      "created_timestamp": "2015-05-01T00:17:40.085Z",
+	      "name": "Custom",
+	      "last_updated": "2015-05-01T00:17:40.085Z",
+	      "parent": null
+	    },
+	    "model": "crowdsourcing.category",
+	    "pk": 4
+	}
+]
