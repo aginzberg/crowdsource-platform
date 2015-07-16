@@ -38,6 +38,7 @@
       self.getPrevious = getPrevious;
       self.getNext = getNext;
       self.advance = advance;
+      self.backup = backup;
       self.form = {
           category: {is_expanded: false, is_done:false},
           general_info: {is_expanded: false, is_done:false},
@@ -82,8 +83,17 @@
       };
 
       function advance(){
-        if(self.templateName == 'Proofreading/editing') {
+        if(self.templateName == 'Proofread or edit a document') {
           self.getNext();
+          self.url = getStepSrc(self.stepid);
+        } else {
+          alert("not supported at this time");
+        }
+      }
+
+      function backup(){
+        if(self.templateName == 'Proofread or edit a document') {
+          self.getPrevious();
           self.url = getStepSrc(self.stepid);
         } else {
           alert("not supported at this time");
@@ -208,7 +218,7 @@
               return '1. Getting Started';
           }
           else if(stepId==2){
-              return '2. Description';
+              return '2. Project Description';
           }
           else if(stepId==3){
               return '3. Prototype Task';
@@ -243,7 +253,6 @@
           else if(stepId==6){
               return '/static/templates/project/summary.html';
           }
-
       }
 
       function getPrevious(){
