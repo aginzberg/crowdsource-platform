@@ -34,8 +34,10 @@
       self.addModule = addModule;
       self.getStepId = getStepId;
       self.getStepName = getStepName;
+      self.getStepSrc = getStepSrc;
       self.getPrevious = getPrevious;
       self.getNext = getNext;
+      self.advance = advance;
       self.form = {
           category: {is_expanded: false, is_done:false},
           general_info: {is_expanded: false, is_done:false},
@@ -54,7 +56,7 @@
           order: ""
       };
 
-      self.stepid = 1;
+      self.stepid = parseInt($routeParams.projectStepId);
 
       self.myProjects = [];
       Project.getProjects().then(function(data) {
@@ -64,22 +66,29 @@
       self.getStatusName = getStatusName;
       self.monitor = monitor;
 
-      self.other = false;
-      self.otherIndex = 7;
+      self.templateName = "";
+      self.url = getStepSrc(self.stepid);
 
       self.getPath = function(){
           return $location.path();
       };
       self.toggle = function (item) {
         self.currentProject.categories = [item];
-        if (item == self.otherIndex) self.other = true;
-        else self.other = false;
       };
 
       self.exists = function (item) {
         var list = self.currentProject.categories || [];
         return list.indexOf(item) > -1;
       };
+
+      function advance(){
+        if(self.templateName == 'Proofreading/editing') {
+          self.getNext();
+          self.url = getStepSrc(self.stepid);
+        } else {
+          alert("not supported at this time");
+        }
+      }
 
       activate();
       function activate(){
@@ -196,7 +205,7 @@
       }
       function getStepName(stepId){
           if(stepId==1){
-              return '1. Category';
+              return '1. Getting Started';
           }
           else if(stepId==2){
               return '2. Description';
@@ -214,12 +223,35 @@
               return '6. Summary';
           }
       }
+
+      function getStepSrc(stepId) {
+          if(stepId==1){
+              return '/static/templates/project/categories.html';
+          }
+          else if(stepId==2){
+              return '/static/templates/project/details.html';
+          }
+          else if(stepId==3){
+              return '/static/templates/project/milestones.html';
+          }
+          else if(stepId==4){
+              return '/static/templates/template/container.html';
+          }
+          else if(stepId==5){
+              return '/static/templates/project/payment.html';
+          }
+          else if(stepId==6){
+              return '/static/templates/project/summary.html';
+          }
+
+      }
+
       function getPrevious(){
-          self.stepid = self.stepid - 1;
+          self.stepid -= 1;
           return self.stepid;
       }
       function getNext(){
-          self.stepid = self.stepid + 1;
+          self.stepid += 1;
           return self.stepid;
       }
 
