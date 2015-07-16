@@ -54,6 +54,8 @@
           order: ""
       };
 
+      self.stepid = 1;
+
       self.myProjects = [];
       Project.getProjects().then(function(data) {
         self.myProjects = data[0];
@@ -190,7 +192,7 @@
           self.modules.push(module);
       }
       function getStepId(){
-          return $routeParams.projectStepId;
+          return self.stepid;
       }
       function getStepName(stepId){
           if(stepId==1){
@@ -213,10 +215,12 @@
           }
       }
       function getPrevious(){
-          return parseInt(self.getStepId())-1;
+          self.stepid = self.stepid - 1;
+          return self.stepid;
       }
       function getNext(){
-          return parseInt(self.getStepId())+1;
+          self.stepid = self.stepid + 1;
+          return self.stepid;
       }
 
       function computeTotal(payment) {
