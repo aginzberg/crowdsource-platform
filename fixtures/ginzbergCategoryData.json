@@ -22,7 +22,7 @@
   {
     "fields": {
       "created_timestamp": "2015-05-01T00:17:40.085Z",
-      "name": "Proofread/edit a document",
+      "name": "Proofread or edit a document",
       "last_updated": "2015-05-01T00:17:40.085Z",
       "parent": null
     },
@@ -32,7 +32,7 @@
   {
     "fields": {
       "created_timestamp": "2015-05-01T00:17:40.085Z",
-      "name": "Design Logo",
+      "name": "Design a logo",
       "last_updated": "2015-05-01T00:17:40.085Z",
       "parent": null
     },
