@@ -218,7 +218,7 @@
               return '1. Getting Started';
           }
           else if(stepId==2){
-              return '2. Project Description';
+              return '2. Project Details';
           }
           else if(stepId==3){
               return '3. Prototype Task';

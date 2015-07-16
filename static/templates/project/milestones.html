@@ -1,13 +1,23 @@
 <md-subheader>
     <label>Every project on D&aelig;mo begins with a prototype task. A
-	prototype task is a short task which is completed by several workers. You
+	prototype task is a short task which will be completed by several workers. You
 	review their work and identify the best workers that understand 
-	what you want. You will then be able to improve your task description and 
+	what you want. You will then have a chance to improve your task description and 
 	incorporate any worker feedback before you proceed with the rest of your 
 	project.</label>
 </md-subheader>
 
-<md-subheader>	<label> Come up with a short task that workers can
+<md-subheader> <label> For proofreading/editing, a prototype task might be a revision of
+the first few paragraphs of the document or a draft of a new introduction. Describe your prototype task as clearly and concisely as possible.</label></md-subheader>
+<md-input-container class="project-field" flex="2">
+    <label>Description</label>
+    <textarea required ng-model="project.currentProject.milestoneDescription" columns="1" md-maxlength="500"></textarea>
+    <div ng-if="project.currentProject.milestoneDescription==null" ng-messages="projectForm.description.$error">
+        <div ng-message="required">This field is required.</div>
+    </div>
+</md-input-container>
+
+<!-- <md-subheader>	<label> Come up with a short task that workers can
 	complete to demonstrate their understanding and skills:</label>
 	<md-list flex="65" style="margin-left: 2%">
 	
@@ -113,4 +123,4 @@
 		</div>     		         
 </md-radio-group>
 
-		
+		 -->
