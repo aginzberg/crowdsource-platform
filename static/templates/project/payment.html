@@ -12,7 +12,7 @@
 <md-input-container  class="form-input-container" style="margin-left: 1%">
     <md-subheader>How much will you pay each worker for completing the prototype task?</md-subheader>
     <span class="dollar-sign">$</span>
-    <input required ng-model="project.currentProject.payment.wage_per_hit" ng-change="project.computeServiceCharge()" aria-label="wage_per_hit" style="margin-left: 2%" type="number" min="1">
+    <input required ng-model="project.currentProject.payment.wage_per_hit" ng-change="project.computeServiceCharge()" aria-label="wage_per_hit" style="margin-left: 2%" type="number" min="0.01">
     <div ng-if="project.currentProject.payment.wage_per_hit==null" ng-messages="projectForm.description.$error">
     </div>
 </md-input-container>
@@ -31,5 +31,6 @@
   <md-subheader>Total</md-subheader>
   <md-subheader><span ng-if="project.currentProject.payment.total && project.currentProject.payment.total !== 'Error'">$</span>{{ project.currentProject.payment.total || 'Please fill fields above' }}</md-subheader>
 </md-list-item>
+
 
 
