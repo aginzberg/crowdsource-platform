@@ -20,11 +20,11 @@ the first few paragraphs of the document or a draft of a new introduction. Descr
 <md-input-container class="project-field" flex="2">
     <label>Number of workers</label>
     <input required ng-model="project.currentProject.payment.number_of_hits" type="number" min="1">
-    <div ng-if="project.currentProject.numberofhits==null" ng-messages="projectForm.description.$error">
+    <div ng-if="project.currentProject.payment.number_of_hits==null" ng-messages="projectForm.description.$error">
         <div ng-message="required">This field is required.</div>
     </div>
 </md-input-container>
-<md-subheader>Estimate how long a worker should spend on the prototype task (we recommend ~15 minutes).</md-subheader>
+<md-subheader>Estimate how long a worker should spend on the prototype task (typically ~15 minutes for a well-designed prototype task).</md-subheader>
 <md-input-container class="project-field" flex="2">
     <label>Task length</label>
     <input required ng-model="project.currentProject.taskTimeDropbox" type="number" min="1">
