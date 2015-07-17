@@ -84,22 +84,21 @@
         return list.indexOf(item) > -1;
       };
 
+      self.nameExample = {
+        'Translate a document': 'Translate Roger\'s menu into Italian',
+        'Create a website': 'Make Diane\'s personal website',
+        'Proofread or edit a document': 'Proofread Joe\'s thesis on crowdsourcing',
+        'Design a logo': 'Design a logo for Rachel\'s business card'
+      };
+
       function advance(){
-        if(self.templateName == 'Proofread or edit a document') {
-          self.getNext();
-          self.url = getStepSrc(self.stepid);
-        } else {
-          alert("not supported at this time");
-        }
+        self.getNext();
+        self.url = getStepSrc(self.stepid);
       }
 
       function backup(){
-        if(self.templateName == 'Proofread or edit a document') {
-          self.getPrevious();
-          self.url = getStepSrc(self.stepid);
-        } else {
-          alert("not supported at this time");
-        }
+        self.getPrevious();
+        self.url = getStepSrc(self.stepid);
       }
 
       activate();
@@ -238,13 +237,13 @@
 
       function getStepSrc(stepId) {
           if(stepId==1){
-              return '/static/templates/project/categories.html';
+              return '/static/templates/project/gettingstarted.html';
           }
           else if(stepId==2){
-              return '/static/templates/project/details.html';
+              return '/static/templates/project/projectdetails.html';
           }
           else if(stepId==3){
-              return '/static/templates/project/milestones.html';
+              return '/static/templates/project/prototypetask.html';
           }
           else if(stepId==4){
               return '/static/templates/template/container.html';

@@ -1,5 +1,5 @@
 <div layout="column">
-    <md-subheader>Name your project, e.g. Proofread Joe's Thesis on Crowdsourcing</md-subheader>
+    <md-subheader>Name your project, e.g. {{project.nameExample[project.templateName]}}</md-subheader>
     <div layout="row" class="project-field">
         <md-input-container flex="65">
             <label>Name</label>
@@ -22,7 +22,7 @@
     </md-input-container>
 </div>
 
-<md-subheader>Upload your document via Google Drive.</md-subheader>  
+<md-subheader>Upload your project files via Google Drive.</md-subheader>  
 <md-input-container class="project-field" flex="2">
    <label>Enter the Google Drive URL, e.g. '/crowdresearch/project.name'</label>
    <input required ng-model="project.currentProject.urlDropbox" >
