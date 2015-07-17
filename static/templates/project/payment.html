@@ -3,16 +3,16 @@
     <a href="mailto:crowdresearch.stanford.edu?Subject=Payment%20trouble">Contact us</a>
     if you have further payment questions.</md-subheader>
 <md-input-container class="form-input-container" style="margin-left: 1%">
-        <md-subheader>How many different people should do the prototype task?</md-subheader>
-        <input required ng-model="project.currentProject.payment.number_of_hits" aria-label="number_of_hits" style="margin-left: 2%" type="number" min="1">
+        <md-subheader>How many workers will complete the prototype task?</md-subheader>
+        <input required ng-model="project.currentProject.payment.number_of_hits" ng-change="project.computeServiceCharge()" aria-label="number_of_hits" style="margin-left: 2%" type="number" min="1">
         <div ng-if="project.currentProject.payment.number_of_hits==null" ng-messages="projectForm.description.$error">
         </div>
 </md-input-container>
 
 <md-input-container  class="form-input-container" style="margin-left: 1%">
-    <md-subheader>How much will you pay per task?</md-subheader>
+    <md-subheader>How much will you pay each worker for completing the prototype task?</md-subheader>
     <span class="dollar-sign">$</span>
-    <input required ng-model="project.currentProject.payment.wage_per_hit" aria-label="wage_per_hit" style="margin-left: 2%" type="number" min="1">
+    <input required ng-model="project.currentProject.payment.wage_per_hit" ng-change="project.computeServiceCharge()" aria-label="wage_per_hit" style="margin-left: 2%" type="number" min="1">
     <div ng-if="project.currentProject.payment.wage_per_hit==null" ng-messages="projectForm.description.$error">
     </div>
 </md-input-container>
@@ -20,7 +20,8 @@
 <md-input-container class="form-input-container" style="margin-left: 1%">
     <md-subheader>Service Fee</md-subheader>
     <span class="dollar-sign">$</span>
-    <input required ng-model="project.currentProject.payment.charges" aria-label="charges" style="margin-left: 2%" type="number" min="0" >
+<!--     <label>{{project.computeServiceCharge(project.currentProject.payment.number_of_hits, project.currentProject.payment.wage_per_hit)}}</label> -->
+    <input required ng-model="project.currentProject.payment.charges" aria-label="charges" style="margin-left: 2%" type="number" min="0" disabled>
     <div ng-if="project.currentProject.payment.charges==null" ng-messages="projectForm.description.$error">
     </div>
 </md-input-container>

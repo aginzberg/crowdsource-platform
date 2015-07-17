@@ -70,6 +70,8 @@
       self.templateName = "";
       self.url = getStepSrc(self.stepid);
 
+      self.computeServiceCharge = computeServiceCharge;
+
       self.getPath = function(){
           return $location.path();
       };
@@ -270,9 +272,13 @@
         return total;
       }
 
+      function computeServiceCharge() {
+        self.currentProject.payment.charges = parseFloat((0.06 * self.currentProject.payment.number_of_hits 
+                                              + 0.13 * self.currentProject.payment.wage_per_hit).toFixed(2));
+      }
+
       $scope.$watch('project.currentProject.payment', function (newVal, oldVal) {
         if (!angular.equals(newVal, oldVal)) {
-          console.log(self.currentProject.payment);
           self.currentProject.payment.total = computeTotal(self.currentProject.payment);
         }
         
