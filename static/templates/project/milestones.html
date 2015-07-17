@@ -16,26 +16,17 @@ the first few paragraphs of the document or a draft of a new introduction. Descr
         <div ng-message="required">This field is required.</div>
     </div>
 </md-input-container>
-
-<md-subheader>Upload your document via Google Drive.</md-subheader>  
-<md-input-container class="project-field" flex="2">
-   <label>Enter the Google Drive URL, e.g. '/crowdresearch/project.name'</label>
-   <input required ng-model="project.currentProject.urlDropbox" >
-    <div ng-if="project.currentProject.urlDropbox==null" ng-messages="projectForm.description.$error">
-        <div ng-message="required">This field is required.</div>
-    </div>
-</md-input-container>
 <md-subheader>How many workers would you like to complete your prototype task?</md-subheader>   
 <md-input-container class="project-field" flex="2">
     <label>Number of workers</label>
-    <input required ng-model="project.currentProject.numberofTasksDropbox" type="number" min="1">
-    <div ng-if="project.currentProject.numberofTasksDropbox==null" ng-messages="projectForm.description.$error">
+    <input required ng-model="project.currentProject.payment.number_of_hits" type="number" min="1">
+    <div ng-if="project.currentProject.numberofhits==null" ng-messages="projectForm.description.$error">
         <div ng-message="required">This field is required.</div>
     </div>
 </md-input-container>
 <md-subheader>How many minutes should a worker spend on this prototype task?</md-subheader>
 <md-input-container class="project-field" flex="2">
-    <label>Task lengthx</label>
+    <label>Task length</label>
     <input required ng-model="project.currentProject.taskTimeDropbox" type="number" min="1">
     <div ng-if="project.currentProject.taskTimeDropbox==null" ng-messages="projectForm.description.$error">
         <div ng-message="required">This field is required.</div>

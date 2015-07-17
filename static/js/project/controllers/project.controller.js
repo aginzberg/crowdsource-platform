@@ -272,6 +272,7 @@
 
       $scope.$watch('project.currentProject.payment', function (newVal, oldVal) {
         if (!angular.equals(newVal, oldVal)) {
+          console.log(self.currentProject.payment);
           self.currentProject.payment.total = computeTotal(self.currentProject.payment);
         }
         

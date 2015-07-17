@@ -37,6 +37,91 @@
       self.items = [];
     }
 
+    self.templateComponents = [
+        {
+          id_string: 1,
+          name: 'label' + 1,
+          type: 'label',
+          width: 100,
+          height: 100,
+          values: 'Label 1',
+          role: 'display',
+          sub_type: 'h4',
+          layout: 'column',
+          icon: null,
+          data_source: null
+        },
+        {
+          id_string: 1,
+          name: 'image_placeholder' + 1,
+          type: 'image_placeholder',
+          width: 100,
+          height: 100,
+          values: null,
+          role: 'display',
+          sub_type: 'div',
+          layout: 'column',
+          icon: '/static/bower_components/material-design-icons/image/svg/production/ic_panorama_24px.svg',
+          data_source: null
+        },
+        {
+          id_string: 1,
+          name: 'select_control' + 1,
+          type: 'select_control',
+          width: 100,
+          height: 100,
+          values: 'Option 1',
+          role: 'display',
+          sub_type: 'div',
+          layout: 'column',
+          icon: null,
+          data_source: null
+        },
+        {
+          id_string: 1,
+          name: 'text_area_placeholder' + 1,
+          type: 'text_area',
+          width: 100,
+          height: 100,
+          values: null,
+          role: 'display',
+          sub_type: 'div',
+          layout: 'column',
+          data_source: null
+        },
+        {
+          id_string: 1,
+          name: 'text_field_placeholder' + 1,
+          type: 'text_field',
+          width: 100,
+          height: 100,
+          values: null,
+          role: 'display',
+          sub_type: 'div',
+          layout: 'column',
+          data_source: null
+        },
+        {
+          id_string: 1,
+          name: 'select_placeholder' + 1,
+          type: 'radio',
+          width: 100,
+          height: 100,
+          values: null,
+          role: 'display',
+          sub_type: 'div',
+          layout: 'column',
+          data_source: null
+        }
+    ];
+
+
+    self.templateIndex = $scope.project.currentProject.categories[0];
+    if(self.templateIndex == 2) {
+      self.items = [self.templateComponents[0],self.templateComponents[3]];
+      self.items[0].values = "E.g. Please proofread the first two paragraphs of my document looking for spelling and grammatical mistakes. Enter your revised version in the textbox below."
+    }
+
     self.selectedTab = 0;
     self.buildHtml = buildHtml;
     self.setSelectedItem = setSelectedItem;
@@ -44,71 +129,71 @@
     self.selectedItem = null;
     $scope.onOver = onOver;
     $scope.onDrop = onDrop;
-    self.templateComponents = [
-      {
-        id: 1,
-        name: "Label",
-        icon: null,
-        type: 'label',
-        description: "Use for static text: labels, headings, paragraphs"
-      },
-      {
-        id: 2,
-        name: "Checkbox",
-        icon: null,
-        type: 'checkbox',
-        description: "Use for selecting multiple options"
-      },
-      {
-        id: 3,
-        name: "Radio Button",
-        icon: null,
-        type: 'radio',
-        description: "Use when only one option needs to be selected"
-      },
-      {
-        id: 4,
-        name: "Select list",
-        icon: null,
-        type: 'select',
-        description: "Use for selecting multiple options from a larger set"
-      },
-      {
-        id: 5,
-        name: "Text field",
-        icon: null,
-        type: 'text_field',
-        description: "Use for short text input"
-      },
-      {
-        id: 6,
-        name: "Text Area",
-        icon: null,
-        type: 'text_area',
-        description: "Use for longer text input"
-      },
-      {
-        id: 7,
-        name: "Image Container",
-        icon: null,
-        type: 'image',
-        description: "A placeholder for the image"
-      },
-      // {
-      //   id: 8,
-      //   name: "Video Container",
-      //   icon: null,
-      //   type: 'video',
-      //   description: "A placeholder for the video player"
-      // },
-      // {
-      //   id: 9,
-      //   name: "Audio Container",
-      //   icon: null,
-      //   type: 'audio',
-      //   description: "A placeholder for the audio player"
-      // }
-    ];
+    // self.templateComponents = [
+    //   {
+    //     id: 1,
+    //     name: "Label",
+    //     icon: null,
+    //     type: 'label',
+    //     description: "Use for static text: labels, headings, paragraphs"
+    //   },
+    //   {
+    //     id: 2,
+    //     name: "Checkbox",
+    //     icon: null,
+    //     type: 'checkbox',
+    //     description: "Use for selecting multiple options"
+    //   },
+    //   {
+    //     id: 3,
+    //     name: "Radio Button",
+    //     icon: null,
+    //     type: 'radio',
+    //     description: "Use when only one option needs to be selected"
+    //   },
+    //   {
+    //     id: 4,
+    //     name: "Select list",
+    //     icon: null,
+    //     type: 'select',
+    //     description: "Use for selecting multiple options from a larger set"
+    //   },
+    //   {
+    //     id: 5,
+    //     name: "Text field",
+    //     icon: null,
+    //     type: 'text_field',
+    //     description: "Use for short text input"
+    //   },
+    //   {
+    //     id: 6,
+    //     name: "Text Area",
+    //     icon: null,
+    //     type: 'text_area',
+    //     description: "Use for longer text input"
+    //   },
+    //   {
+    //     id: 7,
+    //     name: "Image Container",
+    //     icon: null,
+    //     type: 'image',
+    //     description: "A placeholder for the image"
+    //   },
+    //   // {
+    //   //   id: 8,
+    //   //   name: "Video Container",
+    //   //   icon: null,
+    //   //   type: 'video',
+    //   //   description: "A placeholder for the video player"
+    //   // },
+    //   // {
+    //   //   id: 9,
+    //   //   name: "Audio Container",
+    //   //   icon: null,
+    //   //   type: 'audio',
+    //   //   description: "A placeholder for the audio player"
+    //   // }
+    // ];
 
     function buildHtml(item) {
       var html = '';

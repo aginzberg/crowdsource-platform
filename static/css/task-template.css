@@ -31,7 +31,8 @@
 .template-container {
   background-color: #ffffff;
   overflow: auto;
-  min-height: 500px; }
+  padding-left: 16px;
+  min-height: 100px; }
   .template-container .header {
     padding-left: 15px;
     font-weight: 500;
@@ -42,15 +43,20 @@
   .template-container .properties {
     border: 1px solid #ebebeb;
     background-color: #fafafa;
-    min-height: 645px; }
+    min-height: 145px; }
 
 .no-decoration-list {
   list-style-type: none;
   padding: 5px;
+  padding-left: 16px;
 }
 
 .pointer-cursor {
   cursor: pointer;
+}
+
+.subheader {
+  padding-left: 0px;
 }
 
 .pull-left {
