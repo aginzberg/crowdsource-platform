@@ -37,8 +37,8 @@
       self.items = [];
     }
 
-    self.templateComponents = [
-        {
+    self.templateComponents = {
+        'label': {
           id_string: 1,
           name: 'label' + 1,
           type: 'label',
@@ -51,7 +51,7 @@
           icon: null,
           data_source: null
         },
-        {
+        'image': {
           id_string: 1,
           name: 'image_placeholder' + 1,
           type: 'image_placeholder',
@@ -64,7 +64,7 @@
           icon: '/static/bower_components/material-design-icons/image/svg/production/ic_panorama_24px.svg',
           data_source: null
         },
-        {
+        'checkbox': {
           id_string: 1,
           name: 'select_control' + 1,
           type: 'select_control',
@@ -77,7 +77,7 @@
           icon: null,
           data_source: null
         },
-        {
+        'text_area': {
           id_string: 1,
           name: 'text_area_placeholder' + 1,
           type: 'text_area',
@@ -89,7 +89,7 @@
           layout: 'column',
           data_source: null
         },
-        {
+        'text_field': {
           id_string: 1,
           name: 'text_field_placeholder' + 1,
           type: 'text_field',
@@ -101,7 +101,7 @@
           layout: 'column',
           data_source: null
         },
-        {
+        'radio': {
           id_string: 1,
           name: 'select_placeholder' + 1,
           type: 'radio',
@@ -113,14 +113,23 @@
           layout: 'column',
           data_source: null
         }
-    ];
-
-
-    self.templateIndex = $scope.project.currentProject.categories[0];
-    if(self.templateIndex == 2) {
-      self.items = [self.templateComponents[0],self.templateComponents[3]];
-      self.items[0].values = "E.g. Please proofread the first two paragraphs of my document looking for spelling and grammatical mistakes. Enter your revised version in the textbox below."
+    };
+    self.templateName = $scope.project.currentProject.templateName;
+    if(self.templateName == 'Proofread or edit a document' || self.templateName == 'Translate a document') {
+      self.items = [self.templateComponents['label'], self.templateComponents['text_area']];
+      if(self.templateName == 'Proofread or edit a document') {
+        self.items[0].values = 'E.g. Please proofread the first two paragraphs of my '
+                                + 'document looking for spelling and grammatical mistakes.'
+                                + ' Enter your revised version in the textbox below.'
+      } else if (self.templateName == 'Translate a document') {
+        self.items[0].values = 'E.g. Please translate the first three paragraphs of my '
+                                + 'document. Enter the translation in the textbox below.'
+      }
     }
+
+    $scope.$watch('template.items', function (newval, oldval) {
+      if(newval[0].values == undefined) self.items[0].values = "";
+    }, true);
 
     self.selectedTab = 0;
     self.buildHtml = buildHtml;

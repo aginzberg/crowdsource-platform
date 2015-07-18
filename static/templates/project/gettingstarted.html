@@ -3,7 +3,7 @@
 </div>
 <md-radio-group ng-model="project.templateName">
 	<span ng-repeat="item in project.categories">
-		<md-radio-button ng-if="item.name!=='Custom'" ng-value="item.name" ng-click="project.toggle(item.id)">{{item.name}}</md-radio-button>
+		<md-radio-button ng-if="item.name!=='Custom'" ng-value="item.name" ng-click="project.toggle(item)">{{item.name}}</md-radio-button>
 		<md-radio-button ng-if="item.name==='Custom'" ng-value="item.name" ng-click="project.toggle(item.id)" disabled>{{item.name}}</md-radio-button>
 	</span>
 </md-radio-group>

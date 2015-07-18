@@ -76,7 +76,8 @@
           return $location.path();
       };
       self.toggle = function (item) {
-        self.currentProject.categories = [item];
+        self.currentProject.categories = [item.id];
+        self.currentProject.templateName = item.name;
       };
 
       self.exists = function (item) {
