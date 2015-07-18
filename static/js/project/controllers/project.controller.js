@@ -91,6 +91,17 @@
         'Design a logo': 'Design a logo for Rachel\'s business card'
       };
 
+      self.prototypeTaskExample = {
+        'Translate a source': 'For translation, a prototype task might be a translation of '
+                                + 'the first few paragraphs or first five minutes of content.',
+        'Create a website': 'For website creation, a prototype task might be mockup of the '
+                            + 'homepage and a sketch of the data model and architecture.',
+        'Proofread or edit a document': 'For proofreading/editing, a prototype task might be '
+                                        + 'a revision of the first few paragraphs of the document '
+                                        + 'or a draft of a new introduction.',
+        'Design a logo': 'For logo design, a prototype task might be a sketch of the concept.'
+      };
+
       function advance(){
         self.getNext();
         self.url = getStepSrc(self.stepid);
