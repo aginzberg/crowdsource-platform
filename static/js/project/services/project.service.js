@@ -43,6 +43,7 @@
     * @memberOf crowdsource.project.services.Project
     */
     function addProject(project) {
+      console.log(project);
       var settings = {
         url: '/api/project/',
         method: 'POST',

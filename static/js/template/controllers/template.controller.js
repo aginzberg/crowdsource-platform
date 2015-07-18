@@ -125,6 +125,7 @@
         self.items[0].values = 'E.g. Please translate the first three paragraphs of my '
                                 + 'document. Enter the translation in the textbox below.'
       }
+      sync();
     }
 
     $scope.$watch('template.items', function (newval, oldval) {
