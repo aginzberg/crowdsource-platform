@@ -19,6 +19,7 @@
       var self = this; 
       self.stepid = 1;
       self.url = getStepSrc(self.stepid);
+      self.showValidationError = false;
 
       self.getStepName = getStepName;
       self.getStepSrc = getStepSrc;
@@ -27,6 +28,8 @@
       self.backup = backup;
       self.advance = advance;
       self.addProject = addProject;
+      self.validate = validate;
+      self.requireValidation = requireValidation;
 
       function getStepName(stepId){
           if(stepId==1){
@@ -86,8 +89,25 @@
       }
 
       function advance(){
-        self.getNext();
-        self.url = getStepSrc(self.stepid);
+        if(validate(self.stepid)) {
+          self.getNext();
+          self.url = getStepSrc(self.stepid);
+          self.showValidationError = false;
+        } else {
+          requireValidation(self.stepid);
+        }    
+      }
+
+      function validate(stepid){
+        if(stepid == 1) {
+          return !(self.templateName == "");
+        }
+      }
+
+      function requireValidation(stepid) {
+        if(stepid == 1) {
+          self.showValidationError = true;
+        }
       }
 
       /**
@@ -113,7 +133,7 @@
           });
       }
 
-      // The above fields and functions are used in the base.html file
+      //The above fields and functions are used in the base.html file
 
 
 

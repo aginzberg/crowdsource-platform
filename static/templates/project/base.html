@@ -13,11 +13,11 @@
           <div class="step-content">
               <ng-include src="project.url"></ng-include>
               <div layout="row" class="project-actions" layout-align="end center">
-                  <div flex="65" style="margin-left:10%">
+                  <div flex="65" class="back-button">
                       <md-button ng-click="project.backup()" ng-if="project.stepid>1" class="md-raised">Back</md-button>
                   </div>
                   <div flex>
-                      <md-button style="background-color: #003366; color: #ffffff" ng-click="project.advance()" ng-if="project.stepid<6" class="md-raised">Next</md-button>
+                      <md-button class="md-raised md-primary" ng-click="project.advance()" ng-if="project.stepid<6" class="md-raised">Next</md-button>
                       <md-button class="md-raised md-primary" ng-if="project.stepid==6" ng-click="project.addProject()">Submit</md-button>
                   </div>
               </div>
