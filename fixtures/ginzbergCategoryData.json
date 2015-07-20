@@ -12,7 +12,7 @@
   {
     "fields": {
       "created_timestamp": "2015-05-01T00:17:40.085Z",
-      "name": "Create a website",
+      "name": "Proofread or edit a document",
       "last_updated": "2015-05-01T00:17:40.085Z",
       "parent": null
     },
@@ -22,7 +22,7 @@
   {
     "fields": {
       "created_timestamp": "2015-05-01T00:17:40.085Z",
-      "name": "Proofread or edit a document",
+      "name": "Image labelling",
       "last_updated": "2015-05-01T00:17:40.085Z",
       "parent": null
     },
@@ -32,12 +32,32 @@
   {
     "fields": {
       "created_timestamp": "2015-05-01T00:17:40.085Z",
-      "name": "Design a logo",
+      "name": "Run an experiment",
       "last_updated": "2015-05-01T00:17:40.085Z",
       "parent": null
     },
     "model": "crowdsourcing.category",
     "pk": 3
+  },
+  {
+    "fields": {
+      "created_timestamp": "2015-05-01T00:17:40.085Z",
+      "name": "Create a website",
+      "last_updated": "2015-05-01T00:17:40.085Z",
+      "parent": null
+    },
+    "model": "crowdsourcing.category",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "created_timestamp": "2015-05-01T00:17:40.085Z",
+      "name": "Design a logo",
+      "last_updated": "2015-05-01T00:17:40.085Z",
+      "parent": null
+    },
+    "model": "crowdsourcing.category",
+    "pk": 5
   },
   {
 	    "fields": {
@@ -47,6 +67,6 @@
 	      "parent": null
 	    },
 	    "model": "crowdsourcing.category",
-	    "pk": 4
+	    "pk": 6
 	}
 ]
