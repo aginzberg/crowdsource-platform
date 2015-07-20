@@ -107,8 +107,7 @@
           return self.templateName != "";
         } else if(stepid == 2) {
           return typeof(self.currentProject.name) != 'undefined' && 
-                 typeof(self.currentProject.description) != 'undefined' &&
-                 typeof(self.currentProject.urlDropbox) != 'undefined';
+                 typeof(self.currentProject.description) != 'undefined';
         } else if(stepid == 3) {
           return typeof(self.currentProject.milestoneDescription) != 'undefined' &&
                  typeof(self.currentProject.payment.number_of_hits) != 'undefined' &&
