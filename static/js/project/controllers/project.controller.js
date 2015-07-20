@@ -19,7 +19,10 @@
       var self = this; 
       self.stepid = 1;
       self.url = getStepSrc(self.stepid);
+      self.templateName = "";
       self.showValidationError = false;
+      self.categories = [];
+      self.currentProject = Project.retrieve();
 
       self.getStepName = getStepName;
       self.getStepSrc = getStepSrc;
@@ -28,6 +31,7 @@
       self.backup = backup;
       self.advance = advance;
       self.addProject = addProject;
+      self.toggle = toggle;
       self.validate = validate;
       self.requireValidation = requireValidation;
 
@@ -100,14 +104,16 @@
 
       function validate(stepid){
         if(stepid == 1) {
-          return !(self.templateName == "");
+          return self.templateName != "";
+        } else if(stepid == 2) {
+          return typeof(self.currentProject.name) != 'undefined' && 
+                 typeof(self.currentProject.description) != 'undefined' &&
+                 typeof(self.currentProject.urlDropbox) != 'undefined';
         }
       }
 
       function requireValidation(stepid) {
-        if(stepid == 1) {
-          self.showValidationError = true;
-        }
+        self.showValidationError = true;
       }
 
       /**
@@ -133,7 +139,32 @@
           });
       }
 
-      //The above fields and functions are used in the base.html file
+      activate();
+      function activate(){
+          Project.getCategories().then(
+            function success(resp) {
+              var data = resp[0];
+              self.categories = data;
+            },
+            function error(resp) {
+              var data = resp[0];
+              self.error = data.detail;
+            }).finally(function () {});
+      }
+
+      function toggle(item) {
+        self.currentProject.categories = [item.id];
+        self.currentProject.templateName = item.name;
+      };
+
+      self.nameExample = {
+        'Translate a document': 'Translate Roger\'s menu into Italian',
+        'Create a website': 'Make Diane\'s personal website',
+        'Proofread or edit a document': 'Proofread Joe\'s thesis on crowdsourcing',
+        'Design a logo': 'Design a logo for Rachel\'s business card'
+      };
+
+      //The above fields and functions are used in the base.html and gettingstarted files
 
 
 
@@ -145,7 +176,6 @@
       self.description = null;
       self.saveCategories = saveCategories;
       self.getReferenceData = getReferenceData;
-      self.categories = [];
       self.getSelectedCategories = getSelectedCategories;
       self.showTemplates = showTemplates;
       self.closeSideNav = closeSideNav;
@@ -164,9 +194,9 @@
           templates: {is_expanded: false, is_done:false},
           review: {is_expanded: false, is_done:false}
       };
-      self.currentProject = Project.retrieve();
+      
       self.currentProject.payment = self.currentProject.payment || {};
-      self.toggle = toggle;
+
       self.selectedItems = [];
       self.isSelected = isSelected;
       self.sort = sort;
@@ -183,29 +213,17 @@
       self.getStatusName = getStatusName;
       self.monitor = monitor;
 
-      self.templateName = "";
-
 
       self.computeServiceCharge = computeServiceCharge;
 
       self.getPath = function(){
           return $location.path();
       };
-      self.toggle = function (item) {
-        self.currentProject.categories = [item.id];
-        self.currentProject.templateName = item.name;
-      };
+
 
       self.exists = function (item) {
         var list = self.currentProject.categories || [];
         return list.indexOf(item) > -1;
-      };
-
-      self.nameExample = {
-        'Translate a document': 'Translate Roger\'s menu into Italian',
-        'Create a website': 'Make Diane\'s personal website',
-        'Proofread or edit a document': 'Proofread Joe\'s thesis on crowdsourcing',
-        'Design a logo': 'Design a logo for Rachel\'s business card'
       };
 
       self.prototypeTaskExample = {
@@ -220,19 +238,6 @@
       };
 
 
-
-      activate();
-      function activate(){
-          Project.getCategories().then(
-            function success(resp) {
-              var data = resp[0];
-              self.categories = data;
-            },
-            function error(resp) {
-              var data = resp[0];
-              self.error = data.detail;
-            }).finally(function () {});
-      }
       function getReferenceData() {
         Project.getReferenceData().success(function(data) {
           $scope.referenceData = data[0];
@@ -341,11 +346,7 @@
       $scope.$on("$destroy", function() {
         Project.syncLocally(self.currentProject);
       });
-      function toggle(item) {
-          var idx = self.selectedItems.indexOf(item);
-          if (idx > -1) self.selectedItems.splice(idx, 1);
-          else self.selectedItems.push(item);
-      }
+      
       function isSelected(item){
           return !(self.selectedItems.indexOf(item) < 0);
       }
