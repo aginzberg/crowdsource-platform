@@ -12,7 +12,7 @@
     <label>Description</label>
     <textarea required ng-model="project.currentProject.milestoneDescription" columns="1" md-maxlength="500"></textarea>
     <div ng-if="project.currentProject.milestoneDescription==null" ng-messages="projectForm.description.$error">
-        <div ng-message="required">This field is required.</div>
+        <div ng-message="required" ng-show="project.showValidationError">This field is required.</div>
     </div>
 </md-input-container>
 <md-subheader>How many workers would you like to complete your prototype task?</md-subheader>   
@@ -20,14 +20,14 @@
     <label>Number of workers</label>
     <input required ng-model="project.currentProject.payment.number_of_hits" type="number" min="1">
     <div ng-if="project.currentProject.payment.number_of_hits==null" ng-messages="projectForm.description.$error">
-        <div ng-message="required">This field is required.</div>
+        <div ng-message="required" ng-show="project.showValidationError">This field is required and must be an integer.</div>
     </div>
 </md-input-container>
 <md-subheader>Estimate how long a worker should spend on the prototype task (typically ~15-30 minutes for a well-designed prototype task).</md-subheader>
 <md-input-container class="project-field" flex="2">
-    <label>Task length</label>
+    <label>Task length (minutes)</label>
     <input required ng-model="project.currentProject.taskTimeDropbox" type="number" min="1">
     <div ng-if="project.currentProject.taskTimeDropbox==null" ng-messages="projectForm.description.$error">
-        <div ng-message="required">This field is required.</div>
+        <div ng-message="required" ng-show="project.showValidationError">This field is required and must be an integer.</div>
     </div>
 </md-input-container>
