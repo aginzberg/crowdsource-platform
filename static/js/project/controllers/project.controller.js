@@ -34,6 +34,7 @@
       self.toggle = toggle;
       self.validate = validate;
       self.requireValidation = requireValidation;
+      self.computeServiceCharge = computeServiceCharge;
 
       function getStepName(stepId){
           if(stepId==1){
@@ -97,6 +98,9 @@
           self.getNext();
           self.url = getStepSrc(self.stepid);
           self.showValidationError = false;
+          if(self.stepid == 6) {
+            self.currentProject.driveDropbox = typeof(self.currentProject.urlDropbox) != 'undefined'? true : false;
+          }
         } else {
           requireValidation(self.stepid);
         }    
@@ -112,6 +116,13 @@
           return typeof(self.currentProject.milestoneDescription) != 'undefined' &&
                  typeof(self.currentProject.payment.number_of_hits) != 'undefined' &&
                  typeof(self.currentProject.taskTimeDropbox) != 'undefined';
+        } else if(stepid == 4) {
+          return true;
+        } else if(stepid == 5) {
+          return typeof(self.currentProject.payment.number_of_hits) != 'undefined' &&
+                 typeof(self.currentProject.payment.wage_per_hit) != 'undefined' &&
+                 typeof(self.currentProject.payment.charges) != 'undefined' &&
+                 self.currentProject.payment.total !== 'Error';
         }
       }
 
@@ -160,21 +171,32 @@
         self.currentProject.templateName = item.name;
       };
 
+      //Just made up some random numbers
+      function computeServiceCharge() {
+        self.currentProject.payment.charges = parseFloat((0.06 * self.currentProject.payment.number_of_hits 
+                                              + 0.13 * self.currentProject.payment.wage_per_hit).toFixed(2));
+      }
+
       self.nameExample = {
         'Translate a document': 'Translate Roger\'s menu into Italian',
-        'Create a website': 'Make Diane\'s personal website',
         'Proofread or edit a document': 'Proofread Joe\'s thesis on crowdsourcing',
+        'Image labelling': 'Label Sarah\'s photographs of celebrities',
+        'Run an experiment': 'Run Michael\'s experiment on population flows',
+        'Create a website': 'Make Diane\'s personal website',
         'Design a logo': 'Design a logo for Rachel\'s business card'
       };
 
       self.prototypeTaskExample = {
-        'Translate a source': 'For translation, a prototype task might be a translation of '
+        'Translate a document': 'For translation, a prototype task might be a translation of '
                                 + 'the first few paragraphs or first five minutes of content.',
-        'Create a website': 'For website creation, a prototype task might be mockup of the '
-                            + 'homepage and a sketch of the data model and architecture.',
         'Proofread or edit a document': 'For proofreading/editing, a prototype task might be '
                                         + 'a revision of the first few paragraphs of the document '
                                         + 'or a draft of a new introduction.',
+        'Image labelling': 'For image labelling, a prototype task might be labelling five images.',
+        'Run an experiment': 'For running an experiment, a prototype task might be having just five'
+                             + ' subjects complete your experiemnt.',
+        'Create a website': 'For website creation, a prototype task might be mockup of the '
+                            + 'homepage and a sketch of the data model and architecture.',
         'Design a logo': 'For logo design, a prototype task might be a sketch of the concept.'
       };
 
@@ -228,7 +250,7 @@
       self.monitor = monitor;
 
 
-      self.computeServiceCharge = computeServiceCharge;
+      
 
       self.getPath = function(){
           return $location.path();
@@ -334,10 +356,7 @@
         return total;
       }
 
-      function computeServiceCharge() {
-        self.currentProject.payment.charges = parseFloat((0.06 * self.currentProject.payment.number_of_hits 
-                                              + 0.13 * self.currentProject.payment.wage_per_hit).toFixed(2));
-      }
+      
 
       $scope.$watch('project.currentProject.payment', function (newVal, oldVal) {
         if (!angular.equals(newVal, oldVal)) {
