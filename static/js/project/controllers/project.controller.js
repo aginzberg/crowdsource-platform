@@ -16,9 +16,110 @@
   * @namespace ProjectController
   */
   function ProjectController($window, $location, $scope, Project, $filter, $mdSidenav, $routeParams) {
-      var self = this;
-      self.startDate = $filter('date')(new Date(), 'yyyy-MM-ddTHH:mmZ');
+      var self = this; 
+      self.stepid = 1;
+      self.url = getStepSrc(self.stepid);
+
+      self.getStepName = getStepName;
+      self.getStepSrc = getStepSrc;
+      self.getPrevious = getPrevious;
+      self.getNext = getNext;
+      self.backup = backup;
+      self.advance = advance;
       self.addProject = addProject;
+
+      function getStepName(stepId){
+          if(stepId==1){
+              return '1. Getting Started';
+          }
+          else if(stepId==2){
+              return '2. Project Details';
+          }
+          else if(stepId==3){
+              return '3. Prototype Task';
+          }
+          else if(stepId==4){
+              return '4. Design';
+          }
+          else if(stepId==5){
+              return '5. Payment';
+          }
+          else if(stepId==6){
+              return '6. Summary';
+          }
+      }
+
+      function getStepSrc(stepId) {
+          if(stepId==1){
+              return '/static/templates/project/gettingstarted.html';
+          }
+          else if(stepId==2){
+              return '/static/templates/project/projectdetails.html';
+          }
+          else if(stepId==3){
+              return '/static/templates/project/prototypetask.html';
+          }
+          else if(stepId==4){
+              return '/static/templates/template/container.html';
+          }
+          else if(stepId==5){
+              return '/static/templates/project/payment.html';
+          }
+          else if(stepId==6){
+              return '/static/templates/project/summary.html';
+          }
+      }
+
+      function getPrevious(){
+          self.stepid -= 1;
+          return self.stepid;
+      }
+
+      function backup(){
+        self.getPrevious();
+        self.url = getStepSrc(self.stepid);
+      }
+
+      function getNext(){
+          self.stepid += 1;
+          return self.stepid;
+      }
+
+      function advance(){
+        self.getNext();
+        self.url = getStepSrc(self.stepid);
+      }
+
+      /**
+       * @name addProject
+       * @desc Create new project
+       * @memberOf crowdsource.project.controllers.ProjectController
+       */
+      function addProject() {
+          Project.addProject(self.currentProject).then(
+            function success(resp) {
+                var data = resp[0];
+                self.form.general_info.is_done = true;
+                self.form.general_info.is_expanded = false;
+                self.form.modules.is_expanded=true;
+                Project.clean();
+                $location.path('/monitor');
+            },
+            function error(resp) {
+              var data = resp[0];
+              self.error = data.detail;
+          }).finally(function () {
+
+          });
+      }
+
+      // The above fields and functions are used in the base.html file
+
+
+
+
+
+      self.startDate = $filter('date')(new Date(), 'yyyy-MM-ddTHH:mmZ');
       self.endDate = $filter('date')(new Date(), 'yyyy-MM-ddTHH:mmZ');
       self.name = null;
       self.description = null;
@@ -33,12 +134,9 @@
       self.addTemplate = addTemplate;
       self.addModule = addModule;
       self.getStepId = getStepId;
-      self.getStepName = getStepName;
-      self.getStepSrc = getStepSrc;
-      self.getPrevious = getPrevious;
-      self.getNext = getNext;
-      self.advance = advance;
-      self.backup = backup;
+
+
+
       self.form = {
           category: {is_expanded: false, is_done:false},
           general_info: {is_expanded: false, is_done:false},
@@ -57,8 +155,6 @@
           order: ""
       };
 
-      self.stepid = 1;
-
       self.myProjects = [];
       Project.getProjects().then(function(data) {
         self.myProjects = data[0];
@@ -68,7 +164,7 @@
       self.monitor = monitor;
 
       self.templateName = "";
-      self.url = getStepSrc(self.stepid);
+
 
       self.computeServiceCharge = computeServiceCharge;
 
@@ -103,15 +199,7 @@
         'Design a logo': 'For logo design, a prototype task might be a sketch of the concept.'
       };
 
-      function advance(){
-        self.getNext();
-        self.url = getStepSrc(self.stepid);
-      }
 
-      function backup(){
-        self.getPrevious();
-        self.url = getStepSrc(self.stepid);
-      }
 
       activate();
       function activate(){
@@ -130,28 +218,7 @@
           $scope.referenceData = data[0];
         });
       }
-      /**
-       * @name addProject
-       * @desc Create new project
-       * @memberOf crowdsource.project.controllers.ProjectController
-       */
-      function addProject() {
-          Project.addProject(self.currentProject).then(
-            function success(resp) {
-                var data = resp[0];
-                self.form.general_info.is_done = true;
-                self.form.general_info.is_expanded = false;
-                self.form.modules.is_expanded=true;
-                Project.clean();
-                $location.path('/monitor');
-            },
-            function error(resp) {
-              var data = resp[0];
-              self.error = data.detail;
-          }).finally(function () {
-
-          });
-      }
+      
       function saveCategories() {
           self.form.category.is_expanded = false;
           self.form.category.is_done=true;
@@ -226,56 +293,12 @@
       function getStepId(){
           return self.stepid;
       }
-      function getStepName(stepId){
-          if(stepId==1){
-              return '1. Getting Started';
-          }
-          else if(stepId==2){
-              return '2. Project Details';
-          }
-          else if(stepId==3){
-              return '3. Prototype Task';
-          }
-          else if(stepId==4){
-              return '4. Design';
-          }
-          else if(stepId==5){
-              return '5. Payment';
-          }
-          else if(stepId==6){
-              return '6. Summary';
-          }
-      }
+      
 
-      function getStepSrc(stepId) {
-          if(stepId==1){
-              return '/static/templates/project/gettingstarted.html';
-          }
-          else if(stepId==2){
-              return '/static/templates/project/projectdetails.html';
-          }
-          else if(stepId==3){
-              return '/static/templates/project/prototypetask.html';
-          }
-          else if(stepId==4){
-              return '/static/templates/template/container.html';
-          }
-          else if(stepId==5){
-              return '/static/templates/project/payment.html';
-          }
-          else if(stepId==6){
-              return '/static/templates/project/summary.html';
-          }
-      }
+      
 
-      function getPrevious(){
-          self.stepid -= 1;
-          return self.stepid;
-      }
-      function getNext(){
-          self.stepid += 1;
-          return self.stepid;
-      }
+
+
 
       function computeTotal(payment) {
         var total = ((payment.number_of_hits*payment.wage_per_hit)+(payment.charges*1));

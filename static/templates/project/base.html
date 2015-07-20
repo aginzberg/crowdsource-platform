@@ -1,12 +1,12 @@
 <div layout="row">
   <md-content class="transparent-background" flex="100">
       <md-list layout="row" class="project-nav">
-            <md-list-item style="text-decoration:none" ng-class="{'active': project.stepid==1}">{{project.getStepName(1)}}</md-list-item>
-            <md-list-item style="text-decoration:none" ng-class="{'active': project.stepid==2}">{{project.getStepName(2)}}</md-list-item>
-            <md-list-item style="text-decoration:none" ng-class="{'active': project.stepid==3}">{{project.getStepName(3)}}</md-list-item>
-            <md-list-item style="text-decoration:none" ng-class="{'active': project.stepid==4}">{{project.getStepName(4)}}</md-list-item>
-            <md-list-item style="text-decoration:none" ng-class="{'active': project.stepid==5}">{{project.getStepName(5)}}</md-list-item>
-            <md-list-item style="text-decoration:none" ng-class="{'active': project.stepid==6}">{{project.getStepName(6)}}</md-list-item>
+            <md-list-item ng-class="{'active': project.stepid==1}">{{project.getStepName(1)}}</md-list-item>
+            <md-list-item ng-class="{'active': project.stepid==2}">{{project.getStepName(2)}}</md-list-item>
+            <md-list-item ng-class="{'active': project.stepid==3}">{{project.getStepName(3)}}</md-list-item>
+            <md-list-item ng-class="{'active': project.stepid==4}">{{project.getStepName(4)}}</md-list-item>
+            <md-list-item ng-class="{'active': project.stepid==5}">{{project.getStepName(5)}}</md-list-item>
+            <md-list-item ng-class="{'active': project.stepid==6}">{{project.getStepName(6)}}</md-list-item>
       </md-list>
       <div class="project-form">
           <h3 class="step">{{project.getStepName(project.stepid)}}</h3>
