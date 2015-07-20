@@ -57,7 +57,7 @@
           order: ""
       };
 
-      self.stepid = parseInt($routeParams.projectStepId);
+      self.stepid = 1;
 
       self.myProjects = [];
       Project.getProjects().then(function(data) {

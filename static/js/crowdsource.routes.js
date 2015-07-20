@@ -137,7 +137,7 @@
         templateUrl :'/static/templates/project/summary.html'
     })
     
-    .when('/create-project/:projectStepId', {
+    .when('/create-project', {
         controller: 'ProjectController',
         controllerAs: 'project',
         templateUrl :'/static/templates/project/base.html'
