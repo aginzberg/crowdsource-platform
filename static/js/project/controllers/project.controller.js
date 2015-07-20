@@ -142,8 +142,9 @@
                 self.form.general_info.is_done = true;
                 self.form.general_info.is_expanded = false;
                 self.form.modules.is_expanded=true;
-                Project.clean();
-                $location.path('/monitor');
+                //this feels super hacky
+                window.location.reload();
+                $location.path('/task-feed');
             },
             function error(resp) {
               var data = resp[0];
@@ -176,6 +177,21 @@
         self.currentProject.payment.charges = parseFloat((0.06 * self.currentProject.payment.number_of_hits 
                                               + 0.13 * self.currentProject.payment.wage_per_hit).toFixed(2));
       }
+
+      function computeTotal(payment) {
+        var total = ((payment.number_of_hits*payment.wage_per_hit)+(payment.charges*1));
+        total = total ? total.toFixed(2) : 'Error';
+        return total;
+      }
+
+      
+
+      $scope.$watch('project.currentProject.payment', function (newVal, oldVal) {
+        if (!angular.equals(newVal, oldVal)) {
+          self.currentProject.payment.total = computeTotal(self.currentProject.payment);
+        }
+        
+      }, true);
 
       self.nameExample = {
         'Translate a document': 'Translate Roger\'s menu into Italian',
@@ -343,27 +359,8 @@
       function getStepId(){
           return self.stepid;
       }
-      
-
-      
 
 
-
-
-      function computeTotal(payment) {
-        var total = ((payment.number_of_hits*payment.wage_per_hit)+(payment.charges*1));
-        total = total ? total.toFixed(2) : 'Error';
-        return total;
-      }
-
-      
-
-      $scope.$watch('project.currentProject.payment', function (newVal, oldVal) {
-        if (!angular.equals(newVal, oldVal)) {
-          self.currentProject.payment.total = computeTotal(self.currentProject.payment);
-        }
-        
-      }, true);
 
       $scope.$on("$destroy", function() {
         Project.syncLocally(self.currentProject);
