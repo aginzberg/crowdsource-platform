@@ -53,8 +53,8 @@
         },
         'image': {
           id_string: 1,
-          name: 'image_placeholder' + 1,
-          type: 'image_placeholder',
+          name: 'image' + 1,
+          type: 'image',
           width: 100,
           height: 100,
           values: null,
@@ -114,19 +114,32 @@
           data_source: null
         }
     };
+
     self.templateName = $scope.project.currentProject.templateName;
     if(self.templateName == 'Proofread or edit a document' || self.templateName == 'Translate a document') {
       self.items = [self.templateComponents['label'], self.templateComponents['text_area']];
       if(self.templateName == 'Proofread or edit a document') {
         self.items[0].values = 'E.g. Please proofread the first two paragraphs of my '
                                 + 'document looking for spelling and grammatical mistakes.'
-                                + ' Enter your revised version in the textbox below.'
-      } else if (self.templateName == 'Translate a document') {
+                                + ' Enter your revised version in the textbox below.';
+      } else if(self.templateName == 'Translate a document') {
         self.items[0].values = 'E.g. Please translate the first three paragraphs of my '
-                                + 'document. Enter the translation in the textbox below.'
+                                + 'document. Enter the translation in the textbox below.';
       }
-      sync();
+    } else if(self.templateName == 'Image labelling') {
+      self.items = [self.templateComponents['label'], self.templateComponents['image'], self.templateComponents['text_field']]
+      self.items[0].values = 'E.g. Please enter the hair color of the person in the image in the text field below';
+      self.items[1].icon = 'static/images/placeholder.jpg'
+    } else if(self.templateName == 'Design a logo') {
+      // self.items = [self.templateComponents['label'], self.templateComponents['text_area']];
+    } else if(self.templateName == 'Create a website') {
+
+    } else if(self.templateName == 'Run an experiment') {
+      self.items = [self.templateComponents['label'], self.templateComponents['text_field']];
+      self.items[0].values = 'E.g. Please follow the link to my survey and answer the questions. Then '
+                             + 'paste the confirmation code in the textfield below.';
     }
+    sync();
 
     $scope.$watch('template.items', function (newval, oldval) {
       if(newval[0].values == undefined) self.items[0].values = "";
@@ -139,71 +152,6 @@
     self.selectedItem = null;
     $scope.onOver = onOver;
     $scope.onDrop = onDrop;
-    // self.templateComponents = [
-    //   {
-    //     id: 1,
-    //     name: "Label",
-    //     icon: null,
-    //     type: 'label',
-    //     description: "Use for static text: labels, headings, paragraphs"
-    //   },
-    //   {
-    //     id: 2,
-    //     name: "Checkbox",
-    //     icon: null,
-    //     type: 'checkbox',
-    //     description: "Use for selecting multiple options"
-    //   },
-    //   {
-    //     id: 3,
-    //     name: "Radio Button",
-    //     icon: null,
-    //     type: 'radio',
-    //     description: "Use when only one option needs to be selected"
-    //   },
-    //   {
-    //     id: 4,
-    //     name: "Select list",
-    //     icon: null,
-    //     type: 'select',
-    //     description: "Use for selecting multiple options from a larger set"
-    //   },
-    //   {
-    //     id: 5,
-    //     name: "Text field",
-    //     icon: null,
-    //     type: 'text_field',
-    //     description: "Use for short text input"
-    //   },
-    //   {
-    //     id: 6,
-    //     name: "Text Area",
-    //     icon: null,
-    //     type: 'text_area',
-    //     description: "Use for longer text input"
-    //   },
-    //   {
-    //     id: 7,
-    //     name: "Image Container",
-    //     icon: null,
-    //     type: 'image',
-    //     description: "A placeholder for the image"
-    //   },
-    //   // {
-    //   //   id: 8,
-    //   //   name: "Video Container",
-    //   //   icon: null,
-    //   //   type: 'video',
-    //   //   description: "A placeholder for the video player"
-    //   // },
-    //   // {
-    //   //   id: 9,
-    //   //   name: "Audio Container",
-    //   //   icon: null,
-    //   //   type: 'audio',
-    //   //   description: "A placeholder for the audio player"
-    //   // }
-    // ];
 
     function buildHtml(item) {
       var html = '';
@@ -211,8 +159,8 @@
         html = '<' + item.sub_type + '>' + item.values + '</' + item.sub_type + '>';
       }
       else if (item.type === 'image') {
-        //html = '<img class="image-container" src="'+item.icon+'">'+'</img>';
-        html = '<md-icon class="image-container" md-svg-src="' + item.icon + '"></md-icon>';
+        html = '<img class="image-container" src="'+item.icon+'">'+'</img>';
+        // html = '<md-icon class="image-container" md-svg-src="' + item.icon + '"></md-icon>';
       }
       else if (item.type === 'radio') {
         html = '<md-radio-group class="template-item" ng-model="item.answer" layout="' + item.layout + '">' +
