@@ -197,7 +197,7 @@
         'Translate a document': 'Translate Roger\'s menu into Italian',
         'Proofread or edit a document': 'Proofread Joe\'s thesis on crowdsourcing',
         'Image labelling': 'Label Sarah\'s photographs of celebrities',
-        'Run an experiment': 'Run Michael\'s experiment on population flows',
+        'Run an experiment': 'Complete Michael\'s experiment on population flows',
         'Create a website': 'Make Diane\'s personal website',
         'Design a logo': 'Design a logo for Rachel\'s business card'
       };
@@ -209,8 +209,8 @@
                                         + 'a revision of the first few paragraphs of the document '
                                         + 'or a draft of a new introduction.',
         'Image labelling': 'For image labelling, a prototype task might be labelling five images.',
-        'Run an experiment': 'For running an experiment, a prototype task might be having just five'
-                             + ' subjects complete your experiemnt.',
+        'Run an experiment': 'For running an experiment, a prototype task might be having five'
+                             + ' subjects complete your task or survey.',
         'Create a website': 'For website creation, a prototype task might be mockup of the '
                             + 'homepage and a sketch of the data model and architecture.',
         'Design a logo': 'For logo design, a prototype task might be a sketch of the concept.'

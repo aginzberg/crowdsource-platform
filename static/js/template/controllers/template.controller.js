@@ -117,7 +117,7 @@
 
     self.templateName = $scope.project.currentProject.templateName;
     if(self.templateName == 'Proofread or edit a document' || self.templateName == 'Translate a document') {
-      self.items = [self.templateComponents['label'], self.templateComponents['text_area']];
+      self.items = [angular.copy(self.templateComponents['label']), angular.copy(self.templateComponents['text_area'])];
       if(self.templateName == 'Proofread or edit a document') {
         self.items[0].values = 'E.g. Please proofread the first two paragraphs of my '
                                 + 'document looking for spelling and grammatical mistakes.'
@@ -127,17 +127,29 @@
                                 + 'document. Enter the translation in the textbox below.';
       }
     } else if(self.templateName == 'Image labelling') {
-      self.items = [self.templateComponents['label'], self.templateComponents['image'], self.templateComponents['text_field']]
-      self.items[0].values = 'E.g. Please enter the hair color of the person in the image in the text field below';
-      self.items[1].icon = 'static/images/placeholder.jpg'
+      self.items = [angular.copy(self.templateComponents['label']), angular.copy(self.templateComponents['image']), 
+                    angular.copy(self.templateComponents['text_field'])];
+      self.items[0].values = 'E.g. Please enter the hair color of the person in the image in the textbox below';
+      self.items[1].icon = 'static/images/placeholder.jpg';
     } else if(self.templateName == 'Design a logo') {
-      // self.items = [self.templateComponents['label'], self.templateComponents['text_area']];
+      self.items = [angular.copy(self.templateComponents['label']), angular.copy(self.templateComponents['image']),
+                    angular.copy(self.templateComponents['text_area'])];
+      self.items[0].values = 'E.g. Please read the document about my company and then sketch and upload a logo. Add any'
+                             +' comments or questions in the textbox below';
+      self.items[1].icon = 'static/images/placeholder.jpg';
     } else if(self.templateName == 'Create a website') {
+      self.items = [angular.copy(self.templateComponents['label']), angular.copy(self.templateComponents['image']), 
+                    angular.copy(self.templateComponents['text_area']), angular.copy(self.templateComponents['label']),
+                    angular.copy(self.templateComponents['text_area'])];
+      self.items[0].values = 'E.g. Please read my introductory document then create and upload a mockup for the homepage.'
+                             + ' Then briefly describe your proposal for the site architecture in the textbox below.';
+      self.items[1].icon = 'static/images/placeholder.jpg';
+      self.items[3].values = 'Include any comments or questions in the textbox below.';
 
     } else if(self.templateName == 'Run an experiment') {
-      self.items = [self.templateComponents['label'], self.templateComponents['text_field']];
-      self.items[0].values = 'E.g. Please follow the link to my survey and answer the questions. Then '
-                             + 'paste the confirmation code in the textfield below.';
+      self.items = [angular.copy(self.templateComponents['label']), angular.copy(self.templateComponents['text_field'])];
+      self.items[0].values = 'E.g. Please follow the link and complete the survey. Then '
+                             + 'paste the confirmation code given upon completion in the textbox below.';
     }
     sync();
 
