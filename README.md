@@ -155,5 +155,4 @@ after that you can continue with
     heroku run python manage.py makemigrations oauth2_provider
     heroku run python manage.py migrate
 
-
-
+    heroku run python manage.py loaddata fixtures/ginzbergCategoryData.json
