@@ -233,7 +233,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
                                                                 task=task_worker.task).values_list('completion_time',
                                                                                                    flat=True))
             if not task_median:
-                return 1.0
+                medians.append(1.0)
             medians.append(task_worker.completion_time / np.median(task_median))
         return np.median(medians)
 
