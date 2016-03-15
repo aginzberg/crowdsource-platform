@@ -10,6 +10,7 @@ from crowdsourcing.serializers.requester import RequesterSerializer
 from crowdsourcing.serializers.message import CommentSerializer
 from crowdsourcing.utils import generate_random_id
 from crowdsourcing.serializers.file import BatchFileSerializer
+from django.db.models import Q
 from mturk.tasks import mturk_update_status
 import numpy as np
 import math
@@ -196,11 +197,12 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
             project_batch_file.save()
 
     def get_completion_time(self, obj):
+        factor = self.get_scaling_factor(self.context['request'].user.userprofile.worker)
         completion_times = obj.project_tasks.filter(task_workers__task_status__in=[models.TaskWorker.STATUS_SUBMITTED,
                                                                                    models.TaskWorker.STATUS_ACCEPTED]) \
             .values_list('task_workers__completion_time', flat=True)
         if len(completion_times) >= settings.WORKER_TIME_COUNT:
-            return str(int(math.ceil(np.median(completion_times)))) + ' minutes'
+            return str(int(math.ceil(factor * np.median(completion_times)))) + ' minutes'
         parent_completion_times = []
         if obj.parent is not None:
             parent_completion_times = obj.parent.project_tasks. \
@@ -213,9 +215,27 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
         if obj.parent is not None and obj.parent.task_time:
             total_times.append(obj.parent.task_time)
         if len(total_times) > 0:
-            return str(int(math.ceil(np.median(total_times)))) + ' minutes'
+            return str(int(math.ceil(factor * np.median(total_times)))) + ' minutes'
 
         return None
+
+    def get_scaling_factor(self, worker):
+        task_workers = models.TaskWorker.objects.filter(~Q(completion_time=None), worker=worker,
+                                                        task_status__in=[models.TaskWorker.STATUS_ACCEPTED,
+                                                                         models.TaskWorker.STATUS_SUBMITTED])
+        if task_workers.count() == 0:
+            return 1.0
+        medians = []
+        for task_worker in task_workers:
+            task_median = list(models.TaskWorker.objects.filter(~Q(completion_time=None),
+                                                                task_status__in=[models.TaskWorker.STATUS_ACCEPTED,
+                                                                                 models.TaskWorker.STATUS_SUBMITTED],
+                                                                task=task_worker.task).values_list('completion_time',
+                                                                                                   flat=True))
+            if not task_median:
+                return 1.0
+            medians.append(task_worker.completion_time / np.median(task_median))
+        return np.median(medians)
 
 
 class QualificationApplicationSerializer(serializers.ModelSerializer):
