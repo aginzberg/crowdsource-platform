@@ -150,7 +150,7 @@ class WorkerSkill(models.Model):
 class Requester(models.Model):
     profile = models.OneToOneField(UserProfile)
     alias = models.CharField(max_length=32, error_messages={'required': "Please enter an alias!"})
-    rejection_rate = models.FloatField(default=0.0, null=True)
+    rejection_rate = models.FloatField(default=None, null=True)
 
 
 class UserRole(models.Model):
@@ -608,5 +608,22 @@ class WorkerConfig(models.Model):
         (CONDITION_FOUR, 'BoomerangControl:TimerTreatment')
     )
     worker = models.OneToOneField(Worker, related_name='configuration')
+    condition = models.SmallIntegerField(choices=STATUS, null=True)
+    config = JSONField(null=True)
+
+
+class RequesterConfig(models.Model):
+    CONDITION_ONE = 1
+    CONDITION_TWO = 2
+    CONDITION_THREE = 3
+    CONDITION_FOUR = 4
+
+    STATUS = (
+        (CONDITION_ONE, "BoomerangTreatment:RejectionControl"),
+        (CONDITION_TWO, 'BoomerangTreatment:RejectionTreatment'),
+        (CONDITION_THREE, 'BoomerangControl:RejectionControl'),
+        (CONDITION_FOUR, 'BoomerangControl:RejectionTreatment')
+    )
+    requester = models.OneToOneField(Requester, related_name='configuration')
     condition = models.SmallIntegerField(choices=STATUS, null=True)
     config = JSONField(null=True)

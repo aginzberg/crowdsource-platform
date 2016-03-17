@@ -151,12 +151,46 @@ class UserSerializer(serializers.ModelSerializer):
             requester.profile = user_profile
             requester.alias = username
             if settings.STUDY_FEED_PHASE == 1:
-                requester.rejection_rate = random.randrange(0, 95, 5)  # TODO distribute this in a better way
+                import bisect
+                from collections import Counter
+                cuts = [33, 66, 99]
+                rate_ranges = {
+                    "33": (0, 30),
+                    "66": (35, 60),
+                    "99": (65, 95)
+                }
+                requester_rates = models.Requester.objects.filter(rejection_rate__isnull=False). \
+                    values_list('rejection_rate', flat=True)
+                counter = Counter(cuts[bisect.bisect_left(cuts, item)] for item in requester_rates)
+                cut = None
+                if len(counter) < len(cuts):
+                    cut = str(random.sample(list(set(cuts) - set(counter.keys())), 1)[0])
+                else:
+                    least_common = str(counter.most_common()[:-2:-1][0][0])
+                    cut = least_common
+
+                requester.rejection_rate = random.randrange(rate_ranges[cut][0], rate_ranges[cut][1], 5)
             requester.save()
             requester_financial_account = models.FinancialAccount()
             requester_financial_account.owner = user_profile
             requester_financial_account.type = 'requester'
             requester_financial_account.save()
+
+            if settings.STUDY_FEED_PHASE == 3:
+                requester_config = models.RequesterConfig()
+                requester_config.requester = requester
+                existing_configurations = models.RequesterConfig.objects.values('condition') \
+                    .filter(~Q(condition__isnull=True)) \
+                    .annotate(num_requesters=Count('requester')).order_by('num_requesters')
+                configs = [a['condition'] for a in existing_configurations]
+                possible_configs = [a[0] for a in models.RequesterConfig.STATUS]
+                conf = None
+                if existing_configurations.count() < len(models.RequesterConfig.STATUS):
+                    conf = random.sample(list(set(possible_configs) - set(configs)), 1)[0]
+                else:
+                    conf = existing_configurations.first()['condition']
+                requester_config.condition = conf
+                requester_config.save()
 
         has_profile_info = self.validated_data.get('is_requester', False) or self.validated_data.get('is_worker',
                                                                                                      False)
@@ -180,7 +214,7 @@ class UserSerializer(serializers.ModelSerializer):
                 possible_configs = [a[0] for a in models.WorkerConfig.STATUS]
                 conf = None
                 if existing_configurations.count() < len(models.WorkerConfig.STATUS):
-                    conf = random.sample(list(set(possible_configs)-set(configs)), 1)[0]
+                    conf = random.sample(list(set(possible_configs) - set(configs)), 1)[0]
                 else:
                     conf = existing_configurations.first()['condition']
                 worker_config.condition = conf

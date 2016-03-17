@@ -343,7 +343,8 @@ class SuppressDeprecated(logging.Filter):
 WORKER_TIME_COUNT = 1
 
 STUDY_FEED_PHASE = int(os.environ.get('STUDY_FEED_PHASE', 0))
-# Phase 1 is for creating requesters, Phase 2 is when the workers are supposed to come to platform and signup
+# Phase 1 is for creating requesters, Phase 2 is when the workers are supposed to come to platform and signup,
+# Phase 3 requester study
 
 
 PYTHON_VERSION = 2

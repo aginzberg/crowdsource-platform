@@ -76,6 +76,11 @@ class Login(APIView):
                     response_data["configuration"] = {
                         "condition": request.user.userprofile.worker.configuration.condition
                     }
+                if hasattr(request.user.userprofile, 'requester') and hasattr(request.user.userprofile.requester,
+                                                                              'configuration'):
+                    response_data["requester_configuration"] = {
+                        "condition": request.user.userprofile.requester.configuration.condition
+                    }
 
                 return Response(response_data, status.HTTP_200_OK)
             else:
