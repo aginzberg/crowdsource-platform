@@ -367,3 +367,7 @@ if not DEBUG:
 
 # Boomerang Time
 WORKER_TIME_COUNT = 1
+
+
+STUDY_FEED_PHASE = int(os.environ.get('STUDY_FEED_RUNNING', 0))
+

@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 import re
 from django.contrib.auth.models import User
+from django.db.models import Q, Count
 from rest_framework.validators import UniqueValidator
 
 from rest_framework import status
@@ -149,7 +150,8 @@ class UserSerializer(serializers.ModelSerializer):
             requester = models.Requester()
             requester.profile = user_profile
             requester.alias = username
-            requester.rejection_rate = random.randrange(0, 95, 5)  # TODO distribute this in a better way
+            if settings.STUDY_FEED_PHASE == 1:
+                requester.rejection_rate = random.randrange(0, 95, 5)  # TODO distribute this in a better way
             requester.save()
             requester_financial_account = models.FinancialAccount()
             requester_financial_account.owner = user_profile
@@ -168,6 +170,19 @@ class UserSerializer(serializers.ModelSerializer):
             worker_financial_account.owner = user_profile
             worker_financial_account.type = 'worker'
             worker_financial_account.save()
+            if settings.STUDY_FEED_PHASE == 2:
+                worker_config = models.WorkerConfig()
+                worker_config.worker = worker
+                existing_configurations = models.WorkerConfig.objects.values('condition') \
+                    .filter(~Q(condition__isnull=True)) \
+                    .annotate(num_workers=Count('worker')).order_by('num_workers')
+                conf = None
+                if existing_configurations.count() < len(models.WorkerConfig.STATUS):
+                    conf = random.sample(models.WorkerConfig.STATUS, 1)[0][0]
+                else:
+                    conf = existing_configurations.first()['condition']
+                worker_config.condition = conf
+                worker_config.save()
 
         if settings.EMAIL_ENABLED:
             salt = hashlib.sha1(str(random.random()).encode('utf-8')).hexdigest()[:5]

@@ -25,15 +25,15 @@ class PasswordResetModel(models.Model):
 
 
 class Region(models.Model):
-    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the region!', })
-    code = models.CharField(max_length=16, error_messages={'required': 'Please specify the region code!', })
+    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the region!',})
+    code = models.CharField(max_length=16, error_messages={'required': 'Please specify the region code!',})
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
 
 class Country(models.Model):
-    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the country!', })
-    code = models.CharField(max_length=8, error_messages={'required': 'Please specify the country code!', })
+    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the country!',})
+    code = models.CharField(max_length=8, error_messages={'required': 'Please specify the country code!',})
     region = models.ForeignKey(Region)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -43,7 +43,7 @@ class Country(models.Model):
 
 
 class City(models.Model):
-    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the city!', })
+    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the city!',})
     country = models.ForeignKey(Country)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -53,7 +53,7 @@ class City(models.Model):
 
 
 class Address(models.Model):
-    street = models.CharField(max_length=128, error_messages={'required': 'Please specify the street name!', })
+    street = models.CharField(max_length=128, error_messages={'required': 'Please specify the street name!',})
     country = models.ForeignKey(Country)
     city = models.ForeignKey(City)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -596,5 +596,17 @@ class Transaction(models.Model):
 
 
 class WorkerConfig(models.Model):
+    CONDITION_ONE = 1
+    CONDITION_TWO = 2
+    CONDITION_THREE = 3
+    CONDITION_FOUR = 4
+
+    STATUS = (
+        (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
+        (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
+        (CONDITION_THREE, 'BoomerangControl:TimerControl'),
+        (CONDITION_FOUR, 'BoomerangControl:TimerTreatment')
+    )
     worker = models.OneToOneField(Worker, related_name='configuration')
-    data = JSONField(null=True)
+    condition = models.SmallIntegerField(choices=STATUS, null=True)
+    config = JSONField(null=True)
