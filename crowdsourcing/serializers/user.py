@@ -166,7 +166,7 @@ class UserSerializer(serializers.ModelSerializer):
                 if len(counter) < len(cuts):
                     cut = str(random.sample(list(set(cuts) - set(counter.keys())), 1)[0])
                 else:
-                    least_common = str(counter.most_common()[:-2:-1][0][0])
+                    least_common = str(counter.most_common()[len(cuts) - 1][0][0])
                     cut = least_common
 
                 requester.rejection_rate = random.randrange(rate_ranges[cut][0], rate_ranges[cut][1], 5)
