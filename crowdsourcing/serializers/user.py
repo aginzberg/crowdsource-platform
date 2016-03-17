@@ -176,9 +176,11 @@ class UserSerializer(serializers.ModelSerializer):
                 existing_configurations = models.WorkerConfig.objects.values('condition') \
                     .filter(~Q(condition__isnull=True)) \
                     .annotate(num_workers=Count('worker')).order_by('num_workers')
+                configs = [a['condition'] for a in existing_configurations]
+                possible_configs = [a[0] for a in models.WorkerConfig.STATUS]
                 conf = None
                 if existing_configurations.count() < len(models.WorkerConfig.STATUS):
-                    conf = random.sample(models.WorkerConfig.STATUS, 1)[0][0]
+                    conf = random.sample(list(set(possible_configs)-set(configs)), 1)[0]
                 else:
                     conf = existing_configurations.first()['condition']
                 worker_config.condition = conf

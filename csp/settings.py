@@ -339,6 +339,13 @@ class SuppressDeprecated(logging.Filter):
         return not any([warn in record.getMessage() for warn in warnings])
 
 
+# Boomerang Time
+WORKER_TIME_COUNT = 1
+
+STUDY_FEED_PHASE = int(os.environ.get('STUDY_FEED_PHASE', 0))
+# Phase 1 is for creating requesters, Phase 2 is when the workers are supposed to come to platform and signup
+
+
 PYTHON_VERSION = 2
 try:
     from local_settings import *
@@ -363,11 +370,3 @@ if not DEBUG:
         'daemo.herokuapp.com', 'daemo.stanford.edu',
         'daemo-staging.herokuapp.com', 'daemo-staging.stanford.edu'
     ]
-
-
-# Boomerang Time
-WORKER_TIME_COUNT = 1
-
-
-STUDY_FEED_PHASE = int(os.environ.get('STUDY_FEED_RUNNING', 0))
-
