@@ -596,5 +596,5 @@ class Transaction(models.Model):
 
 
 class WorkerConfig(models.Model):
-    worker = models.ForeignKey(Worker, related_name='configuration')
+    worker = models.OneToOneField(Worker, related_name='configuration')
     data = JSONField(null=True)
