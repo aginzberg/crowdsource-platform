@@ -149,6 +149,7 @@ class UserSerializer(serializers.ModelSerializer):
             requester = models.Requester()
             requester.profile = user_profile
             requester.alias = username
+            requester.rejection_rate = random.randrange(0, 95, 5)  # TODO distribute this in a better way
             requester.save()
             requester_financial_account = models.FinancialAccount()
             requester_financial_account.owner = user_profile

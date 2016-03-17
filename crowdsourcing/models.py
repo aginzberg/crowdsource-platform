@@ -150,6 +150,7 @@ class WorkerSkill(models.Model):
 class Requester(models.Model):
     profile = models.OneToOneField(UserProfile)
     alias = models.CharField(max_length=32, error_messages={'required': "Please enter an alias!"})
+    rejection_rate = models.FloatField(default=0.0, null=True)
 
 
 class UserRole(models.Model):
@@ -592,3 +593,8 @@ class Transaction(models.Model):
     reference = models.CharField(max_length=256, null=True)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+
+class WorkerConfig(models.Model):
+    worker = models.ForeignKey(Worker, related_name='configuration')
+    data = JSONField(null=True)
