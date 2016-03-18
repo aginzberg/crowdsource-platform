@@ -153,11 +153,11 @@ class UserSerializer(serializers.ModelSerializer):
             if settings.STUDY_FEED_PHASE == 1:
                 import bisect
                 from collections import Counter
-                cuts = [33, 66, 99]
+                cuts = [3, 20, 60]
                 rate_ranges = {
-                    "33": (0, 30),
-                    "66": (35, 60),
-                    "99": (65, 95)
+                    "3": (0, 3),
+                    "20": (10, 20),
+                    "60": (40, 60)
                 }
                 requester_rates = models.Requester.objects.filter(rejection_rate__isnull=False). \
                     values_list('rejection_rate', flat=True)
@@ -169,7 +169,7 @@ class UserSerializer(serializers.ModelSerializer):
                     least_common = str(counter.most_common()[:-2:-1][0][0])
                     cut = least_common
 
-                requester.rejection_rate = random.randrange(rate_ranges[cut][0], rate_ranges[cut][1], 5)
+                requester.rejection_rate = random.randrange(rate_ranges[cut][0], rate_ranges[cut][1], 1)
             requester.save()
             requester_financial_account = models.FinancialAccount()
             requester_financial_account.owner = user_profile
