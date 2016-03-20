@@ -158,8 +158,34 @@ md-card {
 .template-container .properties md-divider {
   border-top-color: #2746a8; }
 
+.dropdown-menu {
+  background-color: white;
+  border: 1px solid #ddd;
+  list-style: none;
+  padding: 0;
+  margin: 0; }
+  .dropdown-menu li {
+    border: 0;
+    margin: 8px 0;
+    padding: 15px;
+    cursor: pointer;
+    font-size: 15px; }
+  .dropdown-menu li:first-child {
+    border-top: none; }
+  .dropdown-menu li:hover, .dropdown-menu .active {
+    background-color: rgba(158, 158, 158, 0.2); }
+
 ._mturk .remote-content {
   min-height: 384px; }
+
+.template-item a {
+  color: #2e53ff;
+  outline: none;
+  text-decoration: none; }
+  .template-item a:hover {
+    text-decoration: underline; }
+  .template-item a:visited {
+    color: #2746a8; }
 
 .project-form .step {
   padding-left: 15px;
@@ -193,8 +219,8 @@ ul.no-decoration-list {
   padding-left: 0px; }
 
 ._authoring_content {
-  margin-left: 46px;
-  margin-right: 46px; }
+  margin-left: 30px;
+  margin-right: 16px; }
 
 ._template-builder {
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAEklEQVQYlWNgYGCYyTAKBh8AAPRAAJoO5sCqAAAAAElFTkSuQmCC") repeat;
@@ -234,6 +260,28 @@ ul.no-decoration-list {
   background-color: #ebebeb; }
   ._meta-info md-input-container .md-input {
     width: 72px; }
+  ._meta-info md-input-container.larger .md-input {
+    width: 175px; }
+  ._meta-info .md-datepicker-input label {
+    color: rgba(0, 0, 0, 0.54);
+    transform: translate3d(-6px, 6px, 0) scale(0.85);
+    position: relative;
+    left: 0;
+    right: auto;
+    -webkit-font-smoothing: antialiased; }
+  ._meta-info .md-datepicker-input md-datepicker {
+    padding-top: 3px;
+    background-color: transparent; }
+    ._meta-info .md-datepicker-input md-datepicker > button.md-datepicker-button {
+      display: none; }
+    ._meta-info .md-datepicker-input md-datepicker > div.md-datepicker-input-container {
+      margin: 6px 0; }
+    ._meta-info .md-datepicker-input md-datepicker.md-datepicker-open > div.md-datepicker-input-container > input.md-datepicker-input {
+      height: inherit;
+      margin-left: 20px; }
+  ._meta-info .md-button.button-icon span.icon {
+    position: relative;
+    top: 6px; }
   ._meta-info ._upload-text {
     margin-top: auto;
     margin-bottom: auto;
@@ -245,13 +293,14 @@ ul.no-decoration-list {
     border-bottom: solid 1px #2746a8;
     color: #2746a8;
     cursor: pointer; }
-  ._meta-files ._file-action {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    margin-left: 4px;
-    cursor: pointer;
-    outline: none; }
+
+._meta-sources ._file-action {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  cursor: pointer;
+  outline: none; }
 
 h3.my-projects-header {
   color: black; }
@@ -497,8 +546,7 @@ md-list-item.list-item-with-padding {
     ._rating-circle._unchecked:hover {
       background-color: rgba(46, 83, 255, 0.3); }
   ._rating-circle._checked {
-    background-color: #2e53ff;
-    border: 1px solid #2e53ff; }
+    background-color: #2e53ff; }
 
 ._task-detail {
   background-color: #ededed;
@@ -506,6 +554,14 @@ md-list-item.list-item-with-padding {
 
 ._task-editable {
   padding-left: 16px; }
+
+._advanced {
+  font-size: 14px; }
+
+._preference {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.54);
+  height: 26px; }
 
 html, body, md-content {
   background-color: white;
@@ -646,8 +702,15 @@ md-toolbar {
   padding-left: 4px;
   padding-right: 12px; }
 
+._main-content-body {
+  min-width: 768px;
+  width: 0; }
+
 ._ml-24 {
   margin-left: 24px; }
+
+._mr-24 {
+  margin-right: 24px; }
 
 ._text-constrained {
   overflow: hidden;
