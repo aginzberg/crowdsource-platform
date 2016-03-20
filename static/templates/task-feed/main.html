@@ -29,8 +29,7 @@
           </div>
           <div layout="row" class="layout-align-start-center">
             <div flex="10" class="_time">
-              <div ng-if="!project.is_prototype">{{ project.price * 10 | number: 0}} min</div>
-              <div>40 mins</div>
+              <div>{{ project.timeout | number: 0}} min</div>
             </div>
             <div flex="70">
               <text class="_hourly-rate">Hourly Rate : $6 pr/hr </text>
