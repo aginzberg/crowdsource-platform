@@ -6,10 +6,10 @@
         .controller('TaskController', TaskController);
 
     TaskController.$inject = ['$scope', '$state', '$mdToast', '$log', '$http', '$stateParams',
-        'Task', 'Authentication', 'Template', '$sce', '$filter', '$rootScope', 'RatingService', '$cookies', 'User'];
+        'Task', 'Authentication', 'Template', '$sce', '$filter', '$rootScope', 'RatingService', '$cookies', 'User', '$timeout'];
 
     function TaskController($scope, $state, $mdToast, $log, $http, $stateParams, Task, Authentication, Template, $sce,
-                            $filter, $rootScope, RatingService, $cookies, User) {
+                            $filter, $rootScope, RatingService, $cookies, User, $timeout) {
         var self = this;
 
         var userAccount = Authentication.getAuthenticatedAccount();
@@ -22,6 +22,10 @@
         self.updateUserPreferences = updateUserPreferences;
 
         self.gotIt = gotIt;
+        self.has_read_tooltip = true;
+        self.timerRunning = false;
+        self.toggleTimer = toggleTimer;
+        self.toggleTimerVisibility = toggleTimerVisibility;
         activate();
 
         function activate() {
@@ -61,19 +65,31 @@
                                 $mdToast.showSimple('Error fetching comments - ' + JSON.stringify(err));
                             }
                         ).finally(function () {
-                            });
+                        });
                     }
 
                     if (data[0].hasOwnProperty('auto_accept')) {
                         self.auto_accept = data[0].auto_accept;
-                    }else{
+                    } else {
                         self.auto_accept = false;
+                    }
+                    if (data[0].hasOwnProperty('has_read_tooltip')) {
+                        self.has_read_tooltip = data[0].has_read_tooltip;
+                        if (self.has_read_tooltip) {
+                            $timeout(function () {
+                                startTimer();
+                            }, 1000, false);
+                        }
+
+                    } else {
+                        self.has_read_tooltip = false;
                     }
 
                 },
                 function error(data) {
                     $mdToast.showSimple('Could not get task with data.');
-                });
+                }).finally(function () {
+            });
         }
 
 
@@ -143,7 +159,7 @@
                 template_items: itemAnswers,
                 task_status: task_status,
                 saved: self.isSavedQueue || self.isSavedReturnedQueue,
-                auto_accept:self.auto_accept
+                auto_accept: self.auto_accept
             };
 
             Task.submitTask(requestData).then(
@@ -180,17 +196,17 @@
             if (task_status == 1 || data[1] != 200) { //task is saved or failure
                 $state.go('task_feed');
             } else if (task_status == 2 || task_status == 6) { //submit or skip
-                if(self.auto_accept) {
+                if (self.auto_accept) {
                     $state.go('task', {taskId: data[0].task});
-                }else{
+                } else {
                     $state.go('task_feed');
                 }
             }
 
         }
 
-        function updateUserPreferences(auto_accept){
-            User.updatePreferences(userAccount.username, {'auto_accept':auto_accept}).then(function(){
+        function updateUserPreferences(auto_accept) {
+            User.updatePreferences(userAccount.username, {'auto_accept': auto_accept}).then(function () {
             });
         }
 
@@ -216,8 +232,40 @@
             }
         };
 
-        function gotIt(){
-            self.isTimerTooltipOpen=true;
+        function gotIt() {
+            startTimer();
+            User.updatePreferences(userAccount.username, {'has_read_tooltip': true}).then(
+                function () {
+                    self.has_read_tooltip = true;
+                });
+        }
+
+        function startTimer() {
+            self.timerRunning = true;
+            $scope.$broadcast('timer-start');
+        }
+
+        function stopTimer() {
+            self.timerRunning = false;
+            $scope.$broadcast('timer-stop');
+        }
+
+        function resumeTimer() {
+            self.timerRunning = true;
+            $scope.$broadcast('timer-resume');
+        }
+
+        function toggleTimer() {
+            if (self.timerRunning) {
+                stopTimer();
+            }
+            else {
+                resumeTimer();
+            }
+        }
+
+        function toggleTimerVisibility() {
+            self.timerOpen = !self.timerOpen;
         }
 
 

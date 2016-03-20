@@ -12,6 +12,7 @@ angular
         'ng-sortable',
         'ui.router',
         'ngWebsocket',
+        'timer',
 
         // local modules
         'crowdsource.config',

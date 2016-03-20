@@ -1314,4 +1314,8 @@ md-list-item.rate-list-item {
     margin: 0;
     float: right; }
 
+._clickable-icon {
+  outline: none;
+  cursor: pointer; }
+
 /*# sourceMappingURL=app.css.map */

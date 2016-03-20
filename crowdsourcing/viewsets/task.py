@@ -78,15 +78,18 @@ class TaskViewSet(viewsets.ModelViewSet):
             time_left = None
 
         auto_accept = False
+        has_read_tooltip = False
         user_prefs = get_model_or_none(UserPreferences, user=request.user)
         if user_prefs is not None:
             auto_accept = user_prefs.auto_accept
+            has_read_tooltip = user_prefs.has_read_tooltip
 
         return Response({'data': serializer.data,
                          'requester_alias': requester_alias,
                          'project': project,
                          'time_left': time_left,
                          'auto_accept': auto_accept,
+                         'has_read_tooltip': has_read_tooltip,
                          'target': target}, status.HTTP_200_OK)
 
     @list_route(methods=['get'])
