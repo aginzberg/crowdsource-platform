@@ -1209,4 +1209,46 @@ md-list-item.rate-list-item {
     font-weight: 500;
     outline: none; }
 
+._timer {
+  margin-right: 16px;
+  position: relative; }
+  ._timer md-icon {
+    color: rgba(29, 142, 201, 0.87) !important; }
+  ._timer ._tooltip {
+    position: absolute;
+    right: 0;
+    top: -125px;
+    font-size: 12px;
+    padding: 4px 5px;
+    color: rgba(0, 0, 0, 0.54);
+    background-color: #F0F0F0;
+    width: 128px; }
+    ._timer ._tooltip ._main-text {
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.7); }
+    ._timer ._tooltip:after {
+      content: ' ';
+      width: 0;
+      height: 0;
+      border-style: solid;
+      position: absolute;
+      bottom: -14px;
+      right: 0;
+      border-width: 0 13px 15px 0;
+      border-color: transparent #F0F0F0 transparent transparent; }
+
+._primary {
+  background-color: rgba(39, 70, 168, 0.87);
+  color: #ffffff; }
+  ._primary.md-button.md-default-theme:hover:not([disabled]), ._primary.md-button:hover:not([disabled]) {
+    background-color: #2746a8; }
+
+._cbtn {
+  min-height: 30px;
+  line-height: 30px; }
+  ._cbtn._tooltip-btn {
+    color: rgba(39, 70, 168, 0.87);
+    margin: 0;
+    float: right; }
+
 /*# sourceMappingURL=app.css.map */

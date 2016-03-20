@@ -8,12 +8,14 @@
     TaskController.$inject = ['$scope', '$state', '$mdToast', '$log', '$http', '$stateParams',
         'Task', 'Authentication', 'Template', '$sce', '$filter', '$rootScope', 'RatingService', '$cookies'];
 
-    function TaskController($scope, $state, $mdToast, $log, $http, $stateParams, Task, Authentication, Template, $sce, $filter, $rootScope, RatingService, $cookies) {
+    function TaskController($scope, $state, $mdToast, $log, $http, $stateParams, Task, Authentication, Template, $sce,
+                            $filter, $rootScope, RatingService, $cookies) {
         var self = this;
         self.taskData = null;
         self.skip = skip;
         self.submitOrSave = submitOrSave;
         self.saveComment = saveComment;
+        self.gotIt = gotIt;
         activate();
         function activate() {
 
@@ -185,6 +187,10 @@
 
                 });
             }
+        };
+
+        function gotIt(){
+            self.isTimerTooltipOpen=true;
         }
     }
 })();

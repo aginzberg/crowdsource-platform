@@ -3,7 +3,7 @@
         <div class="md-whiteframe-z1 md-padding">
             <h3>Task #{{ task.taskData.id }} {{ task.taskData.project_data.name }}</h3>
 
-            <p>Time Left: <span timer-counter seconds-left="task.time_left"></span></p>
+            <!--p>Time Left: <span timer-counter seconds-left="task.time_left"></span></p-->
 
             <form name="resultsForm">
                 <div ng-controller="TemplateController as template" class="template-item"
@@ -12,13 +12,22 @@
                     <div md-template-compiler="item" editor="false" instance="template"></div>
                 </div>
                 <div layout="row" class="task-actions" layout-align="end center">
-                    <md-button ng-click="task.submitOrSave(2)"
+                    <div class="_timer">
+                        <div class="_tooltip fx-fade-down fx-dur-1000 fx-ease-quart" ng-hide="task.isTimerTooltipOpen">
+                            <span class="_main-text">Help us calculate your hourly wage.</span> <br/>
+                            <span>The timer will tell you how long it takes you to finish this task.</span>
+                            <md-button ng-click="task.gotIt()" class="_cbtn _tooltip-btn">Got it</md-button>
+                        </div>
+                        <md-icon class="" md-font-set="material-icons">schedule</md-icon>
+                        <span ng-hide="task.isTimerTooltipOpen" class="fx-fade-left fx-dur-500 fx-ease-quart">00:00</span>
+                    </div>
+                    <md-button class="_primary _cbtn" ng-click="task.submitOrSave(2)"
                                tabindex="0">Submit
                     </md-button>
-                    <md-button ng-click="task.submitOrSave(1)"
+                    <!--md-button ng-click="task.submitOrSave(1)"
                                tabindex="0">Save
-                    </md-button>
-                    <md-button ng-click="task.skip()"
+                    </md-button-->
+                    <md-button class="_cbtn" ng-click="task.skip()"
                                tabindex="0">Skip
                     </md-button>
                 </div>
