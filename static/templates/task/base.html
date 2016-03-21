@@ -20,7 +20,7 @@
                             <md-button ng-click="task.gotIt()" class="_cbtn _tooltip-btn">Got it</md-button>
                         </div>
                         <div class="_tooltip _small fx-fade-down fx-dur-1000 fx-ease-quart" ng-cloak=""
-                             ng-if="task.readyToSubmit">
+                             ng-if="task.readyToSubmit && !task.timerEditable">
                             <span class="_main-text">Was this your time?</span> <br/>
                             <span>Use the edit button to adjust the time before submitting your task.</span>
                         </div>
@@ -32,7 +32,7 @@
                             <div ng-show="!task.has_read_tooltip || task.timerOpen" ng-cloak="" layout="row"
                                  layout-align="start center"
                                  class="fx-fade-left fx-dur-500 fx-ease-quart"
-                                 style="min-width: 40px; height: 36px">
+                                 style="min-width: 40px; height: 36px; padding-left: 8px">
                                 <timer ng-if="!task.timerEditable" auto-start="false" interval="1000">{{ mminutes }}:{{ sseconds }}</timer>
                                 <div ng-if="task.readyToSubmit && task.timerEditable" layout="row" layout-align="start center" style="width: 75px; padding-top: 12px">
                                     <md-input-container class="">
@@ -47,7 +47,7 @@
                                          class="_icon-18 _clickable-icon" ng-click="task.toggleTimer()"
                                          md-font-set="material-icons">
                                     {{ task.timerRunning?'pause': 'play_arrow' }}</md-icon>
-                                <md-icon ng-if="task.readyToSubmit"
+                                <md-icon ng-if="task.readyToSubmit && !task.timerEditable"
                                          style="margin-left: 2px; color: rgba(0, 0, 0, 0.2) !important;"
                                          class="_icon-18 _clickable-icon" ng-click="task.editTimer()"
                                          md-font-set="material-icons">mode_edit
