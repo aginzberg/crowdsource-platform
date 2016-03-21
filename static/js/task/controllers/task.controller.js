@@ -27,6 +27,10 @@
         self.toggleTimer = toggleTimer;
         self.toggleTimerVisibility = toggleTimerVisibility;
         self.readyToSubmit = false;
+        self.timerEditable = false;
+        self.editTimer = editTimer;
+        self.timerMilliseconds = 0;
+
         activate();
 
         function activate() {
@@ -162,12 +166,13 @@
                 saved: self.isSavedQueue || self.isSavedReturnedQueue,
                 auto_accept: self.auto_accept
             };
-            if (!self.readyToSubmit){
+            if (!self.readyToSubmit) {
                 self.readyToSubmit = true;
                 self.timerOpen = true;
                 stopTimer();
                 return;
             }
+            angular.extend(requestData, {'completion_time': self.timerMilliseconds/1000});
             Task.submitTask(requestData).then(
                 function success(data, status) {
                     gotoLocation(task_status, data);
@@ -274,6 +279,15 @@
             self.timerOpen = !self.timerOpen;
         }
 
+        function editTimer() {
+            self.timerEditable = true;
+            var time = new Date(self.timerMilliseconds);
+            self.timerMinutes = time.getMinutes();
+            self.timerSeconds = time.getSeconds();
+        }
 
+        $scope.$on('timer-tick', function (event, args) {
+            self.timerMilliseconds = args.millis;
+        });
     }
 })();

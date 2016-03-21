@@ -24,16 +24,37 @@
                             <span class="_main-text">Was this your time?</span> <br/>
                             <span>Use the edit button to adjust the time before submitting your task.</span>
                         </div>
-                        <md-icon class="_clickable-icon" md-font-set="material-icons" ng-click="task.toggleTimerVisibility()">schedule</md-icon>
-                        <!--span ng-hide="task.has_read_tooltip" class="fx-fade-left fx-dur-500 fx-ease-quart">00:00</span-->
-                        <div ng-show="!task.has_read_tooltip || task.timerOpen" ng-cloak="" layout="row" layout-align="start center"
-                             class="fx-fade-left fx-dur-500 fx-ease-quart" style="min-width: 40px;display: inline-block">
-                            <timer auto-start="false" interval="1000">{{mminutes}}:{{sseconds}}</timer>
-                            <md-icon ng-if="task.timerOpen && task.has_read_tooltip && !task.readyToSubmit" style="margin-left: 2px; color: rgba(0, 0, 0, 0.2) !important;"
-                                     class="_icon-18 _clickable-icon" ng-click="task.toggleTimer()" md-font-set="material-icons">{{ task.timerRunning?'pause': 'play_arrow' }}</md-icon>
-                            <md-icon ng-if="task.readyToSubmit" style="margin-left: 2px; color: rgba(0, 0, 0, 0.2) !important;"
-                                     class="_icon-18 _clickable-icon" ng-click="task.editTimer()" md-font-set="material-icons">mode_edit</md-icon>
+                        <div layout="row" layout-align="start center">
+                            <md-icon class="_clickable-icon" md-font-set="material-icons"
+                                     ng-click="task.toggleTimerVisibility()">schedule
+                            </md-icon>
+                            <!--span ng-hide="task.has_read_tooltip" class="fx-fade-left fx-dur-500 fx-ease-quart">00:00</span-->
+                            <div ng-show="!task.has_read_tooltip || task.timerOpen" ng-cloak="" layout="row"
+                                 layout-align="start center"
+                                 class="fx-fade-left fx-dur-500 fx-ease-quart"
+                                 style="min-width: 40px; height: 36px">
+                                <timer ng-if="!task.timerEditable" auto-start="false" interval="1000">{{ mminutes }}:{{ sseconds }}</timer>
+                                <div ng-if="task.readyToSubmit && task.timerEditable" layout="row" layout-align="start center" style="width: 75px; padding-top: 12px">
+                                    <md-input-container class="">
+                                        <input aria-label="minutes" type="number" min="0" ng-model="task.timerMinutes" autocomplete="off">
+                                    </md-input-container>
+                                    <md-input-container class="">
+                                        <input aria-label="seconds" type="number" min="0" max="59" ng-model="task.timerSeconds" autocomplete="off">
+                                    </md-input-container>
+                                </div>
+                                <md-icon ng-if="task.timerOpen && task.has_read_tooltip && !task.readyToSubmit"
+                                         style="margin-left: 2px; color: rgba(0, 0, 0, 0.2) !important;"
+                                         class="_icon-18 _clickable-icon" ng-click="task.toggleTimer()"
+                                         md-font-set="material-icons">
+                                    {{ task.timerRunning?'pause': 'play_arrow' }}</md-icon>
+                                <md-icon ng-if="task.readyToSubmit"
+                                         style="margin-left: 2px; color: rgba(0, 0, 0, 0.2) !important;"
+                                         class="_icon-18 _clickable-icon" ng-click="task.editTimer()"
+                                         md-font-set="material-icons">mode_edit
+                                </md-icon>
+                            </div>
                         </div>
+
 
                     </div>
                     <md-button class="_primary _cbtn" ng-click="task.submitOrSave(2)"
