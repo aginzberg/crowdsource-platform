@@ -26,6 +26,7 @@
         self.timerRunning = false;
         self.toggleTimer = toggleTimer;
         self.toggleTimerVisibility = toggleTimerVisibility;
+        self.readyToSubmit = false;
         activate();
 
         function activate() {
@@ -161,7 +162,12 @@
                 saved: self.isSavedQueue || self.isSavedReturnedQueue,
                 auto_accept: self.auto_accept
             };
-
+            if (!self.readyToSubmit){
+                self.readyToSubmit = true;
+                self.timerOpen = true;
+                stopTimer();
+                return;
+            }
             Task.submitTask(requestData).then(
                 function success(data, status) {
                     gotoLocation(task_status, data);

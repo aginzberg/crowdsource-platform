@@ -13,6 +13,9 @@ $timer_tooltip: #F0F0F0;
         position: absolute;
         right: 0;
         top: -125px;
+        &._small {
+            top: -82px;
+        }
         font-size: 12px;
         padding: 4px 5px;
         & ._main-text {

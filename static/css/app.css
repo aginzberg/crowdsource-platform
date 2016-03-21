@@ -1286,6 +1286,8 @@ md-list-item.rate-list-item {
     color: rgba(0, 0, 0, 0.54);
     background-color: #F0F0F0;
     width: 128px; }
+    ._timer ._tooltip._small {
+      top: -82px; }
     ._timer ._tooltip ._main-text {
       font-weight: 500;
       color: rgba(0, 0, 0, 0.7); }

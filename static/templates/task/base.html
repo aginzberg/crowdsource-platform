@@ -19,18 +19,25 @@
                             <span>The timer will tell you how long it takes you to finish this task.</span>
                             <md-button ng-click="task.gotIt()" class="_cbtn _tooltip-btn">Got it</md-button>
                         </div>
+                        <div class="_tooltip _small fx-fade-down fx-dur-1000 fx-ease-quart" ng-cloak=""
+                             ng-if="task.readyToSubmit">
+                            <span class="_main-text">Was this your time?</span> <br/>
+                            <span>Use the edit button to adjust the time before submitting your task.</span>
+                        </div>
                         <md-icon class="_clickable-icon" md-font-set="material-icons" ng-click="task.toggleTimerVisibility()">schedule</md-icon>
                         <!--span ng-hide="task.has_read_tooltip" class="fx-fade-left fx-dur-500 fx-ease-quart">00:00</span-->
                         <div ng-show="!task.has_read_tooltip || task.timerOpen" ng-cloak="" layout="row" layout-align="start center"
                              class="fx-fade-left fx-dur-500 fx-ease-quart" style="min-width: 40px;display: inline-block">
                             <timer auto-start="false" interval="1000">{{mminutes}}:{{sseconds}}</timer>
-                            <md-icon ng-if="task.timerOpen && task.has_read_tooltip" style="margin-left: 2px; color: rgba(0, 0, 0, 0.2) !important;"
+                            <md-icon ng-if="task.timerOpen && task.has_read_tooltip && !task.readyToSubmit" style="margin-left: 2px; color: rgba(0, 0, 0, 0.2) !important;"
                                      class="_icon-18 _clickable-icon" ng-click="task.toggleTimer()" md-font-set="material-icons">{{ task.timerRunning?'pause': 'play_arrow' }}</md-icon>
+                            <md-icon ng-if="task.readyToSubmit" style="margin-left: 2px; color: rgba(0, 0, 0, 0.2) !important;"
+                                     class="_icon-18 _clickable-icon" ng-click="task.editTimer()" md-font-set="material-icons">mode_edit</md-icon>
                         </div>
 
                     </div>
                     <md-button class="_primary _cbtn" ng-click="task.submitOrSave(2)"
-                               tabindex="0">Submit
+                               tabindex="0">{{ task.readyToSubmit?'Done':'Submit' }}
                     </md-button>
                     <!--md-button ng-click="task.submitOrSave(1)"
                                tabindex="0">Save
