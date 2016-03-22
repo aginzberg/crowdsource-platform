@@ -35,10 +35,10 @@
                                  style="min-width: 40px; height: 36px; padding-left: 8px">
                                 <timer ng-if="!task.timerEditable" auto-start="false" interval="1000">{{ mminutes }}:{{ sseconds }}</timer>
                                 <div ng-if="task.readyToSubmit && task.timerEditable" layout="row" layout-align="start center" style="width: 75px; padding-top: 12px">
-                                    <md-input-container class="" style="width: 32px;">
+                                    <md-input-container class="" style="width: 60px;">
                                         <input aria-label="minutes" type="number" min="0" ng-model="task.timerMinutes" autocomplete="off">
                                     </md-input-container>
-                                    <md-input-container class="" style="width: 32px;">
+                                    <md-input-container class="" style="width: 60px;">
                                         <input aria-label="seconds" type="number" min="0" max="59" ng-model="task.timerSeconds" autocomplete="off">
                                     </md-input-container>
                                 </div>
