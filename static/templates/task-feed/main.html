@@ -40,7 +40,7 @@
                         <!--div>40 mins</div-->
                     </div>
                     <div flex="70">
-                        <span class="_hourly-rate" ng-if="project.completion_time">Hourly Rate:  {{ project.price*60 /project.completion_time | number: 2}} $/hr </span>
+                        <span class="_hourly-rate" ng-if="project.completion_time && (taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_TWO__BT_TT || taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_FOUR__BC_TT)">Hourly Rate:  {{ project.price*60 /project.completion_time | number: 2}} $/hr </span>
                         <md-icon md-font-set="material-icons">list</md-icon>
                         <ng-pluralize class="_tasks-available" count="project.available_tasks"
                                       when="{'one': '1 available task', 'other': '{} available tasks'}"></ng-pluralize>

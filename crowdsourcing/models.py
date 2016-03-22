@@ -630,3 +630,7 @@ class RequesterConfig(models.Model):
     requester = models.OneToOneField(Requester, related_name='configuration')
     condition = models.SmallIntegerField(choices=STATUS, null=True)
     config = JSONField(null=True)
+
+
+class URLAuth(models.Model):
+    token = models.CharField(max_length=128)

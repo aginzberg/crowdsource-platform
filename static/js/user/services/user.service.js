@@ -19,7 +19,9 @@
     function User($cookies, $http, $q, HttpService) {
         var User = {
             getProfile: getProfile,
-            updatePreferences: updatePreferences
+            updatePreferences: updatePreferences,
+            getWorkerConfiguration: getWorkerConfiguration,
+            getRequesterConfiguration: getRequesterConfiguration
         };
         return User;
 
@@ -36,6 +38,21 @@
                 url: '/api/preferences/'+username+'/',
                 method: 'PUT',
                 data: data
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function getWorkerConfiguration(){
+            var settings = {
+                url: '/api/preferences/get_worker_configuration/',
+                method: 'GET'
+            };
+            return HttpService.doRequest(settings);
+        }
+        function getRequesterConfiguration(){
+            var settings = {
+                url: '/api/preferences/get_requester_configuration/',
+                method: 'GET'
             };
             return HttpService.doRequest(settings);
         }

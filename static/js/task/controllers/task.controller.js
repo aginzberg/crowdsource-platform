@@ -30,6 +30,20 @@
         self.timerEditable = false;
         self.editTimer = editTimer;
         self.timerMilliseconds = 0;
+        self.setRating = setRating;
+        self.worker_config = null;
+        /*
+         (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
+         (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
+         (CONDITION_THREE, 'BoomerangControl:TimerControl'),
+         (CONDITION_FOUR, 'BoomerangControl:TimerTreatment')
+         * */
+        self.conditions = {
+            CONDITION_ONE__BT_TC: 1,
+            CONDITION_TWO__BT_TT: 2,
+            CONDITION_THREE__BC_TC: 3,
+            CONDITION_FOUR__BC_TT: 4
+        };
 
         activate();
 
@@ -58,6 +72,7 @@
                     self.rating.project = data[0].project;
                     self.rating.target = data[0].target;
                     self.taskData = data[0].data;
+                    self.ratingTarget = data[0].target;
                     self.time_left = data[0].time_left;
                     self.taskData.id = self.taskData.task ? self.taskData.task : id;
                     if (self.taskData.has_comments) {
@@ -94,6 +109,8 @@
                 function error(data) {
                     $mdToast.showSimple('Could not get task with data.');
                 }).finally(function () {
+                getRating();
+                getWorkerConfig();
             });
         }
 
@@ -172,7 +189,7 @@
                 stopTimer();
                 return;
             }
-            angular.extend(requestData, {'completion_time': self.timerMilliseconds/1000});
+            angular.extend(requestData, {'completion_time': self.timerMilliseconds / 1000});
             Task.submitTask(requestData).then(
                 function success(data, status) {
                     gotoLocation(task_status, data);
@@ -218,6 +235,12 @@
 
         function updateUserPreferences(auto_accept) {
             User.updatePreferences(userAccount.username, {'auto_accept': auto_accept}).then(function () {
+            });
+        }
+
+        function getWorkerConfig() {
+            User.getWorkerConfiguration().then(function (data) {
+                self.worker_config = data[0];
             });
         }
 
@@ -289,5 +312,38 @@
         $scope.$on('timer-tick', function (event, args) {
             self.timerMilliseconds = args.millis;
         });
+
+        function getRating() {
+            RatingService.listByTarget(self.ratingTarget, 'worker').then(
+                function success(response) {
+                    self.rating = response[0];
+                },
+                function error(response) {
+                    $mdToast.showSimple('Could requester rating');
+                }
+            ).finally(function () {
+            });
+        }
+
+        function setRating(rating, weight) {
+            if (rating && rating.hasOwnProperty('id') && rating.id) {
+                RatingService.updateRating(weight, rating).then(function success(resp) {
+                    rating.weight = weight;
+                }, function error(resp) {
+                    $mdToast.showSimple('Could not update rating.');
+                }).finally(function () {
+
+                });
+            } else {
+                RatingService.submitRating(weight, rating).then(function success(resp) {
+                    rating.id = resp[0].id;
+                    rating.weight = weight;
+                }, function error(resp) {
+                    $mdToast.showSimple('Could not submit rating.')
+                }).finally(function () {
+
+                });
+            }
+        }
     }
 })();

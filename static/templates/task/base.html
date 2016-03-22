@@ -1,8 +1,26 @@
 <div class="_main-content" ng-class="{'_sm': $mdMedia('sm'), '_gt-sm': $mdMedia('gt-sm')}">
     <div class="_main-content-body">
         <div class="md-whiteframe-z1 md-padding">
-            <h3>Task #{{ task.taskData.id }} {{ task.taskData.project_data.name }}</h3>
+            <div>
+                <h3 style="display: inline-block;">Task #{{ task.taskData.id }} {{ task.taskData.project_data.name }}</h3>
+                <div class="_header-actions" style="display: inline-block; float: right;margin-top: 18px; margin-bottom: 18px;">
+                    <div class="layout-row layout-align-start-center">
+                        <span class="_user-alias">{{ task.taskData.project_data.owner.alias }}</span>
 
+                        <div ng-click="task.setRating(task.rating, 1.0)" class="_rating-circle"
+                             ng-class="{'_unchecked': task.rating.id==null,
+            '_checked': task.rating.weight>=1.0}">
+                            <md-tooltip>See less from this requester</md-tooltip>
+                        </div>
+                        <div ng-click="task.setRating(task.rating, 2.0)" class="_rating-circle"
+                             ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<2.0,
+            '_checked': task.rating.weight>=2.0}"><md-tooltip>See medium amount of tasks from this requester</md-tooltip></div>
+                        <div ng-click="task.setRating(task.rating, 3.0)" class="_rating-circle"
+                             ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<3.0,
+            '_checked': task.rating.weight==3.0}"><md-tooltip>See more tasks from this requester</md-tooltip></div>
+                    </div>
+                </div>
+            </div>
             <!--p>Time Left: <span timer-counter seconds-left="task.time_left"></span></p-->
 
             <form name="resultsForm">
@@ -33,13 +51,17 @@
                                  layout-align="start center"
                                  class="fx-fade-left fx-dur-500 fx-ease-quart"
                                  style="min-width: 40px; height: 36px; padding-left: 8px">
-                                <timer ng-if="!task.timerEditable" auto-start="false" interval="1000">{{ mminutes }}:{{ sseconds }}</timer>
-                                <div ng-if="task.readyToSubmit && task.timerEditable" layout="row" layout-align="start center" style="width: 75px; padding-top: 12px">
+                                <timer ng-if="!task.timerEditable" auto-start="false"
+                                       interval="1000">{{ mminutes }}:{{ sseconds }}</timer>
+                                <div ng-if="task.readyToSubmit && task.timerEditable" layout="row"
+                                     layout-align="start center" style="width: 75px; padding-top: 12px">
                                     <md-input-container class="" style="width: 60px;">
-                                        <input aria-label="minutes" type="number" min="0" ng-model="task.timerMinutes" autocomplete="off">
+                                        <input aria-label="minutes" type="number" min="0" ng-model="task.timerMinutes"
+                                               autocomplete="off">
                                     </md-input-container>
                                     <md-input-container class="" style="width: 60px;">
-                                        <input aria-label="seconds" type="number" min="0" max="59" ng-model="task.timerSeconds" autocomplete="off">
+                                        <input aria-label="seconds" type="number" min="0" max="59"
+                                               ng-model="task.timerSeconds" autocomplete="off">
                                     </md-input-container>
                                 </div>
                                 <md-icon ng-if="task.timerOpen && task.has_read_tooltip && !task.readyToSubmit"

@@ -11,13 +11,13 @@
         .controller('TaskFeedController', TaskFeedController);
 
     TaskFeedController.$inject = ['$window', '$state', '$scope', '$mdToast', 'TaskFeed',
-        '$filter', 'Authentication', 'TaskWorker', 'Project', '$rootScope', '$stateParams'];
+        '$filter', 'Authentication', 'TaskWorker', 'Project', '$rootScope', '$stateParams', 'User'];
 
     /**
      * @namespace TaskFeedController
      */
     function TaskFeedController($window, $state, $scope, $mdToast, TaskFeed,
-                                $filter, Authentication, TaskWorker, Project, $rootScope, $stateParams) {
+                                $filter, Authentication, TaskWorker, Project, $rootScope, $stateParams, User) {
 
         var userAccount = Authentication.getAuthenticatedAccount();
 
@@ -31,6 +31,20 @@
         self.loading = true;
         self.getStatusName = getStatusName;
         self.getRatingPercentage = getRatingPercentage;
+        self.worker_config = null;
+        /*
+         (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
+         (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
+         (CONDITION_THREE, 'BoomerangControl:TimerControl'),
+         (CONDITION_FOUR, 'BoomerangControl:TimerTreatment')
+         * */
+        self.conditions = {
+            CONDITION_ONE__BT_TC: 1,
+            CONDITION_TWO__BT_TT: 2,
+            CONDITION_THREE__BC_TC: 3,
+            CONDITION_FOUR__BC_TT: 4
+        };
+
         activate();
 
         function activate() {
@@ -40,6 +54,7 @@
             else {
                 getProjects();
             }
+            getWorkerConfig();
         }
 
         function getProjects() {
@@ -54,10 +69,9 @@
                     self.error = errData[0].detail;
                     $mdToast.showSimple('Could projects.');
                 }
-            ).
-                finally(function () {
-                    self.loading = false;
-                });
+            ).finally(function () {
+                self.loading = false;
+            });
         }
 
         function showPreview(project) {
@@ -79,7 +93,7 @@
                         $mdToast.showSimple('Error fetching preview.');
                     }
                 ).finally(function () {
-                    });
+                });
             }
         }
 
@@ -109,7 +123,7 @@
                     $mdToast.showSimple('Error: ' + message);
                 }
             ).finally(function () {
-                });
+            });
         }
 
         function openComments(project) {
@@ -130,7 +144,7 @@
                         $mdToast.showSimple('Error fetching comments - ' + JSON.stringify(err));
                     }
                 ).finally(function () {
-                    });
+                });
             }
         }
 
@@ -148,7 +162,7 @@
                     $mdToast.showSimple('Error saving comment - ' + JSON.stringify(err));
                 }
             ).finally(function () {
-                });
+            });
         }
 
         function getStatusName(statusId) {
@@ -160,6 +174,13 @@
         function getRatingPercentage(rating, raw_rating, circle) {
             if (raw_rating) rating = raw_rating;
             return rating >= circle ? 100 : rating >= circle - 1 ? (rating - circle + 1) * 100 : 0;
+        }
+
+        function getWorkerConfig() {
+            User.getWorkerConfiguration().then(function (data) {
+                self.worker_config = data[0];
+                console.log(self.worker_config);
+            });
         }
     }
 
