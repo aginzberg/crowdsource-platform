@@ -38,7 +38,7 @@
         $mdThemingProvider.definePalette('customYellow', customYellow);
 
         $mdThemingProvider.theme('default')
-            .primaryPalette('deep-purple')
+            .primaryPalette('blue-grey')
             .accentPalette('light-blue')
             .warnPalette('red')
             .backgroundPalette('grey');
