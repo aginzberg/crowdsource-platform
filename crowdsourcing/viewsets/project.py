@@ -148,7 +148,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                                fields=('id', 'name', 'age', 'total_tasks', 'deadline', 'timeout',
                                                        'status', 'available_tasks', 'has_comments',
                                                        'allow_feedback', 'price', 'task_time', 'owner',
-                                                       'requester_rating', 'raw_rating', 'is_prototype',),
+                                                       'requester_rating', 'raw_rating', 'is_prototype',
+                                                       'completion_time'),
                                                context={'request': request})
         return Response(data=project_serializer.data, status=status.HTTP_200_OK)
 
