@@ -206,7 +206,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
             .values_list('task_workers__completion_time', flat=True)
         completion_times = [x / 60 for x in completion_times]
         if len(completion_times) >= settings.WORKER_TIME_COUNT:
-            return int(math.ceil(factor * np.median(completion_times)))
+            return round(factor * np.median(completion_times), 2)
         parent_completion_times = []
         if obj.parent is not None:
             parent_completion_times = obj.parent.project_tasks. \
@@ -216,11 +216,11 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
             parent_completion_times = [x / 60 for x in parent_completion_times]
         total_times = list(parent_completion_times) + list(completion_times)
         if obj.task_time is not None and obj.task_time > 0:
-            total_times.append(obj.task_time)
+            total_times.append(float(obj.task_time))
         if obj.parent is not None and obj.parent.task_time and obj.parent.task_time > 0:
-            total_times.append(obj.parent.task_time)
+            total_times.append(float(obj.parent.task_time))
         if len(total_times) > 0:
-            return int(math.ceil(factor * np.median(total_times)))
+            return round(factor * np.median(total_times), 2)
 
         return None
 

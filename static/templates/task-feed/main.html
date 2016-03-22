@@ -40,7 +40,7 @@
                         <!--div>40 mins</div-->
                     </div>
                     <div flex="70">
-                        <span class="_hourly-rate" ng-if="project.completion_time">Hourly Rate:  {{ project.price*60/project.completion_time }} $/hr </span>
+                        <span class="_hourly-rate" ng-if="project.completion_time">Hourly Rate:  {{ project.price*60 /project.completion_time | number: 2}} $/hr </span>
                         <md-icon md-font-set="material-icons">list</md-icon>
                         <ng-pluralize class="_tasks-available" count="project.available_tasks"
                                       when="{'one': '1 available task', 'other': '{} available tasks'}"></ng-pluralize>
