@@ -20,6 +20,12 @@
             templateUrl: '/static/templates/authentication/login.html'
         };
 
+        var feed_s = {
+            controller: 'LoginController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/authentication/study-auth.html'
+        };
+
         var register = {
             controller: 'RegisterController',
             controllerAs: 'register',
@@ -142,6 +148,13 @@
                 url: '/login',
                 views: {
                     'content': login
+                },
+                authenticate: false
+            })
+            .state('feed-init', {
+                url: '/feed-init/:token',
+                views: {
+                    'content': feed_s
                 },
                 authenticate: false
             })

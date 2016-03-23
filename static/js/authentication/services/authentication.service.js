@@ -73,12 +73,13 @@
      * @desc Try to log in with email `email` and password `password`
      * @param {string} email The email entered by the user
      * @param {string} password The password entered by the user
+     * @param {string} token The token given to the user
      * @returns {Promise}
      * @memberOf crowdsource.authentication.services.Authentication
      */
-    function login(email, password) {
+    function login(email, password, token) {
       return $http.post('/api/auth/login/', {
-        username: email, password: password
+        username: email, password: password, token: token
       });
     }
     /**

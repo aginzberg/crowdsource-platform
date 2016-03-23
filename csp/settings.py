@@ -348,6 +348,8 @@ STUDY_FEED_PHASE = int(os.environ.get('STUDY_FEED_PHASE', 0))
 
 
 PYTHON_VERSION = 2
+STUDY_URL_AUTH = os.environ.get('STUDY_URL_AUTH', True)
+
 try:
     from local_settings import *
 except Exception as e:

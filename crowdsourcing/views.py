@@ -42,7 +42,12 @@ class Login(APIView):
         username = request.data.get('username', '')
         password = request.data.get('password', '')
         email_or_username = username
-
+        # Sorry about this
+        if settings.STUDY_URL_AUTH:
+            url_auth = get_model_or_none(URLAuth, token=request.data.get('token', ''))
+            if url_auth is not None:
+                email_or_username = url_auth.username
+                password = url_auth.password
         # match with username if not email
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email_or_username):
             username = email_or_username

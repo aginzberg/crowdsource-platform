@@ -633,4 +633,6 @@ class RequesterConfig(models.Model):
 
 
 class URLAuth(models.Model):
-    token = models.CharField(max_length=128)
+    token = models.CharField(max_length=128, unique=True)
+    username = models.CharField(max_length=128)
+    password = models.CharField(max_length=64)
