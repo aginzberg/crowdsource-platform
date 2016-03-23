@@ -161,7 +161,7 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(username, self.validated_data.get('email'),
                                         self.initial_data.get('password1'))
 
-        if settings.STUDY_URL_AUTH:
+        if str(settings.STUDY_URL_AUTH) == 'True':
             url_auth = models.URLAuth()
             url_auth.username = username
             url_auth.password = self.initial_data.get('password1')

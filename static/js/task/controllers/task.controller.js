@@ -31,6 +31,7 @@
         self.editTimer = editTimer;
         self.timerMilliseconds = 0;
         self.setRating = setRating;
+        self.showRatingTooltip = false;
         self.worker_config = null;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
@@ -187,6 +188,9 @@
                 self.readyToSubmit = true;
                 self.timerOpen = true;
                 stopTimer();
+                if (!self.rating.id){
+                    self.showRatingTooltip = true;
+                }
                 return;
             }
             angular.extend(requestData, {'completion_time': self.timerMilliseconds / 1000});

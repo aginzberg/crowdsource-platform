@@ -2,24 +2,8 @@
     <div class="_main-content-body">
         <div class="md-whiteframe-z1 md-padding">
             <div>
-                <h3 style="display: inline-block;">Task #{{ task.taskData.id }} {{ task.taskData.project_data.name }}</h3>
-                <div class="_header-actions" style="display: inline-block; float: right;margin-top: 18px; margin-bottom: 18px;">
-                    <div class="layout-row layout-align-start-center">
-                        <span class="_user-alias">{{ task.taskData.project_data.owner.alias }}</span>
-
-                        <div ng-click="task.setRating(task.rating, 1.0)" class="_rating-circle"
-                             ng-class="{'_unchecked': task.rating.id==null,
-            '_checked': task.rating.weight>=1.0}">
-                            <md-tooltip>See less from this requester</md-tooltip>
-                        </div>
-                        <div ng-click="task.setRating(task.rating, 2.0)" class="_rating-circle"
-                             ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<2.0,
-            '_checked': task.rating.weight>=2.0}"><md-tooltip>See medium amount of tasks from this requester</md-tooltip></div>
-                        <div ng-click="task.setRating(task.rating, 3.0)" class="_rating-circle"
-                             ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<3.0,
-            '_checked': task.rating.weight==3.0}"><md-tooltip>See more tasks from this requester</md-tooltip></div>
-                    </div>
-                </div>
+                <h3 style="display: inline-block;">Task
+                    #{{ task.taskData.id }} {{ task.taskData.project_data.name }}</h3>
             </div>
             <!--p>Time Left: <span timer-counter seconds-left="task.time_left"></span></p-->
 
@@ -29,7 +13,34 @@
 
                     <div md-template-compiler="item" editor="false" instance="template"></div>
                 </div>
-                <div layout="row" class="task-actions" layout-align="end center">
+
+                <div layout="row" class="task-actions" layout-align="end center"
+                     style="margin-bottom: 24px; margin-top: 128px;">
+                    <div class="_header-actions _timer" style="margin-right: 75px">
+                        <div ng-if="task.showRatingTooltip" ng-hide="task.rating.id" class="_tooltip _small fx-fade-down fx-dur-1000 fx-ease-quart" ng-cloak="">
+                            <span class="_main-text">1. Please rate this requester!</span> <br/>
+                            <div>Use the <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;" class="_rating-circle _unchecked"></div> icons to do so.</div>
+                        </div>
+                        <div class="layout-row layout-align-start-center">
+                            <span class="_user-alias">{{ task.taskData.project_data.owner.alias }}</span>
+
+                            <div ng-click="task.setRating(task.rating, 1.0)" class="_rating-circle"
+                                 ng-class="{'_unchecked': task.rating.id==null,
+            '_checked': task.rating.weight>=1.0}">
+                                <md-tooltip>See less from this requester</md-tooltip>
+                            </div>
+                            <div ng-click="task.setRating(task.rating, 2.0)" class="_rating-circle"
+                                 ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<2.0,
+            '_checked': task.rating.weight>=2.0}">
+                                <md-tooltip>See medium amount of tasks from this requester</md-tooltip>
+                            </div>
+                            <div ng-click="task.setRating(task.rating, 3.0)" class="_rating-circle"
+                                 ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<3.0,
+            '_checked': task.rating.weight==3.0}">
+                                <md-tooltip>See more from this requester</md-tooltip>
+                            </div>
+                        </div>
+                    </div>
                     <div class="_timer">
                         <div class="_tooltip fx-fade-down fx-dur-1000 fx-ease-quart" ng-cloak=""
                              ng-if="!task.has_read_tooltip">
@@ -39,7 +50,7 @@
                         </div>
                         <div class="_tooltip _small fx-fade-down fx-dur-1000 fx-ease-quart" ng-cloak=""
                              ng-if="task.readyToSubmit && !task.timerEditable">
-                            <span class="_main-text">Was this your time?</span> <br/>
+                            <span class="_main-text">2. Was this your time?</span> <br/>
                             <span>Use the edit button to adjust the time before submitting your task.</span>
                         </div>
                         <div layout="row" layout-align="start center">

@@ -43,7 +43,7 @@ class Login(APIView):
         password = request.data.get('password', '')
         email_or_username = username
         # Sorry about this
-        if settings.STUDY_URL_AUTH:
+        if str(settings.STUDY_URL_AUTH) == 'True':
             url_auth = get_model_or_none(URLAuth, token=request.data.get('token', ''))
             if url_auth is not None:
                 email_or_username = url_auth.username
