@@ -69,7 +69,7 @@
                 },
                 function error(errData) {
                     self.error = errData[0].detail;
-                    $mdToast.showSimple('Could projects.');
+                    $mdToast.showSimple('Could not fetch projects.');
                 }
             ).finally(function () {
                 self.loading = false;

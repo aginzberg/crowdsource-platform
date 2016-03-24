@@ -4,11 +4,11 @@ from crowdsourcing.serializers.dynamic import DynamicFieldsModelSerializer
 
 
 class RequesterSerializer(DynamicFieldsModelSerializer):
-    user_id = serializers.SerializerMethodField()
+    # user_id = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Requester
-        fields = ('id', 'alias', 'profile', 'rejection_rate', 'user_id')
+        fields = ('id', 'alias', 'profile', 'rejection_rate')
 
 
 class QualificationSerializer(serializers.ModelSerializer):
