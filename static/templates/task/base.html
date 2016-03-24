@@ -31,31 +31,31 @@
                             <div ng-click="task.setRating(task.rating, 1.0)" class="_rating-circle"
                                  ng-class="{'_unchecked': task.rating.id==null,
             '_checked': task.rating.weight>=1.0}">
-                                <md-tooltip>Fewer: bury this requester's tasks at the bottom of my task feed</md-tooltip>
+                                <md-tooltip>{{ task.tooltipBoomerangOne }}</md-tooltip>
                             </div>
                             <div ng-click="task.setRating(task.rating, 2.0)" class="_rating-circle"
                                  ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<2.0,
             '_checked': task.rating.weight>=2.0}">
-                                <md-tooltip>Same: keep this requester's tasks in the middle of my task feed</md-tooltip>
+                                <md-tooltip>{{ task.tooltipBoomerangTwo }}</md-tooltip>
                             </div>
                             <div ng-click="task.setRating(task.rating, 3.0)" class="_rating-circle"
                                  ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<3.0,
             '_checked': task.rating.weight==3.0}">
-                                <md-tooltip>More: feature this requester's tasks at the top of my task feed</md-tooltip>
+                                <md-tooltip>{{ task.tooltipBoomerangThree }}</md-tooltip>
                             </div>
                         </div>
                     </div>
                     <div class="_timer">
                         <div class="_tooltip fx-fade-down fx-dur-1000 fx-ease-quart" ng-cloak=""
                              ng-if="!task.has_read_tooltip">
-                            <span class="_main-text">Help us calculate your hourly wage.</span> <br/>
-                            <span>The timer will tell you how long it takes you to finish this task.</span>
+                            <span class="_main-text">{{ task.tooltipOneTitle }}</span> <br/>
+                            <span>{{ task.tooltipOneBody }}</span>
                             <md-button ng-click="task.gotIt()" class="_cbtn _tooltip-btn">Got it</md-button>
                         </div>
                         <div class="_tooltip _small fx-fade-down fx-dur-1000 fx-ease-quart" ng-cloak=""
                              ng-if="task.readyToSubmit && !task.timerEditable">
-                            <span class="_main-text">2. Was this your time?</span> <br/>
-                            <span>Use the edit button to adjust the time before submitting your task.</span>
+                            <span class="_main-text">2. {{ task.tooltipTwoTitle }}</span> <br/>
+                            <span>{{ task.tooltipTwoBody }}</span>
                         </div>
                         <div layout="row" layout-align="start center">
                             <md-icon class="_clickable-icon" md-font-set="material-icons"

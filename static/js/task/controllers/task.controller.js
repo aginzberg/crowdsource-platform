@@ -34,6 +34,13 @@
         self.setRating = setRating;
         self.showRatingTooltip = false;
         self.worker_config = null;
+        self.tooltipOneTitle = null;
+        self.tooltipOneBody = null;
+        self.tooltipTwoTitle = null;
+        self.tooltipTwoBody = null;
+        self.tooltipBoomerangOne = null;
+        self.tooltipBoomerangTwo = null;
+        self.tooltipBoomerangThree = null;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
          (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
@@ -189,7 +196,7 @@
                 self.readyToSubmit = true;
                 self.timerOpen = true;
                 stopTimer();
-                if (!self.rating.id){
+                if (!self.rating.id) {
                     self.showRatingTooltip = true;
                 }
                 return;
@@ -250,6 +257,7 @@
         function getWorkerConfig() {
             User.getWorkerConfiguration().then(function (data) {
                 self.worker_config = data[0];
+                setTooltips();
             });
         }
 
@@ -352,6 +360,34 @@
                 }).finally(function () {
 
                 });
+            }
+        }
+
+        function setTooltips() {
+            if (self.worker_config.condition == self.conditions.CONDITION_ONE__BT_TC ||
+                self.worker_config.condition == self.conditions.CONDITION_THREE__BC_TC) {
+                self.tooltipOneTitle = 'Automatic timekeeping.';
+                self.tooltipOneBody = 'The timer will tell you how long it takes you to finish this task.';
+                self.tooltipTwoTitle = 'All done!';
+                self.tooltipTwoBody = 'If it’s inaccurate, you can still modify it before submitting!';
+            }
+            else {
+                self.tooltipOneTitle = 'How much money will you make?';
+                self.tooltipOneBody = 'Our algorithm uses this time to predict your hourly wage for other tasks on the platform.';
+                self.tooltipTwoTitle = 'Edit your time if needed.';
+                self.tooltipTwoBody = 'Our algorithm uses this time to predict your hourly wage for future tasks on the platform.';
+            }
+
+            if (self.worker_config.condition == self.conditions.CONDITION_ONE__BT_TC ||
+                self.worker_config.condition == self.conditions.CONDITION_TWO__BT_TT) {
+                self.tooltipBoomerangOne = 'Fewer: bury this requester\'s tasks at the bottom of my task feed';
+                self.tooltipBoomerangTwo = 'Same: keep this requester\'s tasks in the middle of my task feed';
+                self.tooltipBoomerangThree = 'More: feature this requester\'s tasks at the top of my task feed';
+            }
+            else {
+                self.tooltipBoomerangOne = 'Bad';
+                self.tooltipBoomerangTwo = 'Ok';
+                self.tooltipBoomerangThree = 'Great';
             }
         }
     }
