@@ -185,7 +185,6 @@
         function getWorkerConfig() {
             User.getWorkerConfiguration().then(function (data) {
                 self.worker_config = data[0];
-                console.log(self.worker_config);
             });
         }
     }

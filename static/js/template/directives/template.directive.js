@@ -265,7 +265,7 @@
                                         //$mdToast.showSimple('Could not delete template item.');
                                     }
                                 ).finally(function () {
-                                    });
+                                });
                             }, 2048);
                         }
                     }, true);
