@@ -27,17 +27,17 @@
                             <div ng-click="task.setRating(task.rating, 1.0)" class="_rating-circle"
                                  ng-class="{'_unchecked': task.rating.id==null,
             '_checked': task.rating.weight>=1.0}">
-                                <md-tooltip>See less from this requester</md-tooltip>
+                                <md-tooltip>Fewer: bury this requester's tasks at the bottom of my task feed</md-tooltip>
                             </div>
                             <div ng-click="task.setRating(task.rating, 2.0)" class="_rating-circle"
                                  ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<2.0,
             '_checked': task.rating.weight>=2.0}">
-                                <md-tooltip>See medium amount of tasks from this requester</md-tooltip>
+                                <md-tooltip>Same: keep this requester's tasks in the middle of my task feed</md-tooltip>
                             </div>
                             <div ng-click="task.setRating(task.rating, 3.0)" class="_rating-circle"
                                  ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<3.0,
             '_checked': task.rating.weight==3.0}">
-                                <md-tooltip>See more from this requester</md-tooltip>
+                                <md-tooltip>More: feature this requester's tasks at the top of my task feed</md-tooltip>
                             </div>
                         </div>
                     </div>
