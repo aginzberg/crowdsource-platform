@@ -202,7 +202,11 @@
                 }
                 return;
             }
-            angular.extend(requestData, {'completion_time': self.timerMilliseconds / 1000});
+            var completion_time = self.timerMilliseconds / 1000;
+            if(self.timerEditable) {
+                completion_time = self.timerMinutes*60 + self.timerSeconds;
+            }
+            angular.extend(requestData, {'completion_time': completion_time});
             Task.submitTask(requestData).then(
                 function success(data, status) {
                     gotoLocation(task_status, data);
