@@ -56,6 +56,12 @@
             templateUrl: '/static/templates/authentication/activate-account.html'
         };
 
+        var home = {
+            templateUrl: '/static/templates/layout/home.html',
+            controller: 'HomeController',
+            controllerAs: 'vm'
+        };
+
         var navbar = {
             templateUrl: '/static/templates/layout/navbar.html',
             controller: 'NavbarController',
@@ -126,7 +132,15 @@
         };
 
         var messages = {
-            templateUrl: '/static/templates/message/base.html'
+            templateUrl: '/static/templates/message/inbox.html',
+            controller: 'MessageController',
+            controllerAs: 'inbox'
+        };
+
+        var overlay = {
+            templateUrl: '/static/templates/message/overlay.html',
+            controller: 'OverlayController',
+            controllerAs: 'overlay'
         };
 
         var taskFeed = {
@@ -214,14 +228,15 @@
                     'navbar': navbar,
                     'content': contributors
                 },
-                authenticate: true
+                authenticate: false
             })
 
             .state('dashboard', {
                 url: '/dashboard',
                 views: {
                     'navbar': navbar,
-                    'content': dashboard
+                    'content': dashboard,
+                    'chat': overlay
                 },
                 authenticate: true
             })
@@ -230,7 +245,8 @@
                 url: '/profile',
                 views: {
                     'navbar': navbar,
-                    'content': profile
+                    'content': profile,
+                    'chat': overlay
                 },
                 authenticate: true
             })
@@ -239,7 +255,8 @@
                 url: '/requester',
                 views: {
                     'navbar': navbar,
-                    'content': requesterProfile
+                    'content': requesterProfile,
+                    'chat': overlay
                 },
                 authenticate: true
             })
@@ -266,7 +283,8 @@
                 url: '/my-tasks',
                 views: {
                     'navbar': navbar,
-                    'content': myTasks
+                    'content': myTasks,
+                    'chat': overlay
                 },
                 authenticate: true
             })
@@ -275,7 +293,8 @@
                 url: '/create-project/:projectId',
                 views: {
                     'navbar': navbar,
-                    'content': createProject
+                    'content': createProject,
+                    'chat': overlay
                 },
                 authenticate: true
             })
@@ -284,7 +303,8 @@
                 url: '/my-projects',
                 views: {
                     'navbar': navbar,
-                    'content': myProjects
+                    'content': myProjects,
+                    'chat': overlay
                 },
                 authenticate: true
             })
@@ -293,7 +313,8 @@
                 url: '/project-review/:projectId',
                 views: {
                     'navbar': navbar,
-                    'content': projectReview
+                    'content': projectReview,
+                    'chat': overlay
                 },
                 authenticate: true,
                 resolve: {
@@ -303,11 +324,21 @@
                 }
             })
 
+            .state('messages', {
+                url: '/messages/?t',
+                views: {
+                    'navbar': navbar,
+                    'content': messages
+                },
+                authenticate: true
+            })
+
             .state('task', {
                 url: '/task/:taskId/:returned?',
                 views: {
                     'navbar': navbar,
-                    'content': task
+                    'content': task,
+                    'chat': overlay
                 },
                 authenticate: true
             })
@@ -316,22 +347,32 @@
                 url: '/task-feed/:projectId?',
                 views: {
                     'navbar': navbar,
-                    'content': taskFeed
+                    'content': taskFeed,
+                    'chat': overlay
                 },
                 authenticate: true
             })
 
             .state('task_feed', {
-                url: '/',
+                url: '/task-feed',
                 views: {
                     'navbar': navbar,
-                    'content': taskFeed
+                    'content': taskFeed,
+                    'chat': overlay
                 },
                 authenticate: true
+            })
+
+            .state('home', {
+                url: '/home',
+                views: {
+                    'fullscreen': home
+                },
+                authenticate: false
             })
         ;
 
 
-        $urlRouterProvider.otherwise("/");
+        $urlRouterProvider.otherwise("/task-feed");
     }
 })();

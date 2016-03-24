@@ -31,6 +31,8 @@
         self.loading = true;
         self.getStatusName = getStatusName;
         self.getRatingPercentage = getRatingPercentage;
+        self.openChat = openChat;
+
         self.worker_config = null;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
@@ -174,6 +176,10 @@
         function getRatingPercentage(rating, raw_rating, circle) {
             if (raw_rating) rating = raw_rating;
             return rating >= circle ? 100 : rating >= circle - 1 ? (rating - circle + 1) * 100 : 0;
+        }
+
+        function openChat(requester){
+            $rootScope.openChat(requester);
         }
 
         function getWorkerConfig() {

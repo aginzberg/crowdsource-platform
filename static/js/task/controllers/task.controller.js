@@ -19,6 +19,7 @@
         self.skip = skip;
         self.submitOrSave = submitOrSave;
         self.saveComment = saveComment;
+        self.openChat = openChat;
         self.updateUserPreferences = updateUserPreferences;
 
         self.gotIt = gotIt;
@@ -235,6 +236,10 @@
                 }
             }
 
+        }
+
+        function openChat(requester) {
+            $rootScope.openChat(requester);
         }
 
         function updateUserPreferences(auto_accept) {
