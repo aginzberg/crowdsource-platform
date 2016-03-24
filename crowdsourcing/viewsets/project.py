@@ -145,9 +145,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
         '''
         projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id})
         project_serializer = ProjectSerializer(instance=projects, many=True,
-                                               fields=('id', 'name', 'age', 'total_tasks', 'deadline', 'timeout',
-                                                       'status', 'available_tasks', 'has_comments',
-                                                       'allow_feedback', 'price', 'task_time', 'owner',
+                                               fields=('id', 'name',
+                                                       'status', 'available_tasks',
+                                                       'price', 'task_time', 'owner',
                                                        'requester_rating', 'raw_rating', 'is_prototype',
                                                        'completion_time'),
                                                context={'request': request})
@@ -175,7 +175,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['GET'])
     def requester_projects(self, request, **kwargs):
-        projects = request.user.userprofile.requester.project_owner.all().filter(deleted=False)
+        projects = request.user.userprofile.requester.project_owner.all().filter(deleted=False).\
+            order_by('-created_timestamp')
         serializer = ProjectSerializer(instance=projects, many=True,
                                        fields=('id', 'name', 'age', 'total_tasks', 'status'),
                                        context={'request': request})

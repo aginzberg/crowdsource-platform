@@ -203,8 +203,8 @@
                 return;
             }
             var completion_time = self.timerMilliseconds / 1000;
-            if(self.timerEditable) {
-                completion_time = self.timerMinutes*60 + self.timerSeconds;
+            if (self.timerEditable) {
+                completion_time = self.timerMinutes * 60 + self.timerSeconds;
             }
             angular.extend(requestData, {'completion_time': completion_time});
             Task.submitTask(requestData).then(
