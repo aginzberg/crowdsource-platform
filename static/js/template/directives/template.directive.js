@@ -28,6 +28,7 @@
                     "text": scope.editor ? "text-edit" : "text",
                     "number": scope.editor ? "text-edit" : "text",
                     "text_area": scope.editor ? "text-edit" : "text",
+                    "text_static": scope.editor ? "text-edit" : "text",
                     "checkbox": scope.editor ? "select-edit" : "select",
                     "select_list": scope.editor ? "select-edit" : "select",
                     "radio": scope.editor ? "select-edit" : "select",

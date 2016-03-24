@@ -48,6 +48,7 @@
                     }
                 },
                 function error(response) {
+                    console.log(response);
                     $mdToast.showSimple('Could not get project.');
                 }
             ).finally(function () {

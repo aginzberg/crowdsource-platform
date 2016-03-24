@@ -60,7 +60,25 @@
 
             var templateComponents = [
                 {
-                    name: "Text",
+                    name: "Instruction",
+                    icon: 'text_format',
+                    type: 'text_static',
+                    sub_type: 'text_static',
+                    tooltip: "Static Text",
+                    role: 'display',
+                    watch_fields: ['aux_attributes', 'type', 'sub_type'],
+                    aux_attributes: {
+                        question: {
+                            value: "Untitled Question",
+                            data_source: null
+                        }
+                    },
+                    position: null,
+                    required: false
+
+                },
+                {
+                    name: "Text Input",
                     icon: 'text_fields',
                     type: 'text',
                     sub_type: 'text',
