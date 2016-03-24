@@ -1410,6 +1410,10 @@ md-list-item.rate-list-item {
     width: 128px; }
     ._timer ._tooltip._small {
       top: -82px; }
+    ._timer ._tooltip._treatment-t2 {
+      top: -100px; }
+    ._timer ._tooltip._treatment-t1 {
+      top: -140px; }
     ._timer ._tooltip ._main-text {
       font-weight: 500;
       color: rgba(0, 0, 0, 0.7); }

@@ -41,6 +41,7 @@
         self.tooltipBoomerangOne = null;
         self.tooltipBoomerangTwo = null;
         self.tooltipBoomerangThree = null;
+        self.tooltipTaller = false;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
          (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
@@ -376,6 +377,7 @@
                 self.tooltipOneBody = 'Our algorithm uses this time to predict your hourly wage for other tasks on the platform.';
                 self.tooltipTwoTitle = 'Edit your time if needed.';
                 self.tooltipTwoBody = 'Our algorithm uses this time to predict your hourly wage for future tasks on the platform.';
+                self.tooltipTaller = true;
             }
 
             if (self.worker_config.condition == self.conditions.CONDITION_ONE__BT_TC ||
