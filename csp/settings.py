@@ -351,6 +351,7 @@ STUDY_FEED_PHASE = int(os.environ.get('STUDY_FEED_PHASE', 0))
 # Phase 1 is for creating requesters, Phase 2 is when the workers are supposed to come to platform and signup,
 # Phase 3 requester study
 
+STUDY_FEED_TIME = int(os.environ.get('STUDY_FEED_TIME', 16))  # minutes
 
 PYTHON_VERSION = 2
 STUDY_URL_AUTH = os.environ.get('STUDY_URL_AUTH', True)

@@ -111,6 +111,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['get'])
     def list_feed(self, request, **kwargs):
+        from django.utils.timezone import utc
+        last_login = request.user.last_login
+        now = datetime.utcnow().replace(tzinfo=utc)
+        if (now - last_login).total_seconds()/60 >= settings.STUDY_FEED_TIME:
+            return Response(data={"message": "Time is up, thank you so much, you may close this window now!"},
+                            status=status.HTTP_410_GONE)
         query = '''
             WITH projects AS (
                 SELECT

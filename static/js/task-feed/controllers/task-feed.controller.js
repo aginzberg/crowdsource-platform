@@ -32,7 +32,7 @@
         self.getStatusName = getStatusName;
         self.getRatingPercentage = getRatingPercentage;
         self.openChat = openChat;
-
+        self.emptyState = 'No free tasks available';
         self.worker_config = null;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
@@ -46,6 +46,7 @@
             CONDITION_THREE__BC_TC: 3,
             CONDITION_FOUR__BC_TT: 4
         };
+        self.HTTP_410_GONE = 410;
 
         activate();
 
@@ -68,6 +69,11 @@
                     self.availableTasks = self.projects.length > 0;
                 },
                 function error(errData) {
+                    if(errData[1]==self.HTTP_410_GONE){
+                        $mdToast.showSimple(errData[0].message);
+                        self.emptyState = errData[0].message;
+                        return;
+                    }
                     self.error = errData[0].detail;
                     $mdToast.showSimple('Could not fetch projects.');
                 }
@@ -123,6 +129,7 @@
                         message = JSON.stringify(err);
                     }
                     $mdToast.showSimple('Error: ' + message);
+                    $state.go('task_feed');
                 }
             ).finally(function () {
             });
