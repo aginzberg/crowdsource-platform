@@ -140,11 +140,10 @@ class TaskWorkerViewSet(viewsets.ModelViewSet):
         obj = self.queryset.get(task=kwargs['task__id'], worker=request.user.userprofile.worker.id)
         serializer = TaskWorkerSerializer(instance=obj, data=request.data)
         if serializer.is_valid():
-            updated = serializer.update()
+            serializer.update()
             return Response(data={"message": "OK"}, status=status.HTTP_200_OK)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
     def destroy(self, request, *args, **kwargs):
         serializer = TaskWorkerSerializer()

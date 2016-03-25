@@ -14,7 +14,6 @@ from crowdsourcing.serializers.file import BatchFileSerializer
 from django.db.models import Q
 from mturk.tasks import mturk_update_status
 import numpy as np
-import math
 
 
 class CategorySerializer(DynamicFieldsModelSerializer):
