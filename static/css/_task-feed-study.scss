@@ -3,7 +3,7 @@
 $timer_color: #1D8EC9;
 $timer_tooltip: #F0F0F0;
 
-._timer {
+._timer, ._study-rankings {
     margin-right: 16px;
     & md-icon {
         color: rgba($timer_color, 0.87) !important;
@@ -68,4 +68,11 @@ $timer_tooltip: #F0F0F0;
 ._clickable-icon {
     outline: none;
     cursor: pointer;
+}
+
+
+._ranking-success {
+    font-weight: 500;
+    font-size: 24px;
+    color: rgba($status_online, 0.7);
 }

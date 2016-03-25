@@ -58,7 +58,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project_object = self.get_object()
         serializer = ProjectSerializer(instance=project_object,
                                        fields=('id', 'name', 'price', 'repetition', 'deadline', 'timeout',
-                                               'is_prototype', 'templates', 'status', 'batch_files', 'completion_time', 'post_mturk'),
+                                               'is_prototype', 'templates', 'status', 'batch_files', 'completion_time',
+                                               'post_mturk'),
                                        context={'request': request})
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -105,7 +106,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                           ~Q(project_tasks__task_workers__task_status=TaskWorker.STATUS_SKIPPED),
                                           deleted=False).distinct()
         serializer = ProjectSerializer(instance=projects, many=True,
-                                       fields=('id', 'name', 'owner', 'status'),
+                                       fields=('id', 'name', 'owner', 'status', 'owner_id'),
                                        context={'request': request})
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -114,7 +115,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         from django.utils.timezone import utc
         last_login = request.user.last_login
         now = datetime.utcnow().replace(tzinfo=utc)
-        if (now - last_login).total_seconds()/60 >= settings.STUDY_FEED_TIME:
+        if (now - last_login).total_seconds() / 60 >= settings.STUDY_FEED_TIME:
             return Response(data={"message": "Time is up, thank you so much, you may close this window now!"},
                             status=status.HTTP_410_GONE)
         query = '''
@@ -125,7 +126,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                   requester_ratings.requester_rating,
                   requester_ratings.raw_rating
                 FROM get_min_project_ratings() ratings
-                  LEFT OUTER JOIN (SELECT requester_id, requester_rating as raw_rating,
+                  LEFT OUTER JOIN (SELECT requester_id, requester_rating AS raw_rating,
                                     CASE WHEN requester_rating IS NULL AND requester_avg_rating
                                         IS NOT NULL THEN requester_avg_rating
                                     WHEN requester_rating IS NULL AND requester_avg_rating IS NULL THEN 1.99
@@ -141,11 +142,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                     ELSE worker_rating + 0.1 * worker_avg_rating END worker_rating
                                    FROM get_worker_ratings(%(worker_profile)s)) worker_ratings
                     ON worker_ratings.requester_id = ratings.owner_id
-                    and worker_ratings.worker_rating>=ratings.min_rating
-                ORDER BY requester_rating desc)
-            UPDATE crowdsourcing_project p set min_rating=projects.new_min_rating
+                    AND worker_ratings.worker_rating>=ratings.min_rating
+                ORDER BY requester_rating DESC)
+            UPDATE crowdsourcing_project p SET min_rating=projects.new_min_rating
             FROM projects
-            where projects.project_id=p.id
+            WHERE projects.project_id=p.id
             RETURNING p.id, p.name, p.price, p.owner_id, p.created_timestamp, p.allow_feedback,
             p.is_prototype, projects.requester_rating, projects.raw_rating;
         '''
@@ -181,7 +182,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['GET'])
     def requester_projects(self, request, **kwargs):
-        projects = request.user.userprofile.requester.project_owner.all().filter(deleted=False).\
+        projects = request.user.userprofile.requester.project_owner.all().filter(deleted=False). \
             order_by('-created_timestamp')
         serializer = ProjectSerializer(instance=projects, many=True,
                                        fields=('id', 'name', 'age', 'total_tasks', 'status'),
@@ -207,3 +208,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
         task = Task.objects.filter(project=project).first()
         task_serializer = TaskSerializer(instance=task, fields=('id', 'template'))
         return Response(data=task_serializer.data, status=status.HTTP_200_OK)
+
+    @list_route(methods=['post'], url_path='submit-rankings')
+    def submit_rankings(self, request, *args, **kwargs):
+        from django.utils import timezone
+        ranking_data = request.data.get('rankings', [])
+        models.RequesterFeedRankings.objects.filter(worker=request.user.userprofile.worker).delete()
+        ranking_obj = []
+        now = timezone.now()
+        for ranking in ranking_data:
+            ranking_obj.append(models.RequesterFeedRankings(worker=request.user.userprofile.worker,
+                                                            requester_id=ranking['requester'], rank=ranking['rank'],
+                                                            created_timestamp=now))
+        models.RequesterFeedRankings.objects.bulk_create(ranking_obj)
+        return Response(data={"message": "Thank you"}, status=status.HTTP_201_CREATED)

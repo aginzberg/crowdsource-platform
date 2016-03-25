@@ -1396,12 +1396,12 @@ md-list-item.rate-list-item {
     font-weight: 500;
     outline: none; }
 
-._timer {
+._timer, ._study-rankings {
   margin-right: 16px;
   position: relative; }
-  ._timer md-icon {
+  ._timer md-icon, ._study-rankings md-icon {
     color: rgba(29, 142, 201, 0.87) !important; }
-  ._timer ._tooltip {
+  ._timer ._tooltip, ._study-rankings ._tooltip {
     position: absolute;
     right: 0;
     top: -125px;
@@ -1410,16 +1410,16 @@ md-list-item.rate-list-item {
     color: rgba(0, 0, 0, 0.54);
     background-color: #F0F0F0;
     width: 128px; }
-    ._timer ._tooltip._small {
+    ._timer ._tooltip._small, ._study-rankings ._tooltip._small {
       top: -90px; }
-    ._timer ._tooltip._treatment-t2 {
+    ._timer ._tooltip._treatment-t2, ._study-rankings ._tooltip._treatment-t2 {
       top: -100px; }
-    ._timer ._tooltip._treatment-t1 {
+    ._timer ._tooltip._treatment-t1, ._study-rankings ._tooltip._treatment-t1 {
       top: -140px; }
-    ._timer ._tooltip ._main-text {
+    ._timer ._tooltip ._main-text, ._study-rankings ._tooltip ._main-text {
       font-weight: 500;
       color: rgba(0, 0, 0, 0.7); }
-    ._timer ._tooltip:after {
+    ._timer ._tooltip:after, ._study-rankings ._tooltip:after {
       content: ' ';
       width: 0;
       height: 0;
@@ -1447,6 +1447,11 @@ md-list-item.rate-list-item {
 ._clickable-icon {
   outline: none;
   cursor: pointer; }
+
+._ranking-success {
+  font-weight: 500;
+  font-size: 24px;
+  color: rgba(0, 200, 83, 0.7); }
 
 .project-form .step {
   padding-left: 15px;

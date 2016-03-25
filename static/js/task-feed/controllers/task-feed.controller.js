@@ -34,6 +34,12 @@
         self.openChat = openChat;
         self.emptyState = 'No free tasks available';
         self.worker_config = null;
+        self.workerRequesters = [];
+        self.workerProjectsRaw = [];
+        self.moveUp = moveUp;
+        self.moveDown = moveDown;
+        self.submitRankings = submitRankings;
+        self.rankingsSubmitted = false;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
          (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
@@ -51,6 +57,10 @@
         activate();
 
         function activate() {
+            if ($state.current.name == 'feed-end') {
+                getWorkerProjects();
+                return;
+            }
             if ($stateParams.projectId) {
                 self.openTask($stateParams.projectId);
             }
@@ -69,7 +79,7 @@
                     self.availableTasks = self.projects.length > 0;
                 },
                 function error(errData) {
-                    if(errData[1]==self.HTTP_410_GONE){
+                    if (errData[1] == self.HTTP_410_GONE) {
                         $mdToast.showSimple(errData[0].message);
                         self.emptyState = errData[0].message;
                         return;
@@ -185,13 +195,84 @@
             return rating >= circle ? 100 : rating >= circle - 1 ? (rating - circle + 1) * 100 : 0;
         }
 
-        function openChat(requester){
+        function openChat(requester) {
             $rootScope.openChat(requester);
         }
 
         function getWorkerConfig() {
             User.getWorkerConfiguration().then(function (data) {
                 self.worker_config = data[0];
+            });
+        }
+
+
+        function getWorkerProjects() {
+            Project.listWorkerProjects().then(
+                function success(response) {
+                    self.loading = false;
+                    var projects = response[0];
+                    self.workerRequesters = _
+                        .chain(projects)
+                        .groupBy('owner_id')
+                        .map(function (value, key) {
+                            return {
+                                requester_id: key,
+                                requester_name: value[0].owner.alias,
+                                project_names: _.pluck(value, 'name'),
+                                projects: value.map(function (inner_value, inner_key) {
+                                    return {
+                                        name: inner_value.name,
+                                        project_id: inner_value.id
+                                    };
+                                })
+                            }
+                        })
+                        .value();
+                    self.workerProjectsRaw = projects;
+
+
+                },
+                function error(response) {
+                    $mdToast.showSimple('Could not get tasks.');
+                }
+            ).finally(function () {
+            });
+        }
+
+        function moveUp($index) {
+            if ($index == 0) {
+                return;
+            }
+            var temp = self.workerRequesters[$index - 1];
+            self.workerRequesters[$index - 1] = self.workerRequesters[$index];
+            self.workerRequesters[$index] = temp;
+        }
+
+        function moveDown($index) {
+            if ($index + 1 == self.workerRequesters.length) {
+                return;
+            }
+            var temp = self.workerRequesters[$index + 1];
+            self.workerRequesters[$index + 1] = self.workerRequesters[$index];
+            self.workerRequesters[$index] = temp;
+        }
+
+        function submitRankings() {
+            var request_data = self.workerRequesters.map(function (value, index) {
+                return {
+                    requester: value.requester_id,
+                    rank: index + 1
+                };
+            });
+
+            Project.submitRankings(request_data).then(
+                function success(data) {
+                    self.rankingsSubmitted = true;
+                },
+                function error(errData) {
+                    $mdToast.showSimple('Please retry, something went wrong.');
+                }
+            ).finally(function () {
             });
         }
     }

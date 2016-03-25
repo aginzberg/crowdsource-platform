@@ -650,3 +650,10 @@ class URLAuth(models.Model):
     token = models.CharField(max_length=128, unique=True)
     username = models.CharField(max_length=128)
     password = models.CharField(max_length=64)
+
+
+class RequesterFeedRankings(models.Model):
+    worker = models.ForeignKey(Worker, related_name='requester_rankings')
+    requester = models.ForeignKey(Requester, related_name='rankings')
+    rank = models.IntegerField(default=0)
+    created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)

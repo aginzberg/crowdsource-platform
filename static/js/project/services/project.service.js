@@ -34,7 +34,8 @@
             fork: fork,
             getProjectComments: getProjectComments,
             listWorkerProjects: listWorkerProjects,
-            getPreview: getPreview
+            getPreview: getPreview,
+            submitRankings: submitRankings
         };
 
         return Project;
@@ -141,6 +142,17 @@
             var settings = {
                 url: '/api/project/' + project_id + '/get_preview/',
                 method: 'GET'
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function submitRankings(rankings) {
+            var settings = {
+                url: '/api/project/submit-rankings/',
+                method: 'POST',
+                data: {
+                    rankings: rankings
+                }
             };
             return HttpService.doRequest(settings);
         }

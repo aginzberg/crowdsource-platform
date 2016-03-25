@@ -53,6 +53,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
     raw_rating = serializers.IntegerField(read_only=True, required=False)
     deadline = serializers.DateTimeField()
     completion_time = serializers.SerializerMethodField()
+    owner_id = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Project
@@ -60,10 +61,11 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
                   'batch_files', 'deleted', 'created_timestamp', 'last_updated', 'price', 'has_data_set',
                   'data_set_location', 'total_tasks', 'file_id', 'age', 'is_micro', 'is_prototype', 'task_time',
                   'allow_feedback', 'feedback_permissions', 'min_rating', 'has_comments',
-                  'available_tasks', 'comments', 'num_rows', 'requester_rating', 'raw_rating', 'completion_time', 'post_mturk')
+                  'available_tasks', 'comments', 'num_rows', 'requester_rating', 'raw_rating', 'completion_time',
+                  'post_mturk', 'owner_id')
         read_only_fields = (
             'created_timestamp', 'last_updated', 'deleted', 'owner', 'has_comments', 'available_tasks',
-            'comments', 'templates', 'completion_time',)
+            'comments', 'templates', 'completion_time', 'owner_id')
 
     def create(self, **kwargs):
         project = models.Project.objects.create(deleted=False, owner=kwargs['owner'].requester)
@@ -100,6 +102,9 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
 
     def get_has_comments(self, obj):
         return obj.projectcomment_project.count() > 0
+
+    def get_owner_id(self, obj):
+        return obj.owner_id
 
     def get_available_tasks(self, obj):
         available_task_count = models.Project.objects.values('id').raw('''

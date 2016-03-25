@@ -1,0 +1,32 @@
+<div layout="row" class="_main-content" layout-align="start center" layout-margin>
+    <md-content class="authentication-form _main-content-body _study-rankings" layout-padding layout-align="start center"
+                layout="column">
+        <h1 class="md-headline">Welcome Back!</h1>
+        <div ng-hide="taskfeed.rankingsSubmitted" class="fx-fade-down fx-dur-1000 fx-ease-quart">
+            <div class="_note" style="text-align: left">Instructions: These are the requesters that you have worked with, please rank them! Use the
+            "<md-icon class="_clickable-icon" md-font-set="material-icons">keyboard_arrow_down</md-icon>" icon to move them down and
+            "<md-icon class="_clickable-icon" md-font-set="material-icons">keyboard_arrow_up</md-icon>" icon to move them up.
+            Best to worst (top to bottom, so 1. is best), after ranking them click Submit!.
+            </div>
+            <div style="width: 100%;">
+                <div ng-repeat="requester in taskfeed.workerRequesters" style="margin-top: 16px;">
+                    <md-icon class="_clickable-icon" ng-click="taskfeed.moveDown($index)" md-font-set="material-icons">keyboard_arrow_down</md-icon>
+                    <md-icon class="_clickable-icon" ng-click="taskfeed.moveUp($index)" md-font-set="material-icons">keyboard_arrow_up</md-icon>
+                    <span>{{ $index+1 + '. ' }}</span><span class="_user-alias">{{ requester.requester_name }}</span>
+                    <div style="font-weight: 500; font-size: 14px; color: rgba(0, 0, 0, 0.54); padding: 12px;">
+                        <md-chips ng-model="requester.projects" name="name" readonly="true">
+                            <md-chip-template>
+                                <em>{{$chip.name}}</em>
+                            </md-chip-template>
+                        </md-chips>
+                    </div>
+                </div>
+            </div>
+            <md-button style="width: 100%;" class="md-accent" ng-click="taskfeed.submitRankings()">Submit!</md-button>
+        </div>
+        <div class="_ranking-success" ng-if="taskfeed.rankingsSubmitted">Successfully submitted. You may close this window.</div>
+
+        <div style="margin-top: 24px; font-size: 14px">Thank you so much for participating!!!</div>
+    </md-content>
+</div>
+

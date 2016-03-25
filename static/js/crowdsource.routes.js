@@ -26,6 +26,12 @@
             templateUrl: '/static/templates/authentication/study-auth.html'
         };
 
+        var feed_end = {
+            controller: 'TaskFeedController',
+            controllerAs: 'taskfeed',
+            templateUrl: '/static/templates/task-feed/study-ranking.html'
+        };
+
         var register = {
             controller: 'RegisterController',
             controllerAs: 'register',
@@ -171,6 +177,13 @@
                     'content': feed_s
                 },
                 authenticate: false
+            })
+            .state('feed-end', {
+                url: '/feed-end/:token',
+                views: {
+                    'content': feed_end
+                },
+                authenticate: true
             })
 
             .state('register', {
