@@ -1253,7 +1253,6 @@ md-list-item.rate-list-item {
     font-size: 18px; }
 
 ._task-top {
-  margin: 6px;
   padding: 10px 0 0;
   font-size: 12px;
   cursor: pointer; }
@@ -1452,6 +1451,14 @@ md-list-item.rate-list-item {
   font-weight: 500;
   font-size: 24px;
   color: rgba(0, 200, 83, 0.7); }
+
+._feed-timer-hint {
+  font-size: 12px;
+  padding: 4px 5px;
+  color: rgba(0, 0, 0, 0.54); }
+  ._feed-timer-hint ._main-text {
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.7); }
 
 .project-form .step {
   padding-left: 15px;

@@ -64,15 +64,23 @@ $timer_tooltip: #F0F0F0;
     }
 }
 
-
 ._clickable-icon {
     outline: none;
     cursor: pointer;
 }
 
-
 ._ranking-success {
     font-weight: 500;
     font-size: 24px;
     color: rgba($status_online, 0.7);
+}
+
+._feed-timer-hint {
+    font-size: 12px;
+    padding: 4px 5px;
+    & ._main-text {
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.7);
+    }
+    color: rgba(0, 0, 0, 0.54);
 }

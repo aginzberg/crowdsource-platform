@@ -15,23 +15,32 @@
                     </div>
                     <div flex="20" class="_author _right-offset">
                         <div class="_user-alias _no-border">{{ project.owner.alias }}</div>
-                <span>
-                  <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
-                       ng-style="{'background': 'linear-gradient(to right, black 0%, black
-                               {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 1)}}%, white
-                               {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 1)}}%, white 100%)'}">
-                  </div>
-                  <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
-                       ng-style="{'background': 'linear-gradient(to right, black 0%, black
-                               {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 2)}}%, white
-                               {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 2)}}%, white 100%)'}">
-                  </div>
-                  <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
-                       ng-style="{'background': 'linear-gradient(to right, black 0%, black
-                               {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 3)}}%, white
-                               {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 3)}}%, white 100%)'}">
-                  </div>
-                </span>
+                            <span>
+                              <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
+                                   ng-style="{'background': 'linear-gradient(to right, black 0%, black
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 1)}}%, white
+
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 1)}}%, white 100%)'}">
+                              </div>
+                              <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
+                                   ng-style="{'background': 'linear-gradient(to right, black 0%, black
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 2)}}%, white
+
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 2)}}%, white 100%)'}">
+                              </div>
+                              <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
+                                   ng-style="{'background': 'linear-gradient(to right, black 0%, black
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 3)}}%, white
+
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 3)}}%, white 100%)'}">
+                              </div>
+                            </span>
                     </div>
                 </div>
                 <div layout="row" class="layout-align-start-center">
@@ -40,7 +49,10 @@
                         <!--div>40 mins</div-->
                     </div>
                     <div flex="70">
-                        <span class="_hourly-rate" ng-if="project.completion_time && (taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_TWO__BT_TT || taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_FOUR__BC_TT)"><md-icon class="_icon-18" md-font-set="material-icons">schedule</md-icon> Hourly Rate:  {{ project.price*60 /project.completion_time | number: 2}} $/hr </span>
+                        <span class="_hourly-rate"
+                              ng-if="project.completion_time && (taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_TWO__BT_TT || taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_FOUR__BC_TT)"><md-icon
+                                class="_icon-18" md-font-set="material-icons">schedule
+                        </md-icon> Hourly Rate:  {{ project.price*60 /project.completion_time | number: 2}} $/hr </span>
                         <md-icon md-font-set="material-icons">list</md-icon>
                         <ng-pluralize class="_tasks-available" count="project.available_tasks"
                                       when="{'one': '1 available task', 'other': '{} available tasks'}"></ng-pluralize>
@@ -52,6 +64,11 @@
                         <md-icon ng-if="!project.show_preview" md-font-set="material-icons" class="_more">expand_more
                         </md-icon>
                     </div>
+                </div>
+                <div ng-if="$index==0 && (taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_TWO__BT_TT || taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_FOUR__BC_TT)"
+                     layout="column" class="layout-align-start-center _note _feed-timer-hint" style="padding: 0; margin-bottom: 8px">
+                    <div class="_main-text">We estimate your Hourly Rate!</div>
+                    <div>Daemo predicts how long each task will take you, based on the time you spent on previous tasks.</div>
                 </div>
             </div>
             <div class="_preview" ng-if="project.show_preview">
