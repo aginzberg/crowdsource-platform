@@ -42,6 +42,7 @@
         self.rankingsSubmitted = false;
         self.gotIt = gotIt;
         self.has_read_tooltip = true;
+        self.showToolTip = false;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
          (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
@@ -205,6 +206,9 @@
         function getWorkerConfig() {
             User.getWorkerConfiguration().then(function (data) {
                 self.worker_config = data[0];
+
+                self.showToolTip = !(self.worker_config.condition == self.conditions.CONDITION_ONE__BT_TC ||
+                self.worker_config.condition == self.conditions.CONDITION_THREE__BC_TC);
             });
         }
 

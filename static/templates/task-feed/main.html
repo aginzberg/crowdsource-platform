@@ -5,7 +5,7 @@
     </div>
     <div class="_feed-list">
         <div ng-hide="!project.available_tasks" ng-repeat="project in taskfeed.projects" class="_task-feed-shadow"
-             ng-class="{'_first-margin': $index==0 && !taskfeed.has_read_tooltip}">
+             ng-class="{'_first-margin': $index==0 && !taskfeed.has_read_tooltip && taskfeed.showToolTip}">
             <div class="_task-top" ng-click="taskfeed.showPreview(project)">
                 <div layout="row">
                     <div flex="10" class="_price">
@@ -86,7 +86,7 @@
                         <md-icon ng-if="!project.show_preview" md-font-set="material-icons" class="_more">expand_more
                         </md-icon>
                     </div>
-                    <div ng-if="$index==0 && !taskfeed.has_read_tooltip" class="_tooltip _feed-tooltip fx-fade-down fx-dur-1000 fx-ease-quart " ng-cloak=""
+                    <div ng-if="$index==0 && !taskfeed.has_read_tooltip && taskfeed.showToolTip" class="_tooltip _feed-tooltip fx-fade-down fx-dur-1000 fx-ease-quart " ng-cloak=""
                          ng-class="{'_treatment-t1': task.tooltipTaller}">
                         <span class="_main-text">We estimate your Hourly Rate!</span> <br/>
                         <span>Daemo predicts how long each task will take you, based on the time you spent on previous tasks.</span>
