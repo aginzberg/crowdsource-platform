@@ -116,7 +116,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
                   ratings.project_id,
                   ratings.min_rating new_min_rating,
                   requester_ratings.requester_rating,
-                  requester_ratings.raw_rating
+                  requester_ratings.raw_rating,
+                  rejection.rejection_rate 
                 FROM get_min_project_ratings() ratings
                   LEFT OUTER JOIN (SELECT requester_id, requester_rating as raw_rating,
                                     CASE WHEN requester_rating IS NULL AND requester_avg_rating
@@ -135,12 +136,38 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                    FROM get_worker_ratings(%(worker_profile)s)) worker_ratings
                     ON worker_ratings.requester_id = ratings.owner_id
                     and worker_ratings.worker_rating>=ratings.min_rating
+                  INNER JOIN (SELECT requester_id, (SELECT CASE WHEN count(*) > 0
+                              THEN ( WITH wr_interaction AS
+                                (SELECT * FROM get_all_workers_ratings() WHERE worker_id = %(worker_profile)s and requester_id = t.requester_id),
+                                similar_wr_interaction AS
+                                (SELECT * FROM get_all_workers_ratings WHERE worker_id != %(worker_profile)s
+                                       and requester_rating = (SELECT requester_rating FROM wr_interaction LIMIT 1)
+                                       and requester_id = t.requester_id)
+                                SELECT 0.9*((SELECT CAST(count(*) AS float) FROM wr_interaction WHERE task_status = 4) /
+                                 (SELECT CAST(count(*) AS float) FROM wr_interaction)) +
+                                 0.1*((SELECT CAST(count(*) AS float) FROM similar_wr_interaction WHERE task_status = 4) /
+                                 (SELECT CAST(count(*) AS float) FROM similar_wr_interaction)))
+  
+                              ELSE ( WITH worker AS
+                                (SELECT * FROM get_all_workers_ratings WHERE worker_id = %(worker_profile)s LIMIT 1),
+                                similar_wr_interaction AS
+                                (SELECT * FROM get_all_workers_ratings WHERE worker_id != %(worker_profile)s
+                                       and requester_avg_rating = (SELECT requester_avg_rating FROM worker)
+                                       and requester_id = t.requester_id)
+                                SELECT (SELECT CAST(count(*) AS float) FROM similar_wr_interaction WHERE task_status = 4) /
+                                       (SELECT CAST(count(*) AS float) FROM similar_wr_interaction))           
+                                           
+                              END rejection_rate
+                              FROM   get_all_workers_ratings() where worker_id = %(worker_profile)s and requester_id = t.requester_id)
+                              FROM get_all_workers_ratings() t group by requester_id) rejection
+                    ON  rejection.requester_id = ratings.owner_id    
+
                 ORDER BY requester_rating desc)
             UPDATE crowdsourcing_project p set min_rating=projects.new_min_rating
             FROM projects
             where projects.project_id=p.id
             RETURNING p.id, p.name, p.price, p.owner_id, p.created_timestamp, p.allow_feedback,
-            p.is_prototype, projects.requester_rating, projects.raw_rating;
+            p.is_prototype, projects.requester_rating, projects.raw_rating, projects.rejection_rate;
         '''
         projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id})
         project_serializer = ProjectSerializer(instance=projects, many=True,
