@@ -40,6 +40,8 @@
         self.moveDown = moveDown;
         self.submitRankings = submitRankings;
         self.rankingsSubmitted = false;
+        self.gotIt = gotIt;
+        self.has_read_tooltip = true;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
          (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
@@ -73,7 +75,8 @@
         function getProjects() {
             TaskFeed.getProjects().then(
                 function success(data) {
-                    self.projects = data[0].filter(function (project) {
+                    self.has_read_tooltip = data[0].has_read_tooltip_feed;
+                    self.projects = data[0].projects.filter(function (project) {
                         return project.available_tasks > 0;
                     });
                     self.availableTasks = self.projects.length > 0;
@@ -274,6 +277,14 @@
                 }
             ).finally(function () {
             });
+        }
+
+        function gotIt($event) {
+            $event.preventDefault();
+            User.updatePreferences(userAccount.username, {'has_read_tooltip_feed': true}).then(
+                function () {
+                    self.has_read_tooltip = true;
+                });
         }
     }
 

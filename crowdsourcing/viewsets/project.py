@@ -158,7 +158,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                                        'requester_rating', 'raw_rating', 'is_prototype',
                                                        'completion_time'),
                                                context={'request': request})
-        return Response(data=project_serializer.data, status=status.HTTP_200_OK)
+        has_read_tooltip_feed = request.user.preferences.has_read_tooltip_feed or False
+        return Response(data={'projects': project_serializer.data, 'has_read_tooltip_feed': has_read_tooltip_feed},
+                        status=status.HTTP_200_OK)
 
     @detail_route(methods=['post'])
     def attach_file(self, request, **kwargs):

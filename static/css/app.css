@@ -1020,7 +1020,7 @@ img.circular {
   ._tooltip ._main-text {
     font-weight: 500;
     color: rgba(0, 0, 0, 0.7); }
-  ._tooltip:after {
+  ._tooltip:after:not(._feed-tooltip) {
     content: ' ';
     width: 0;
     height: 0;
@@ -1030,6 +1030,26 @@ img.circular {
     right: 0;
     border-width: 0 13px 15px 0;
     border-color: transparent #F0F0F0 transparent transparent; }
+  ._tooltip._feed-tooltip {
+    left: 80px;
+    top: 70px;
+    z-index: 99;
+    background-color: #E1F5FE; }
+  ._tooltip._feed-tooltip:before {
+    content: ' ';
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: absolute;
+    top: -14px;
+    left: 0;
+    border-width: 0 13px 15px 0;
+    border-color: transparent #E1F5FE transparent transparent;
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg); }
+
+._first-margin {
+  margin-bottom: 150px; }
 
 .table-content {
   background-color: #ffffff; }
@@ -1270,7 +1290,8 @@ md-list-item.rate-list-item {
     font-weight: 500;
     font-size: 18px; }
   ._task-top ._hourly-rate {
-    opacity: 0.54; }
+    opacity: 0.54;
+    margin-right: 16px; }
   ._task-top ._acceptance-rate {
     opacity: 0.54; }
   ._task-top ._tasks-available {

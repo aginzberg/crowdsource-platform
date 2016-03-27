@@ -4,7 +4,8 @@
         <span class="_nav-title _left-inset">Task Feed</span>
     </div>
     <div class="_feed-list">
-        <div ng-hide="!project.available_tasks" ng-repeat="project in taskfeed.projects" class="_task-feed-shadow">
+        <div ng-hide="!project.available_tasks" ng-repeat="project in taskfeed.projects" class="_task-feed-shadow"
+             ng-class="{'_first-margin': $index==0 && !taskfeed.has_read_tooltip}">
             <div class="_task-top" ng-click="taskfeed.showPreview(project)">
                 <div layout="row">
                     <div flex="10" class="_price">
@@ -19,7 +20,13 @@
                               <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
                                    ng-style="{'background': 'linear-gradient(to right, black 0%, black
 
+
+
+
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 1)}}%, white
+
+
+
 
 
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 1)}}%, white 100%)'}">
@@ -27,7 +34,13 @@
                               <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
                                    ng-style="{'background': 'linear-gradient(to right, black 0%, black
 
+
+
+
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 2)}}%, white
+
+
+
 
 
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 2)}}%, white 100%)'}">
@@ -35,7 +48,13 @@
                               <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
                                    ng-style="{'background': 'linear-gradient(to right, black 0%, black
 
+
+
+
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 3)}}%, white
+
+
+
 
 
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 3)}}%, white 100%)'}">
@@ -52,7 +71,10 @@
                         <span class="_hourly-rate"
                               ng-if="project.completion_time && (taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_TWO__BT_TT || taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_FOUR__BC_TT)"><md-icon
                                 class="_icon-18" md-font-set="material-icons">schedule
-                        </md-icon> Hourly Rate:  {{ project.price*60 /project.completion_time | number: 2}} $/hr </span>
+                        </md-icon> {{ project.price*60 /project.completion_time | number: 2}} $/hr estimated rate
+
+                        </span>
+
                         <md-icon md-font-set="material-icons">list</md-icon>
                         <ng-pluralize class="_tasks-available" count="project.available_tasks"
                                       when="{'one': '1 available task', 'other': '{} available tasks'}"></ng-pluralize>
@@ -64,12 +86,22 @@
                         <md-icon ng-if="!project.show_preview" md-font-set="material-icons" class="_more">expand_more
                         </md-icon>
                     </div>
+                    <div ng-if="$index==0 && !taskfeed.has_read_tooltip" class="_tooltip _feed-tooltip fx-fade-down fx-dur-1000 fx-ease-quart " ng-cloak=""
+                         ng-class="{'_treatment-t1': task.tooltipTaller}">
+                        <span class="_main-text">We estimate your Hourly Rate!</span> <br/>
+                        <span>Daemo predicts how long each task will take you, based on the time you spent on previous tasks.</span>
+                        <md-button ng-click="taskfeed.gotIt($event)" class="_cbtn _tooltip-btn">Got it</md-button>
+                    </div>
                 </div>
-                <div ng-if="$index==0 && (taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_TWO__BT_TT || taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_FOUR__BC_TT)"
-                     layout="column" class="layout-align-start-center _note _feed-timer-hint" style="padding: 0; margin-bottom: 8px">
-                    <div class="_main-text">We estimate your Hourly Rate!</div>
-                    <div>Daemo predicts how long each task will take you, based on the time you spent on previous tasks.</div>
-                </div>
+
+                <!--div ng-if="$index==0 && (taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_TWO__BT_TT || taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_FOUR__BC_TT)"
+                     layout="column" class="layout-align-start-center _note _feed-timer-hint"
+                     style="padding: 0; margin-bottom: 8px">
+                    <div class="_main-text">We /...</div>
+                    <div>Daemo predicts how long each task will take you, based on the time you spent on previous
+                        tasks.
+                    </div>
+                </div-->
             </div>
             <div class="_preview" ng-if="project.show_preview">
                 <div layout="row" class="layout-align-start-center">

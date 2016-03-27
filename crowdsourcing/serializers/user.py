@@ -86,7 +86,8 @@ class UserPreferencesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserPreferences
-        fields = ('user', 'language', 'currency', 'login_alerts', 'auto_accept', 'has_read_tooltip')
+        fields = ('user', 'language', 'currency', 'login_alerts', 'auto_accept', 'has_read_tooltip',
+                  'has_read_tooltip_feed')
 
     def create(self, **kwargs):
         currency_data = self.validated_data.pop('currency')
@@ -109,6 +110,8 @@ class UserPreferencesSerializer(serializers.ModelSerializer):
     def update(self, **kwargs):
         self.instance.auto_accept = self.validated_data.get('auto_accept', self.instance.auto_accept)
         self.instance.has_read_tooltip = self.validated_data.get('has_read_tooltip', self.instance.has_read_tooltip)
+        self.instance.has_read_tooltip_feed = self.validated_data.get('has_read_tooltip_feed',
+                                                                      self.instance.has_read_tooltip_feed)
         self.instance.save()
         return self.instance
 
