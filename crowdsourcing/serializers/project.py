@@ -40,7 +40,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
     file_id = serializers.IntegerField(write_only=True, allow_null=True, required=False)
     age = serializers.SerializerMethodField()
     has_comments = serializers.SerializerMethodField()
-    available_tasks = serializers.SerializerMethodField()
+    available_tasks = serializers.IntegerField(read_only=True)  # serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
     name = serializers.CharField(default='Untitled Project')
     status = serializers.IntegerField(default=1)

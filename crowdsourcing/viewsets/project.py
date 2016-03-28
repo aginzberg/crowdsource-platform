@@ -136,11 +136,31 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                    FROM get_requester_ratings(%(worker_profile)s)) requester_ratings
                     ON requester_ratings.requester_id = ratings.owner_id
                   )
-            select * from projects p
-        INNER JOIN crowdsourcing_project cp on p.project_id= cp.id
+            SELECT cp.id, cp.name, p.raw_rating, p.requester_rating, cp.owner_id, cp.is_prototype, cp.price, cp.task_time, available_projects.available_tasks
+             FROM projects p
+        INNER JOIN crowdsourcing_project cp ON p.project_id= cp.id
+        INNER JOIN (SELECT
+                        project_id,
+                        sum(available_tasks) available_tasks
+                      FROM (
+                             SELECT
+                               t.project_id,
+                               t.id,
+                               CASE WHEN count(DISTINCT twd.id) < p.repetition AND count(DISTINCT tw.id) = 0
+                                 THEN 1
+                               ELSE 0 END available_tasks
+                             FROM crowdsourcing_project p INNER JOIN crowdsourcing_task t ON p.id = t.project_id
+                               LEFT OUTER JOIN crowdsourcing_taskworker tw
+                                 ON t.id = tw.task_id AND tw.worker_id = %(worker_id)s AND tw.task_status NOT IN (4, 6)
+                               LEFT OUTER JOIN crowdsourcing_taskworker twd
+                                 ON t.id = twd.task_id AND tw.worker_id <> %(worker_id)s AND tw.task_status NOT IN (4, 6)
+                             GROUP BY t.project_id, t.id, p.repetition) projects WHERE projects.available_tasks>0
+                      GROUP BY projects.project_id
+                ) available_projects ON available_projects.project_id=p.project_id
         ORDER BY p.requester_rating DESC;
         '''
-        projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id})
+        projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id,
+                                                      'worker_id': request.user.userprofile.worker.id})
         project_serializer = ProjectSerializer(instance=projects, many=True,
                                                fields=('id', 'name',
                                                        'status',
