@@ -149,7 +149,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                                        # 'owner',
                                                        'requester_rating', 'raw_rating',
                                                        'is_prototype',
-                                                       'completion_time'
+                                                       # 'completion_time'
                                                        ),
                                                context={'request': request})
         has_read_tooltip_feed = request.user.preferences.has_read_tooltip_feed or False
