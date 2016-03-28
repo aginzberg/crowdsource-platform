@@ -144,12 +144,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project_serializer = ProjectSerializer(instance=projects, many=True,
                                                fields=('id', 'name',
                                                        'status',
-                                                       # 'available_tasks',
+                                                       'available_tasks',
                                                        'price', 'task_time',
-                                                       # 'owner',
+                                                       'owner',
                                                        'requester_rating', 'raw_rating',
                                                        'is_prototype',
-                                                       # 'completion_time'
+                                                       'completion_time'
                                                        ),
                                                context={'request': request})
         has_read_tooltip_feed = request.user.preferences.has_read_tooltip_feed or False
