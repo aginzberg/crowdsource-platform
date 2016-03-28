@@ -135,28 +135,22 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                     ELSE requester_rating + 0.1 * requester_avg_rating END requester_rating
                                    FROM get_requester_ratings(%(worker_profile)s)) requester_ratings
                     ON requester_ratings.requester_id = ratings.owner_id
-                  LEFT OUTER JOIN (SELECT requester_id, CASE WHEN worker_rating IS NULL AND worker_avg_rating
-                                        IS NOT NULL THEN worker_avg_rating
-                                    WHEN worker_rating IS NULL AND worker_avg_rating IS NULL THEN 1.99
-                                    WHEN worker_rating IS NOT NULL AND worker_avg_rating IS NULL THEN worker_rating
-                                    ELSE worker_rating + 0.1 * worker_avg_rating END worker_rating
-                                   FROM get_worker_ratings(%(worker_profile)s)) worker_ratings
-                    ON worker_ratings.requester_id = ratings.owner_id
-                    AND worker_ratings.worker_rating>=ratings.min_rating
-                ORDER BY requester_rating DESC)
-            UPDATE crowdsourcing_project p SET min_rating=projects.new_min_rating
-            FROM projects
-            WHERE projects.project_id=p.id
-            RETURNING p.id, p.name, p.price, p.owner_id, p.created_timestamp, p.allow_feedback,
-            p.is_prototype, projects.requester_rating, projects.raw_rating;
+                  )
+            select * from projects p
+        INNER JOIN crowdsourcing_project cp on p.project_id= cp.id
+        ORDER BY p.requester_rating DESC;
         '''
-        projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id})
+        projects = Project.objects.prefetch_related('owner__profile__user').raw(query, params={'worker_profile': request.user.userprofile.id})
         project_serializer = ProjectSerializer(instance=projects, many=True,
                                                fields=('id', 'name',
-                                                       'status', 'available_tasks',
-                                                       'price', 'task_time', 'owner',
-                                                       'requester_rating', 'raw_rating', 'is_prototype',
-                                                       'completion_time'),
+                                                       'status',
+                                                       'available_tasks',
+                                                       'price', 'task_time',
+                                                       'owner',
+                                                       'requester_rating', 'raw_rating',
+                                                       'is_prototype',
+                                                       'completion_time'
+                                                       ),
                                                context={'request': request})
         has_read_tooltip_feed = request.user.preferences.has_read_tooltip_feed or False
         return Response(data={'projects': project_serializer.data, 'has_read_tooltip_feed': has_read_tooltip_feed},
