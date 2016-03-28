@@ -140,7 +140,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         INNER JOIN crowdsourcing_project cp on p.project_id= cp.id
         ORDER BY p.requester_rating DESC;
         '''
-        projects = Project.objects.prefetch_related('owner__profile__user').raw(query, params={'worker_profile': request.user.userprofile.id})
+        projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id})
         project_serializer = ProjectSerializer(instance=projects, many=True,
                                                fields=('id', 'name',
                                                        'status',
