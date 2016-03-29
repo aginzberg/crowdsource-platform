@@ -118,6 +118,31 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if (now - last_login).total_seconds() / 60 >= settings.STUDY_FEED_TIME:
             return Response(data={"message": "Time is up, thank you so much, you may close this window now!"},
                             status=status.HTTP_410_GONE)
+
+        query_factor = '''
+            SELECT avg(p.ratio) id
+            FROM (
+                   SELECT
+                     t.id task_id,
+                     CASE WHEN tw.completion_time / two.completion_time IS NULL
+                       THEN 1.0
+                     ELSE tw.completion_time / two.completion_time END ratio,
+                     two.completion_time completion_time
+                   FROM crowdsourcing_task t
+                     LEFT OUTER JOIN crowdsourcing_taskworker tw ON tw.task_id = t.id
+                             AND tw.task_status IN (2, 3) AND tw.worker_id = %(worker_id)s AND
+                             tw.completion_time IS NOT NULL
+                     LEFT OUTER JOIN (SELECT
+                                        task_id,
+                                        avg(completion_time) completion_time
+                                      FROM crowdsourcing_taskworker two
+                                      WHERE two.task_status IN (2, 3) AND two.completion_time IS NOT NULL
+                                      GROUP BY task_id) two ON two.task_id = t.id
+            ) p;
+        '''
+        worker_id = request.user.userprofile.worker.id
+        factor = models.Worker.objects.raw(query_factor, params={'worker_id': worker_id})[0].id
+
         query = '''
             WITH projects AS (
                 SELECT
@@ -136,9 +161,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                    FROM get_requester_ratings(%(worker_profile)s)) requester_ratings
                     ON requester_ratings.requester_id = ratings.owner_id
                   )
-            SELECT cp.id, cp.name, p.raw_rating, p.requester_rating, cp.owner_id, cp.is_prototype, cp.price, cp.task_time, available_projects.available_tasks
+            SELECT cp.id, cp.name, p.raw_rating, p.requester_rating, r.alias owner_name, cp.owner_id, cp.is_prototype, cp.price, cp.task_time, available_projects.available_tasks
              FROM projects p
         INNER JOIN crowdsourcing_project cp ON p.project_id= cp.id
+        INNER JOIN crowdsourcing_requester r ON r.id = cp.owner_id
         INNER JOIN (SELECT
                         project_id,
                         sum(available_tasks) available_tasks
@@ -160,18 +186,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
         ORDER BY p.requester_rating DESC;
         '''
         projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id,
-                                                      'worker_id': request.user.userprofile.worker.id})
+                                                      'worker_id': worker_id})
         project_serializer = ProjectSerializer(instance=projects, many=True,
                                                fields=('id', 'name',
                                                        'status',
                                                        'available_tasks',
                                                        'price', 'task_time',
-                                                       'owner',
+                                                       'owner_name',
                                                        'requester_rating', 'raw_rating',
                                                        'is_prototype',
                                                        'completion_time'
                                                        ),
-                                               context={'request': request})
+                                               context={'request': request, 'factor': factor})
         has_read_tooltip_feed = request.user.preferences.has_read_tooltip_feed or False
         return Response(data={'projects': project_serializer.data, 'has_read_tooltip_feed': has_read_tooltip_feed},
                         status=status.HTTP_200_OK)

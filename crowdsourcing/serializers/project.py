@@ -53,6 +53,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
     deadline = serializers.DateTimeField()
     completion_time = serializers.SerializerMethodField()
     owner_id = serializers.SerializerMethodField()
+    owner_name = serializers.CharField(read_only=True)
 
     class Meta:
         model = models.Project
@@ -61,10 +62,10 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
                   'data_set_location', 'total_tasks', 'file_id', 'age', 'is_micro', 'is_prototype', 'task_time',
                   'allow_feedback', 'feedback_permissions', 'min_rating', 'has_comments',
                   'available_tasks', 'comments', 'num_rows', 'requester_rating', 'raw_rating', 'completion_time',
-                  'post_mturk', 'owner_id')
+                  'post_mturk', 'owner_id', 'owner_name')
         read_only_fields = (
             'created_timestamp', 'last_updated', 'deleted', 'owner', 'has_comments', 'available_tasks',
-            'comments', 'templates', 'completion_time', 'owner_id')
+            'comments', 'templates', 'completion_time', 'owner_id', 'owner_name')
 
     def create(self, **kwargs):
         project = models.Project.objects.create(deleted=False, owner=kwargs['owner'].requester)
@@ -234,6 +235,8 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
         return None
 
     def get_scaling_factor(self, worker):
+        return self.context['factor']
+
         task_workers = models.TaskWorker.objects.filter(~Q(completion_time=None), worker=worker,
                                                         task_status__in=[models.TaskWorker.STATUS_ACCEPTED,
                                                                          models.TaskWorker.STATUS_SUBMITTED])
