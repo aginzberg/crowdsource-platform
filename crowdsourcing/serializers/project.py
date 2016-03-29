@@ -215,7 +215,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
         completion_times = obj.project_tasks.filter(task_workers__task_status__in=[models.TaskWorker.STATUS_SUBMITTED,
                                                                                    models.TaskWorker.STATUS_ACCEPTED]) \
             .values_list('task_workers__completion_time', flat=True)
-        completion_times = [x / 60 for x in completion_times]
+        completion_times = [x / 60 for x in completion_times if x > 0]
         if len(completion_times) >= settings.WORKER_TIME_COUNT:
             return round(factor * np.median(completion_times), 2)
         parent_completion_times = []
