@@ -161,7 +161,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                    FROM get_requester_ratings(%(worker_profile)s)) requester_ratings
                     ON requester_ratings.requester_id = ratings.owner_id
                   )
-            SELECT cp.id, cp.name, p.raw_rating, p.requester_rating, r.alias owner_name, cp.owner_id, cp.is_prototype, cp.price, cp.task_time, available_projects.available_tasks
+            SELECT cp.id, cp.name, p.raw_rating, p.requester_rating, r.alias owner_name, r.rejection_rate rejection_rate,
+             cp.owner_id, cp.is_prototype, cp.price, cp.task_time, available_projects.available_tasks
              FROM projects p
         INNER JOIN crowdsourcing_project cp ON p.project_id= cp.id
         INNER JOIN crowdsourcing_requester r ON r.id = cp.owner_id

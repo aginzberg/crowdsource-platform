@@ -80,7 +80,7 @@
                                       when="{'one': '1 available task', 'other': '{} available tasks'}"></ng-pluralize>
                     </div>
                     <div flex="20" class="_expand _right-offset">
-                        <span class="_acceptance-rate">Acceptance Rate: {{ 100 - project.owner.rejection_rate +'%' }} </span>
+                        <span class="_acceptance-rate">Acceptance Rate: {{ 100 - project.rejection_rate +'%' }} </span>
                         <md-icon ng-if="project.show_preview" md-font-set="material-icons" class="_more">expand_less
                         </md-icon>
                         <md-icon ng-if="!project.show_preview" md-font-set="material-icons" class="_more">expand_more
