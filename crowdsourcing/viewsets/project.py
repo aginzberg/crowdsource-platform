@@ -196,6 +196,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                                        'owner_name',
                                                        'requester_rating', 'raw_rating',
                                                        'is_prototype',
+                                                       'rejection_rate',
                                                        'completion_time'
                                                        ),
                                                context={'request': request, 'factor': factor})

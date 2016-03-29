@@ -53,6 +53,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
     deadline = serializers.DateTimeField()
     completion_time = serializers.SerializerMethodField()
     owner_id = serializers.SerializerMethodField()
+    rejection_rate = serializers.IntegerField(read_only=True)
     owner_name = serializers.CharField(read_only=True)
 
     class Meta:
@@ -62,7 +63,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
                   'data_set_location', 'total_tasks', 'file_id', 'age', 'is_micro', 'is_prototype', 'task_time',
                   'allow_feedback', 'feedback_permissions', 'min_rating', 'has_comments',
                   'available_tasks', 'comments', 'num_rows', 'requester_rating', 'raw_rating', 'completion_time',
-                  'post_mturk', 'owner_id', 'owner_name')
+                  'post_mturk', 'owner_id', 'owner_name', 'rejection_rate')
         read_only_fields = (
             'created_timestamp', 'last_updated', 'deleted', 'owner', 'has_comments', 'available_tasks',
             'comments', 'templates', 'completion_time', 'owner_id', 'owner_name')
