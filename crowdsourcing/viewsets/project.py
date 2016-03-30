@@ -142,6 +142,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
         '''
         worker_id = request.user.userprofile.worker.id
         factor = models.Worker.objects.raw(query_factor, params={'worker_id': worker_id})[0].id
+        condition = -1
+        if hasattr(request.user.userprofile.worker, 'configuration'):
+            condition = request.user.userprofile.worker.configuration.condition
 
         query = '''
             WITH projects AS (
@@ -184,10 +187,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
                              GROUP BY t.project_id, t.id, p.repetition) projects WHERE projects.available_tasks>0
                       GROUP BY projects.project_id
                 ) available_projects ON available_projects.project_id=p.project_id
-        ORDER BY p.requester_rating DESC;
+        ORDER BY case when %(worker_condition)s < 3 then  p.requester_rating else p.project_id end DESC;
         '''
         projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id,
-                                                      'worker_id': worker_id})
+                                                      'worker_id': worker_id, 'worker_condition': condition})
         project_serializer = ProjectSerializer(instance=projects, many=True,
                                                fields=('id', 'name',
                                                        'status',
