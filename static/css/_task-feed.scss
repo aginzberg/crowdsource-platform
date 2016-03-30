@@ -58,7 +58,19 @@
 	}
 
 	& ._acceptance-rate {
-		opacity: 0.54;
+		//opacity: 0.54;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 2px;
+        &._high {
+            background-color: #FFCDD2;
+        }
+        &._medium {
+            background-color: #FFECB3;
+        }
+        &._low {
+            background-color: #C8E6C9;
+        }
 	}
 
 	& ._tasks-available {

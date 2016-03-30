@@ -23,13 +23,19 @@
 
 
 
-                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 1)}}%, white
+
+
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 1)}}%, white
 
 
 
 
 
-                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 1)}}%, white 100%)'}">
+
+
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 1)}}%, white 100%)'}">
                               </div>
                               <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
                                    ng-style="{'background': 'linear-gradient(to right, black 0%, black
@@ -37,13 +43,19 @@
 
 
 
-                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 2)}}%, white
+
+
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 2)}}%, white
 
 
 
 
 
-                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 2)}}%, white 100%)'}">
+
+
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 2)}}%, white 100%)'}">
                               </div>
                               <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
                                    ng-style="{'background': 'linear-gradient(to right, black 0%, black
@@ -51,13 +63,19 @@
 
 
 
-                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 3)}}%, white
+
+
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 3)}}%, white
 
 
 
 
 
-                                           {{ taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 3)}}%, white 100%)'}">
+
+
+
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 3)}}%, white 100%)'}">
                               </div>
                             </span>
                     </div>
@@ -80,13 +98,16 @@
                                       when="{'one': '1 available task', 'other': '{} available tasks'}"></ng-pluralize>
                     </div>
                     <div flex="20" class="_expand _right-offset">
-                        <span class="_acceptance-rate">Acceptance Rate: {{ 100 - project.rejection_rate +'%' }} </span>
+                        <span class="_acceptance-rate"
+                              ng-class="{'_high': project.rejection_rate>=40, '_medium': project.rejection_rate<=20 && project.rejection_rate>=10, '_low': project.rejection_rate<=3}">
+                            Rejection Rate: {{ project.rejection_rate +'%'}} </span>
                         <md-icon ng-if="project.show_preview" md-font-set="material-icons" class="_more">expand_less
                         </md-icon>
                         <md-icon ng-if="!project.show_preview" md-font-set="material-icons" class="_more">expand_more
                         </md-icon>
                     </div>
-                    <div ng-if="$index==0 && !taskfeed.has_read_tooltip && taskfeed.showToolTip" class="_tooltip _feed-tooltip fx-fade-down fx-dur-1000 fx-ease-quart " ng-cloak=""
+                    <div ng-if="$index==0 && !taskfeed.has_read_tooltip && taskfeed.showToolTip"
+                         class="_tooltip _feed-tooltip fx-fade-down fx-dur-1000 fx-ease-quart " ng-cloak=""
                          ng-class="{'_treatment-t1': task.tooltipTaller}">
                         <span class="_main-text">We estimate your Hourly Rate!</span> <br/>
                         <span>Daemo predicts how long each task will take you, based on the time you spent on previous tasks.</span>

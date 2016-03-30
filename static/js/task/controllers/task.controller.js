@@ -162,6 +162,7 @@
             angular.forEach(itemsToSubmit, function (obj) {
                 if ((!obj.answer || obj.answer == "") && obj.type != 'checkbox') {
                     missing = true;
+                    return;
                 }
 
                 if (obj.type != 'checkbox') {
@@ -200,6 +201,11 @@
                 if (!self.rating.id) {
                     self.showRatingTooltip = true;
                 }
+                return;
+            }
+            if (!self.rating.id) {
+                self.showRatingTooltip = true;
+                $mdToast.showSimple('Please rate this requester!');
                 return;
             }
             var completion_time = self.timerMilliseconds / 1000;

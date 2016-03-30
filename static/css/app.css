@@ -1293,7 +1293,15 @@ md-list-item.rate-list-item {
     opacity: 0.54;
     margin-right: 16px; }
   ._task-top ._acceptance-rate {
-    opacity: 0.54; }
+    font-size: 13px;
+    font-weight: 500;
+    padding: 2px; }
+    ._task-top ._acceptance-rate._high {
+      background-color: #FFCDD2; }
+    ._task-top ._acceptance-rate._medium {
+      background-color: #FFECB3; }
+    ._task-top ._acceptance-rate._low {
+      background-color: #C8E6C9; }
   ._task-top ._tasks-available {
     opacity: 0.54; }
   ._task-top ._author {

@@ -43,6 +43,7 @@
         self.gotIt = gotIt;
         self.has_read_tooltip = true;
         self.showToolTip = false;
+        self.getRateText = getRateText;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
          (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
@@ -194,8 +195,8 @@
             else return 'Running';
         }
 
-        function getRatingPercentage(rating, raw_rating, circle) {
-            if (raw_rating) rating = raw_rating;
+        function getRatingPercentage(rating, circle) {
+            if (rating==null) return 0;
             return rating >= circle ? 100 : rating >= circle - 1 ? (rating - circle + 1) * 100 : 0;
         }
 
@@ -289,6 +290,18 @@
                 function () {
                     self.has_read_tooltip = true;
                 });
+        }
+
+        function getRateText(rate) {
+            if (rate <= 3) {
+                return 'low';
+            }
+            else if (rate >= 10 && rate <= 20) {
+                return 'medium';
+            }
+            else {
+                return 'high';
+            }
         }
     }
 
