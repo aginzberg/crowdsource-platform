@@ -123,7 +123,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
         from django.utils.timezone import utc
         last_login = request.user.last_login
         now = datetime.utcnow().replace(tzinfo=utc)
-
         condition = -1
         phase = 3
         if hasattr(request.user.userprofile.worker, 'configuration'):
@@ -133,7 +132,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
             if phase_updated is not None and (now - phase_updated).total_seconds() / 60 >= settings.STUDY_FEED_TIME \
                 and phase == 3:
-                return Response(data={"message": "Time is up, thank you so much, you may close this window now!"},
+                return Response(data={"message": "Time is up, thank you so much, your code is ZPY1687QG, "
+                                                 "you may close this window now!"},
                                 status=status.HTTP_410_GONE)
 
         query_factor = '''
