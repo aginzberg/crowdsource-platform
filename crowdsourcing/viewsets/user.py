@@ -200,7 +200,8 @@ class UserPreferencesViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
     @list_route(methods=['get'])
     def get_worker_configuration(self, request, *args, **kwargs):
         if hasattr(request.user.userprofile, 'worker') and hasattr(request.user.userprofile.worker, 'configuration'):
-            return Response(data={"condition": request.user.userprofile.worker.configuration.condition},
+            config = request.user.userprofile.worker.configuration
+            return Response(data={"condition": config.condition, 'phase': config.phase},
                             status=status.HTTP_200_OK)
 
         return Response(data={}, status=status.HTTP_204_NO_CONTENT)

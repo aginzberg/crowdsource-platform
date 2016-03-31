@@ -198,9 +198,9 @@
                 self.readyToSubmit = true;
                 self.timerOpen = true;
                 stopTimer();
-                if (!self.rating.id) {
+                /*if (!self.rating.id) {
                     self.showRatingTooltip = true;
-                }
+                }*/
                 return;
             }
             if (!self.rating.id) {
@@ -213,7 +213,7 @@
             if (self.timerEditable) {
                 completion_time = self.timerMinutes * 60 + self.timerSeconds;
             }
-            angular.extend(requestData, {'completion_time': completion_time, 'sytem_completion_time': sys_time});
+            angular.extend(requestData, {'completion_time': completion_time, 'system_completion_time': sys_time});
             Task.submitTask(requestData).then(
                 function success(data, status) {
                     gotoLocation(task_status, data);
@@ -356,6 +356,9 @@
 
         function setRating(rating, weight) {
             if (rating && rating.hasOwnProperty('id') && rating.id) {
+                if (rating.weight == weight){
+                    weight = 2.0;
+                }
                 RatingService.updateRating(weight, rating).then(function success(resp) {
                     rating.weight = weight;
                 }, function error(resp) {
@@ -393,14 +396,14 @@
 
             if (self.worker_config.condition == self.conditions.CONDITION_ONE__BT_TC ||
                 self.worker_config.condition == self.conditions.CONDITION_TWO__BT_TT) {
-                self.tooltipBoomerangOne = 'Fewer: bury this requester\'s tasks at the bottom of my task feed';
+                self.tooltipBoomerangOne = 'I don\'t like this: bury this requester\'s tasks at the bottom of my task feed';
                 self.tooltipBoomerangTwo = 'Same: keep this requester\'s tasks in the middle of my task feed';
-                self.tooltipBoomerangThree = 'More: feature this requester\'s tasks at the top of my task feed';
+                self.tooltipBoomerangThree = 'I like this: feature this requester\'s tasks at the top of my task feed';
             }
             else {
-                self.tooltipBoomerangOne = 'Bad';
+                self.tooltipBoomerangOne = 'I don\'t like this';
                 self.tooltipBoomerangTwo = 'Ok';
-                self.tooltipBoomerangThree = 'Great';
+                self.tooltipBoomerangThree = 'I like this';
             }
         }
     }

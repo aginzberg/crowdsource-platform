@@ -44,6 +44,7 @@
         self.has_read_tooltip = true;
         self.showToolTip = false;
         self.getRateText = getRateText;
+        self.requesterRatingLabel = requesterRatingLabel;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
          (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
@@ -266,13 +267,18 @@
         }
 
         function submitRankings() {
+            var ratedCount = 0;
             var request_data = self.workerRequesters.map(function (value, index) {
+                if (value.rating==null || value.rating==undefined) ratedCount++;
                 return {
                     requester: value.requester_id,
-                    rank: index + 1
+                    rank: value.rating
                 };
             });
-
+            if (ratedCount>0){
+                $mdToast.showSimple('Please answer for all requesters.');
+                return;
+            }
             Project.submitRankings(request_data).then(
                 function success(data) {
                     self.rankingsSubmitted = true;
@@ -302,6 +308,13 @@
             else {
                 return 'high';
             }
+        }
+
+        function requesterRatingLabel(rating) {
+            if (!rating) return 'not rated';
+            if (rating == 2) return 'ok';
+            else if (rating == 1) return 'disliked';
+            else if (rating == 3) return 'liked it';
         }
     }
 

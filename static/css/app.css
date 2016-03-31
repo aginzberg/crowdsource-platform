@@ -1427,7 +1427,7 @@ md-list-item.rate-list-item {
 ._timer, ._study-rankings {
   margin-right: 16px;
   position: relative; }
-  ._timer md-icon, ._study-rankings md-icon {
+  ._timer md-icon:not(._t), ._study-rankings md-icon:not(._t) {
     color: rgba(29, 142, 201, 0.87) !important; }
   ._timer ._tooltip, ._study-rankings ._tooltip {
     position: absolute;
@@ -1488,6 +1488,10 @@ md-list-item.rate-list-item {
   ._feed-timer-hint ._main-text {
     font-weight: 500;
     color: rgba(0, 0, 0, 0.7); }
+
+._thumb {
+  margin-left: 4px;
+  margin-right: 4px; }
 
 .project-form .step {
   padding-left: 15px;
