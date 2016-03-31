@@ -102,11 +102,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['get'], url_path='worker_projects')
     def worker_projects(self, request, *args, **kwargs):
-        projects = Project.objects.filter(Q(project_tasks__task_workers__worker_id=request.user.userprofile.worker),
-                                          ~Q(project_tasks__task_workers__task_status=TaskWorker.STATUS_SKIPPED),
-                                          deleted=False).distinct()
+        query = '''
+            SELECT
+                DISTINCT p.id, p.name, r.alias owner_name, p.owner_id
+            FROM crowdsourcing_taskworker tw
+              INNER JOIN crowdsourcing_task t ON tw.task_id = t.id
+              INNER JOIN crowdsourcing_worker w ON tw.worker_id = w.id
+              INNER JOIN crowdsourcing_project p ON t.project_id = p.id
+              INNER JOIN crowdsourcing_requester r ON r.id = p.owner_id
+            WHERE tw.worker_id = %(worker_id)s AND task_status<>6;
+        '''
+        projects = Project.objects.raw(query, params={'worker_id': request.user.userprofile.worker.id})
         serializer = ProjectSerializer(instance=projects, many=True,
-                                       fields=('id', 'name', 'owner', 'status', 'owner_id'),
+                                       fields=('id', 'name', 'owner', 'owner_id'),
                                        context={'request': request})
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -115,9 +123,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
         from django.utils.timezone import utc
         last_login = request.user.last_login
         now = datetime.utcnow().replace(tzinfo=utc)
-        if (now - last_login).total_seconds() / 60 >= settings.STUDY_FEED_TIME:
-            return Response(data={"message": "Time is up, thank you so much, you may close this window now!"},
-                            status=status.HTTP_410_GONE)
+
+        condition = -1
+        phase = 3
+        if hasattr(request.user.userprofile.worker, 'configuration'):
+            condition = request.user.userprofile.worker.configuration.condition
+            phase = request.user.userprofile.worker.configuration.phase
+            phase_updated = request.user.userprofile.worker.configuration.phase_changed
+
+            if phase_updated is not None and (now - phase_updated).total_seconds() / 60 >= settings.STUDY_FEED_TIME \
+                and phase == 3:
+                return Response(data={"message": "Time is up, thank you so much, you may close this window now!"},
+                                status=status.HTTP_410_GONE)
 
         query_factor = '''
             SELECT avg(p.ratio) id
@@ -142,10 +159,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         '''
         worker_id = request.user.userprofile.worker.id
         factor = models.Worker.objects.raw(query_factor, params={'worker_id': worker_id})[0].id
-        condition = -1
-        if hasattr(request.user.userprofile.worker, 'configuration'):
-            condition = request.user.userprofile.worker.configuration.condition
 
+        extra_query = ''
+        if phase == 1:
+            extra_query = ' inner join (select px.owner_id, max(px.id) id from ' \
+                          'crowdsourcing_project px GROUP BY px.owner_id) px on px.id=cp.id '
         query = '''
             WITH projects AS (
                 SELECT
@@ -167,8 +185,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             SELECT cp.id, cp.name, p.raw_rating, p.requester_rating, r.alias owner_name, r.rejection_rate rejection_rate,
              cp.owner_id, cp.is_prototype, cp.price, cp.task_time, available_projects.available_tasks
              FROM projects p
-        INNER JOIN crowdsourcing_project cp ON p.project_id= cp.id
-        INNER JOIN crowdsourcing_requester r ON r.id = cp.owner_id
+        INNER JOIN crowdsourcing_project cp ON p.project_id= cp.id ''' + extra_query + '''INNER JOIN crowdsourcing_requester r ON r.id = cp.owner_id
         INNER JOIN (SELECT
                         project_id,
                         sum(available_tasks) available_tasks
@@ -187,7 +204,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                              GROUP BY t.project_id, t.id, p.repetition) projects WHERE projects.available_tasks>0
                       GROUP BY projects.project_id
                 ) available_projects ON available_projects.project_id=p.project_id
-        ORDER BY case when %(worker_condition)s < 3 then  p.requester_rating else p.project_id end DESC;
+        ORDER BY CASE WHEN %(worker_condition)s < 3 THEN  p.requester_rating ELSE p.project_id END DESC;
         '''
         projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id,
                                                       'worker_id': worker_id, 'worker_condition': condition})
@@ -268,4 +285,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                                             requester_id=ranking['requester'], rank=ranking['rank'],
                                                             created_timestamp=now))
         models.RequesterFeedRankings.objects.bulk_create(ranking_obj)
+        config = request.user.userprofile.worker.configuration
+        config.phase = 3
+        config.save()
         return Response(data={"message": "Thank you"}, status=status.HTTP_201_CREATED)

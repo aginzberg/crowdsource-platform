@@ -1493,6 +1493,15 @@ md-list-item.rate-list-item {
   margin-left: 4px;
   margin-right: 4px; }
 
+._init-instructions {
+  background-color: #FFF9C4;
+  margin-bottom: 200px;
+  padding: 8px;
+  font-size: 14px; }
+
+._important {
+  font-weight: 500; }
+
 .project-form .step {
   padding-left: 15px;
   color: rgba(0, 0, 0, 0.34); }

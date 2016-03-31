@@ -12,16 +12,49 @@
             <!--p>Time Left: <span timer-counter seconds-left="task.time_left"></span></p-->
 
             <form name="resultsForm">
-                <div ng-controller="TemplateController as template" class="template-item"
+                <div ng-if="task.has_read_tooltip" ng-controller="TemplateController as template" class="template-item"
                      ng-repeat="item in task.taskData.template.template_items">
 
                     <div md-template-compiler="item" editor="false" instance="template"></div>
+                </div>
+                <div class="_init-instructions" ng-if="!task.has_read_tooltip">
+                    <div>First things first! Read this carefully.</div>
+                    <!--div>Before you begin, please check out the timer tooltip below and click "GOT IT" after having done
+                        so.
+                    </div-->
+                    <div>You may (optionally) give a thumbs up or down to the task/requester, use the buttons below.</div>
+                    <div style="margin-top: 20px" ng-if="task.isBoomerangTreatment">Note: If you give a task
+                        <md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
+                                 md-font-set="material-icons"">thumb_up
+                        </md-icon>
+                        that means <span
+                                class="_important">"I like this: feature this requester's tasks at
+                        the top of my task feed in the future"</span>, and if you give it
+                        <md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
+                                 md-font-set="material-icons"">thumb_down
+                        </md-icon>
+                        it means
+                        <span class="_important">
+                            "I don't like this: bury this requester's tasks at the bottom of my task feed in the future"</span>.
+                    </div>
+                    <div style="margin-top: 20px" ng-if="task.isTimerTreatment">
+                        Note:  <span class="_important">Our algorithm uses the timer at the bottom to tell you what your hourly wage will be for other
+                        tasks, so you can see how much you will make before accepting a task</span>.
+                    </div>
+                    <div style="margin-top: 20px" ng-if="!task.isTimerTreatment">
+                        Note:  <span class="_important">The timer will tell you how long it took you to finish this task.</span>
+                    </div>
+
+                    <div ng-if="task.isTimerTreatment || task.isBoomerangTreatment" class="_important" style="margin-top: 32px">
+                        IMPORTANT: The data we collect during these 14 tasks trains our algorithms and will be applied to your interface
+                        in the second phase (15-minute).</div>
+                    <div>Thank you!!!</div>
                 </div>
                 <!--md-divider></md-divider-->
                 <div layout="row" class="task-actions" layout-align="end center"
                      style="margin-bottom: 24px; margin-top: 128px;">
                     <div class="_header-actions _timer" style="margin-right: 75px">
-                        <div ng-if="task.showRatingTooltip" ng-hide="task.rating.id"
+                        <div ng-if="task.showRatingTooltip && false" ng-hide="task.rating.id"
                              class="_tooltip _small fx-fade-down fx-dur-1000 fx-ease-quart" ng-cloak="">
                             <span class="_main-text">1. Please rate this requester!</span> <br/>
                             <div>Use the
@@ -31,21 +64,24 @@
                             </div>
                         </div>
                         <div class="layout-row layout-align-start-center">
-                            <span class="_user-alias" style="margin-right: 4px">{{ task.taskData.project_data.owner.alias }}</span>
+                            <span class="_user-alias"
+                                  style="margin-right: 4px">{{ task.taskData.project_data.owner.alias }}</span>
 
                             <div class="_thumb">
                                 <md-icon class="_clickable-icon" ng-class="{'_t': task.rating.weight != 3.0}"
                                          md-font-set="material-icons"
                                          ng-click="task.setRating(task.rating, 3.0)">thumb_up
                                 </md-icon>
-                                <md-tooltip>{{ task.rating.weight != 3.0? task.tooltipBoomerangThree: 'Unlike' }}</md-tooltip>
+                                <md-tooltip>
+                                    {{ task.rating.weight != 3.0? task.tooltipBoomerangThree: 'Unlike' }}</md-tooltip>
                             </div>
                             <div class="_thumb">
                                 <md-icon class="_clickable-icon" ng-class="{'_t': task.rating.weight != 1.0}"
                                          md-font-set="material-icons"
                                          ng-click="task.setRating(task.rating, 1.0)">thumb_down
                                 </md-icon>
-                                <md-tooltip>{{ task.rating.weight != 1.0?task.tooltipBoomerangOne : 'Undo' }}</md-tooltip>
+                                <md-tooltip>
+                                    {{ task.rating.weight != 1.0?task.tooltipBoomerangOne : 'Undo' }}</md-tooltip>
                             </div>
 
 
@@ -71,10 +107,10 @@
                              ng-if="!task.has_read_tooltip" ng-class="{'_treatment-t1': task.tooltipTaller}">
                             <span class="_main-text">{{ task.tooltipOneTitle }}</span> <br/>
                             <span>{{ task.tooltipOneBody }}</span>
-                            <md-button ng-click="task.gotIt()" class="_cbtn _tooltip-btn">Got it</md-button>
+                            <md-button ng-click="task.gotIt()" class="_cbtn _tooltip-btn">Start</md-button>
                         </div>
                         <div class="_tooltip _small fx-fade-down fx-dur-1000 fx-ease-quart" ng-cloak=""
-                             ng-if="task.readyToSubmit && !task.timerEditable"
+                             ng-if="task.readyToSubmit && !task.timerEditable && false"
                              ng-class="{'_treatment-t2': task.tooltipTaller}">
                             <span class="_main-text">2. {{ task.tooltipTwoTitle }}</span> <br/>
                             <span>{{ task.tooltipTwoBody }}</span>
@@ -116,7 +152,8 @@
 
 
                     </div>
-                    <md-button class="_primary _cbtn" ng-click="task.submitOrSave(2)"
+                    <md-button ng-disabled="!task.has_read_tooltip" class="_primary _cbtn"
+                               ng-click="task.submitOrSave(2)"
                                tabindex="0">{{ task.readyToSubmit?'Done':'Submit' }}
                     </md-button>
                     <!--md-button ng-click="task.submitOrSave(1)"

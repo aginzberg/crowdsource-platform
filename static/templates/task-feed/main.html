@@ -5,7 +5,7 @@
     </div>
     <div class="_feed-list">
         <div ng-hide="!project.available_tasks" ng-repeat="project in taskfeed.projects" class="_task-feed-shadow"
-             ng-class="{'_first-margin': $index==0 && !taskfeed.has_read_tooltip && taskfeed.showToolTip}">
+             ng-class="{'_first-margin': $index==0 && !taskfeed.has_read_tooltip && taskfeed.showToolTip && false}">
             <div class="_task-top" ng-click="taskfeed.showPreview(project)">
                 <div layout="row">
                     <div flex="10" class="_price">
@@ -14,67 +14,22 @@
                     <div flex="70" class="_title">
                         {{ project.name }}
                     </div>
-                    <div flex="20" class="_author _right-offset" >
+                    <div flex="20" class="_author _right-offset">
                         <div class="_user-alias _no-border">{{ project.owner_name }}</div>
                             <span ng-if="taskfeed.worker_config.phase==3">
                               <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
                                    ng-style="{'background': 'linear-gradient(to right, black 0%, black
-
-
-
-
-
-
-
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, 1)}}%, white
-
-
-
-
-
-
-
-
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, 1)}}%, white 100%)'}">
                               </div>
                               <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
                                    ng-style="{'background': 'linear-gradient(to right, black 0%, black
-
-
-
-
-
-
-
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, 2)}}%, white
-
-
-
-
-
-
-
-
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, 2)}}%, white 100%)'}">
                               </div>
                               <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
                                    ng-style="{'background': 'linear-gradient(to right, black 0%, black
-
-
-
-
-
-
-
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, 3)}}%, white
-
-
-
-
-
-
-
-
                                            {{ taskfeed.getRatingPercentage(project.raw_rating, 3)}}%, white 100%)'}">
                               </div>
                             </span>
@@ -106,7 +61,7 @@
                         <md-icon ng-if="!project.show_preview" md-font-set="material-icons" class="_more">expand_more
                         </md-icon>
                     </div>
-                    <div ng-if="$index==0 && !taskfeed.has_read_tooltip && taskfeed.showToolTip && taskfeed.worker_config.phase==3"
+                    <div ng-if="$index==0 && !taskfeed.has_read_tooltip && taskfeed.showToolTip && false"
                          class="_tooltip _feed-tooltip fx-fade-down fx-dur-1000 fx-ease-quart " ng-cloak=""
                          ng-class="{'_treatment-t1': task.tooltipTaller}">
                         <span class="_main-text">We estimate your Hourly Rate!</span> <br/>
@@ -147,7 +102,11 @@
             </div>
         </div>
         <div class="_no-tasks _task-feed-shadow" ng-if="!taskfeed.loading && !taskfeed.availableTasks">
-            {{ taskfeed.emptyState }}
+
+            <div ng-if="taskfeed.worker_config.phase==1">All 14 tasks completed successfully. Click below to continue with the next step!
+                <a style="width: 100%;" ui-sref="feed-end" class="md-button md-accent">Continue</a>
+            </div>
+            <div ng-if="taskfeed.worker_config.phase==3">{{ taskfeed.emptyState }}</div>
         </div>
     </div>
 </div>

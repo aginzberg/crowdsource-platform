@@ -629,6 +629,7 @@ class WorkerConfig(models.Model):
     worker = models.OneToOneField(Worker, related_name='configuration')
     condition = models.SmallIntegerField(choices=STATUS, null=True)
     phase = models.SmallIntegerField(default=1)
+    phase_changed = models.DateTimeField(auto_now_add=False, auto_now=True, null=True)
     config = JSONField(null=True)
 
 

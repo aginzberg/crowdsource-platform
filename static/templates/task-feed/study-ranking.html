@@ -42,11 +42,13 @@
             </div>
             <md-button style="width: 100%;" class="md-accent" ng-click="taskfeed.submitRankings()">Submit!</md-button>
         </div>
-        <div class="_ranking-success" ng-if="taskfeed.rankingsSubmitted">Successfully submitted. YOUR SUBMISSION KEY IS
-            8qTZDc78
+        <div ng-if="taskfeed.rankingsSubmitted"><div>Successfully submitted. Now, click "Next" to start Phase 2 of the study,
+            work for 15 minutes. The accepted tasks will be paid as a bonus, do as many as you can. Good luck!</div>
+            <div flex="">
+                <a style="width: 100%;" ui-sref="task_feed" class="md-button md-accent">Next</a>
+            </div>
         </div>
 
-        <div style="margin-top: 24px; font-size: 14px">Thank you so much for participating!!!</div>
     </md-content>
 </div>
 

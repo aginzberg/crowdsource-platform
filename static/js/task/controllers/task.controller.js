@@ -203,11 +203,11 @@
                 }*/
                 return;
             }
-            if (!self.rating.id) {
+            /*if (!self.rating.id) {
                 self.showRatingTooltip = true;
                 $mdToast.showSimple('Please rate this requester!');
                 return;
-            }
+            }*/
             var completion_time = self.timerMilliseconds / 1000;
             var sys_time = self.timerMilliseconds / 1000;
             if (self.timerEditable) {
@@ -382,25 +382,31 @@
             if (self.worker_config.condition == self.conditions.CONDITION_ONE__BT_TC ||
                 self.worker_config.condition == self.conditions.CONDITION_THREE__BC_TC) {
                 self.tooltipOneTitle = 'Automatic timekeeping.';
-                self.tooltipOneBody = 'The timer will tell you how long it takes you to finish this task.';
+                //self.tooltipOneBody = 'The timer will tell you how long it takes you to finish this task.';
+                self.tooltipOneBody = 'The timer sits here, use the clock icon to expand/collapse it.';
                 self.tooltipTwoTitle = 'All done!';
                 self.tooltipTwoBody = 'If it’s inaccurate, you can still modify it before submitting!';
+                self.isTimerTreatment = false;
             }
             else {
                 self.tooltipOneTitle = 'How much money will you make?';
-                self.tooltipOneBody = 'Our algorithm uses this time to predict your hourly wage for other tasks on the platform.';
+                //self.tooltipOneBody = 'Our algorithm uses this time to predict your hourly wage for other tasks on the platform.';
+                self.tooltipOneBody = 'The timer sits here, use the clock icon to expand/collapse it.';
                 self.tooltipTwoTitle = 'Edit your time if needed.';
                 self.tooltipTwoBody = 'Our algorithm uses this time to predict your hourly wage for future tasks on the platform.';
                 self.tooltipTaller = true;
+                self.isTimerTreatment = true;
             }
 
             if (self.worker_config.condition == self.conditions.CONDITION_ONE__BT_TC ||
                 self.worker_config.condition == self.conditions.CONDITION_TWO__BT_TT) {
+                self.isBoomerangTreatment = true;
                 self.tooltipBoomerangOne = 'I don\'t like this: bury this requester\'s tasks at the bottom of my task feed';
                 self.tooltipBoomerangTwo = 'Same: keep this requester\'s tasks in the middle of my task feed';
                 self.tooltipBoomerangThree = 'I like this: feature this requester\'s tasks at the top of my task feed';
             }
             else {
+                self.isBoomerangTreatment = false;
                 self.tooltipBoomerangOne = 'I don\'t like this';
                 self.tooltipBoomerangTwo = 'Ok';
                 self.tooltipBoomerangThree = 'I like this';
