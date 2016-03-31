@@ -371,6 +371,7 @@ class TaskWorker(models.Model):
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
     is_paid = models.BooleanField(default=False)
     completion_time = models.FloatField(null=True)
+    system_completion_time = models.FloatField(null=True)
 
     class Meta:
         unique_together = ('task', 'worker',)
@@ -627,6 +628,7 @@ class WorkerConfig(models.Model):
     )
     worker = models.OneToOneField(Worker, related_name='configuration')
     condition = models.SmallIntegerField(choices=STATUS, null=True)
+    phase = models.SmallIntegerField(default=1)
     config = JSONField(null=True)
 
 

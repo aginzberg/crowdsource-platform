@@ -56,7 +56,8 @@ class TaskWorkerSerializer(DynamicFieldsModelSerializer):
         fields = ('id', 'task', 'worker', 'task_status', 'created_timestamp', 'last_updated',
                   'worker_alias', 'worker_rating', 'task_worker_results',
                   'updated_delta',
-                  'requester_alias', 'project_data', 'is_paid', 'has_comments', 'completion_time')
+                  'requester_alias', 'project_data', 'is_paid', 'has_comments', 'completion_time',
+                  'system_completion_time')
         read_only_fields = ('task', 'worker', 'task_worker_results', 'created_timestamp', 'last_updated',
                             'has_comments')
 
@@ -174,6 +175,8 @@ class TaskWorkerSerializer(DynamicFieldsModelSerializer):
 
     def update(self, *args, **kwargs):
         self.instance.completion_time = self.validated_data.get('completion_time', self.instance.completion_time)
+        self.instance.system_completion_time = self.validated_data.get('system_completion_time',
+                                                                       self.instance.system_completion_time)
         self.instance.save()
         return self.instance
 

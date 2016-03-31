@@ -243,6 +243,7 @@ class TaskWorkerResultViewSet(viewsets.ModelViewSet):
         task = request.data.get('task', None)
         auto_accept = request.data.get('auto_accept', False)
         completion_time = request.data.get('completion_time', 0)
+        system_completion_time = request.data.get('system_completion_time', 0)
         template_items = request.data.get('template_items', [])
         task_status = request.data.get('task_status', None)
         saved = request.data.get('saved')
@@ -251,6 +252,7 @@ class TaskWorkerResultViewSet(viewsets.ModelViewSet):
             task_worker = TaskWorker.objects.get(worker=request.user.userprofile.worker, task=task)
             task_worker.task_status = task_status
             task_worker.completion_time = completion_time
+            task_worker.system_completion_time = system_completion_time
             task_worker.save()
 
             task_worker_results = TaskWorkerResult.objects.filter(task_worker_id=task_worker.id)
