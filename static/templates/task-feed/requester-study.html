@@ -1,0 +1,43 @@
+<div class="_main-content _middle-content _relative">
+
+
+    <div class="_init-instructions">
+        <div>Thanks for doing this.</div>
+        <div>In this study workers were asked to make the best title for the provided text. To make it simple you can
+            just reject the ones that you think that should be rejected and the rest will be accepted when you click "Done".</div>
+        <div ng-if="vm.condition==2" class="_important" style="margin-top: 32px">
+            IMPORTANT: Your rejection rates will be shown to the workers before they accept your future HITs. And this is shown
+            based on worker similarity i.e if you reject only bad workers only they will see a higher rejection rate on your tasks
+            and this will make them not accept the HITs which benefits you,
+            good workers will see a rejection rate of 0. <br>
+            If you reject good work all the good workers will see this rejection rate and might not be willing to do future work for you.
+
+        </div>
+        <div>Thank you!!!</div>
+    </div>
+    <div ng-if="!vm.done">
+        <div ng-repeat="task in vm.tasks">
+            <div style="margin-top: 16px; margin-bottom: 16px">
+                <div>{{ $index+1 +'. ' +task.entry }}</div>
+                <div style="margin-left: 24px; margin-top: 16px;">
+                    <span class="_sub-header">Submissions</span>
+                    <div style="margin-top: 8px; margin-bottom: 8px;"
+                         ng-repeat="assignment in task.assignments">
+                        <div class="_user-alias">{{ assignment.worker_id }}</div>
+                        <div>
+                            <div style="min-width: 512px; display: inline-block">{{ assignment.answer }}</div>
+                            <md-button ng-if="!assignment.review" ng-click="vm.reject(assignment)">Reject</md-button>
+                            <span class="_error" ng-if="assignment.review.status==1">rejected</span>
+                            <span class="_ranking-success" ng-if="assignment.review.status==2">accepted</span>
+                        </div>
+
+                        <md-divider ng-if="!$last"></md-divider>
+                    </div>
+                </div>
+            </div>
+            <md-divider></md-divider>
+        </div>
+    </div>
+    <md-button style="width: 100%" class="md-accent" ng-click="vm.acceptRest()">Done</md-button>
+    <div class="_important">Thank you!</div>
+</div>

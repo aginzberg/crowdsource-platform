@@ -32,6 +32,12 @@
             templateUrl: '/static/templates/task-feed/study-ranking.html'
         };
 
+        var feed_requesters = {
+            controller: 'MyTasksController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/task-feed/requester-study.html'
+        };
+
         var register = {
             controller: 'RegisterController',
             controllerAs: 'register',
@@ -185,7 +191,13 @@
                 },
                 authenticate: true
             })
-
+            .state('requester-study', {
+                url: '/requester-study/:token',
+                views: {
+                    'content': feed_requesters
+                },
+                authenticate: false
+            })
             .state('register', {
                 url: '/register',
                 views: {

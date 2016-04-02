@@ -8,7 +8,7 @@ from crowdsourcing.viewsets.requester import RequesterViewSet, QualificationView
 from crowdsourcing.viewsets.rating import WorkerRequesterRatingViewset, RatingViewset
 from crowdsourcing.viewsets.worker import *
 from crowdsourcing.viewsets.task import TaskViewSet, TaskWorkerResultViewSet, TaskWorkerViewSet, \
-    ExternalSubmit
+    ExternalSubmit, ReviewableTaskViewSet
 from crowdsourcing.viewsets.template import TemplateViewSet, TemplateItemViewSet, TemplateItemPropertiesViewSet
 from crowdsourcing.viewsets.drive import *
 from crowdsourcing.viewsets.google_drive import GoogleDriveOauth, GoogleDriveViewSet
@@ -48,6 +48,7 @@ router.register(r'api/inbox', RedisMessageViewSet, base_name='redis-message')
 router.register(r'api/payment-paypal', PayPalFlowViewSet)
 router.register(r'api/financial-accounts', FinancialAccountViewSet)
 router.register(r'^api/file', FileViewSet)
+router.register(r'^api/requester-study', ReviewableTaskViewSet)
 
 mturk_router = SimpleRouter(trailing_slash=False)
 mturk_router.register(r'^api/mturk', MTurkAssignmentViewSet)
@@ -67,6 +68,7 @@ urlpatterns = patterns('',
                        url(r'', include(router.urls)),
 
                        url(r'^mturk/task', mturk_views.mturk_index),
+                       url(r'^load_requester_data', views.load_requester_data),
                        url(r'', include(mturk_router.urls)),
                        url(r'^api/mturk/url', MTurkConfig.as_view({'get': 'get_mturk_url'})),
 

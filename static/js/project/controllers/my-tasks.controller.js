@@ -6,12 +6,12 @@
         .controller('MyTasksController', MyTasksController);
 
     MyTasksController.$inject = ['$scope', 'Project', 'Task', '$mdToast',
-        '$filter', 'RatingService'];
+        '$filter', 'RatingService', '$state', '$stateParams'];
 
     /**
      * @namespace MyTasksController
      */
-    function MyTasksController($scope, Project, Task, $mdToast, $filter, RatingService) {
+    function MyTasksController($scope, Project, Task, $mdToast, $filter, RatingService, $state, $stateParams) {
         var self = this;
         self.projects = [];
         self.loading = true;
@@ -23,6 +23,9 @@
         self.setRating = setRating;
         self.filterByStatus = filterByStatus;
         self.dropSavedTasks = dropSavedTasks;
+        self.reject = reject;
+        self.acceptRest = acceptRest;
+        self.done = false;
         self.tasks = [];
         self.status = {
             RETURNED: 5,
@@ -32,8 +35,22 @@
             IN_PROGRESS: 1,
             SKIPPED: 6
         };
+
+        self.conditions = {
+            "x7JAz90L": 1,
+            "0ReR2I9z": 2,
+            "R1yPIczm": 2
+        };
         activate();
         function activate() {
+            if ($state.current.name == 'requester-study') {
+                //getWorkerProjects();
+                var token = $stateParams.token;
+                self.requesterId = token;
+                self.condition = self.conditions[token];
+                loadRequesterStudy();
+                return;
+            }
             Project.listWorkerProjects().then(
                 function success(response) {
                     self.loading = false;
@@ -46,8 +63,9 @@
             ).finally(function () {
             });
         }
-        function loadFirst(){
-            if(self.projects.length){
+
+        function loadFirst() {
+            if (self.projects.length) {
                 listMyTasks(self.projects[0]);
             }
         }
@@ -65,6 +83,50 @@
             }
         }
 
+        function loadRequesterStudy(requester_id) {
+            Project.loadRequesterStudy(self.requesterId).then(
+                function success(response) {
+                    self.tasks = response[0];
+                },
+                function error(response) {
+                    $mdToast.showSimple('Could fetch project submissions');
+                }
+            ).finally(function () {
+            });
+        }
+
+        function reject(assignment) {
+            Project.reject(assignment.id, self.requesterId).then(
+                function success(response) {
+                    assignment.review = response[0];
+                },
+                function error(response) {
+                    $mdToast.showSimple('Could fetch project submissions');
+                }
+            ).finally(function () {
+            });
+        }
+
+        function acceptRest() {
+            var assignmentToAccept = [];
+            angular.forEach(self.tasks, function (task) {
+                angular.forEach(task.assignments, function (assignment) {
+                    if (assignment.review==null){
+                        assignmentToAccept.push(assignment.id);
+                    }
+                });
+            });
+            Project.acceptRest(assignmentToAccept, self.requesterId).then(
+                function success(response) {
+                    self.done = true;
+
+                },
+                function error(response) {
+                    $mdToast.showSimple('Could fetch project submissions');
+                }
+            ).finally(function () {
+            });
+        }
 
         function getStatus(statusId) {
             for (var key in self.status) {
@@ -129,7 +191,7 @@
             };
             Task.dropSavedTasks(request_data).then(function success(resp) {
                 task.task_status = self.status.SKIPPED;
-                $mdToast.showSimple('Task '+ task.task+ ' released');
+                $mdToast.showSimple('Task ' + task.task + ' released');
             }, function error(resp) {
                 $mdToast.showSimple('Could drop tasks')
             }).finally(function () {

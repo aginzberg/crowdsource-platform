@@ -216,6 +216,32 @@ class TaskWorkerViewSet(viewsets.ModelViewSet):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
+class ReviewableTaskViewSet(viewsets.ModelViewSet):
+    queryset =  models.ReviewableTask.objects.all()
+    serializer_class = ReviewableTaskSerializer
+
+    def list(self, request, *args, **kwargs):
+        requester_id = request.query_params.get('requester_id', '-1')
+        serializer = self.serializer_class(instance=self.queryset, many=True, context={'requester_id': requester_id})
+
+        return Response(data=serializer.data)
+
+    @list_route(methods=['post'])
+    def reject(self, request, *args, **kwargs):
+        requester_id = request.data.get('requester_id')
+        assignment_id = request.data.get('assignment_id')
+        review = models.AssignmentReviews.objects.create(requester=requester_id, assignment_id=assignment_id, status=1)
+        return Response({"id": review.id, "status": 1})
+
+    @list_route(methods=['post'])
+    def accept_rest(self, request, *args, **kwargs):
+        requester_id = request.data.get('requester_id')
+        assignments = request.data.get('assignments')
+        for assignment in assignments:
+            models.AssignmentReviews.objects.create(requester=requester_id, assignment_id=assignment, status=2)
+        return Response({"message": "SUCCESS"})
+
+
 class TaskWorkerResultViewSet(viewsets.ModelViewSet):
     queryset = TaskWorkerResult.objects.all()
     serializer_class = TaskWorkerResultSerializer

@@ -25,15 +25,15 @@ class PasswordResetModel(models.Model):
 
 
 class Region(models.Model):
-    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the region!', })
-    code = models.CharField(max_length=16, error_messages={'required': 'Please specify the region code!', })
+    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the region!',})
+    code = models.CharField(max_length=16, error_messages={'required': 'Please specify the region code!',})
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
 
 class Country(models.Model):
-    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the country!', })
-    code = models.CharField(max_length=8, error_messages={'required': 'Please specify the country code!', })
+    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the country!',})
+    code = models.CharField(max_length=8, error_messages={'required': 'Please specify the country code!',})
     region = models.ForeignKey(Region)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -43,7 +43,7 @@ class Country(models.Model):
 
 
 class City(models.Model):
-    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the city!', })
+    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the city!',})
     country = models.ForeignKey(Country)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -53,7 +53,7 @@ class City(models.Model):
 
 
 class Address(models.Model):
-    street = models.CharField(max_length=128, error_messages={'required': 'Please specify the street name!', })
+    street = models.CharField(max_length=128, error_messages={'required': 'Please specify the street name!',})
     country = models.ForeignKey(Country)
     city = models.ForeignKey(City)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -661,3 +661,20 @@ class RequesterFeedRankings(models.Model):
     requester = models.ForeignKey(Requester, related_name='rankings')
     rank = models.IntegerField(default=0)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+
+class ReviewableTask(models.Model):
+    entry = models.TextField(max_length=4096)
+    task_id = models.IntegerField()
+
+
+class ReviewableAssignment(models.Model):
+    task_id = models.ForeignKey(ReviewableTask, related_name='assignments')
+    worker_id = models.CharField(max_length=32)
+    answer = models.TextField(max_length=1024, blank=True, null=True)
+
+
+class AssignmentReviews(models.Model):
+    requester = models.CharField(max_length=32)
+    assignment = models.ForeignKey(ReviewableAssignment, related_name='reviews')
+    status = models.IntegerField(default=0)

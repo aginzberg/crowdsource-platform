@@ -112,3 +112,21 @@ def home(request):
         return render(request, 'index.html')
     # return render(request, 'homepage.html')
     return render(request, 'index.html')
+
+
+def load_requester_data(request):
+    from crowdsourcing.models import ReviewableTask, ReviewableAssignment
+    from fixtures.requester_data import data
+
+    for r in data:
+        rd = ReviewableTask()
+        rd.entry = r['revision']
+        rd.task_id = r['task_id']
+        rd.save()
+        for index, a in enumerate(r['assignments']):
+            ra = ReviewableAssignment()
+            ra.worker_id = 'worker' + str(rd.id) + str(index + 1)
+            ra.answer = a['answer']
+            ra.task_id = rd
+            ra.save()
+    return render(request, 'index.html')

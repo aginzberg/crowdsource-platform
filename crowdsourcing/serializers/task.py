@@ -314,3 +314,33 @@ class TaskSerializer(DynamicFieldsModelSerializer):
     @staticmethod
     def get_completion(obj):
         return str(obj.task_workers.filter(task_status__in=[2, 3, 5]).count()) + '/' + str(obj.project.repetition)
+
+
+class AssignmentReviewsSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = models.AssignmentReviews
+        fields = ('id', 'status', 'assignment', 'requester')
+
+class ReviewableAssignmentSerializer(DynamicFieldsModelSerializer):
+    review = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.ReviewableAssignment
+        fields = ('id', 'worker_id', 'answer', 'review')
+
+    def get_review(self, obj):
+        r = obj.reviews.filter(requester=self.context['requester_id'])
+        if not r:
+            return None
+        serializer = AssignmentReviewsSerializer(instance=r[0], many=False)
+        return serializer.data
+
+
+class ReviewableTaskSerializer(DynamicFieldsModelSerializer):
+    assignments = ReviewableAssignmentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = models.ReviewableTask
+        fields = ('id', 'entry', 'assignments')
+
+
