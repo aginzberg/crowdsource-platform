@@ -116,17 +116,20 @@ def home(request):
 
 def load_requester_data(request):
     from crowdsourcing.models import ReviewableTask, ReviewableAssignment
-    from fixtures.requester_data import data
+    from fixtures.requester_data import new_data as data
 
-    for r in data:
+    for i, r in enumerate(data):
         rd = ReviewableTask()
-        rd.entry = r['revision']
-        rd.task_id = r['task_id']
+        rd.entry = r['Queries']
+        rd.task_id = i+1
         rd.save()
-        for index, a in enumerate(r['assignments']):
-            ra = ReviewableAssignment()
-            ra.worker_id = 'worker' + str(rd.id) + str(index + 1)
-            ra.answer = a['answer']
-            ra.task_id = rd
-            ra.save()
+        ra = ReviewableAssignment()
+        ra.worker_id = 'worker' + str(rd.id) + str(i + 1)
+        ra.answer = r['Answer']
+        ra.task_id = rd
+        if r['Accept'] == "T":
+            ra.status = 2
+        else:
+            ra.status = 1
+        ra.save()
     return render(request, 'index.html')

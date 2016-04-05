@@ -6,12 +6,12 @@
         .controller('MyTasksController', MyTasksController);
 
     MyTasksController.$inject = ['$scope', 'Project', 'Task', '$mdToast',
-        '$filter', 'RatingService', '$state', '$stateParams'];
+        '$filter', 'RatingService', '$state', '$stateParams', 'User'];
 
     /**
      * @namespace MyTasksController
      */
-    function MyTasksController($scope, Project, Task, $mdToast, $filter, RatingService, $state, $stateParams) {
+    function MyTasksController($scope, Project, Task, $mdToast, $filter, RatingService, $state, $stateParams, User) {
         var self = this;
         self.projects = [];
         self.loading = true;
@@ -25,6 +25,7 @@
         self.dropSavedTasks = dropSavedTasks;
         self.reject = reject;
         self.acceptRest = acceptRest;
+        self.showText = false;
         self.done = false;
         self.tasks = [];
         self.status = {
@@ -44,10 +45,7 @@
         activate();
         function activate() {
             if ($state.current.name == 'requester-study') {
-                //getWorkerProjects();
-                var token = $stateParams.token;
-                self.requesterId = token;
-                self.condition = self.conditions[token];
+                getRequesterConfig();
                 loadRequesterStudy();
                 return;
             }
@@ -84,7 +82,7 @@
         }
 
         function loadRequesterStudy(requester_id) {
-            Project.loadRequesterStudy(self.requesterId).then(
+            Project.loadRequesterStudy().then(
                 function success(response) {
                     self.tasks = response[0];
                 },
@@ -96,7 +94,7 @@
         }
 
         function reject(assignment) {
-            Project.reject(assignment.id, self.requesterId).then(
+            Project.reject(assignment.id).then(
                 function success(response) {
                     assignment.review = response[0];
                 },
@@ -116,7 +114,7 @@
                     }
                 });
             });
-            Project.acceptRest(assignmentToAccept, self.requesterId).then(
+            Project.acceptRest(assignmentToAccept).then(
                 function success(response) {
                     self.done = true;
 
@@ -195,6 +193,15 @@
             }, function error(resp) {
                 $mdToast.showSimple('Could drop tasks')
             }).finally(function () {
+            });
+        }
+
+        function getRequesterConfig() {
+            User.getRequesterConfiguration().then(function (data) {
+                self.requester_config = data[0];
+                if (self.requester_config.condition == 2 || self.requester_config.condition == 4){
+                    self.showText = true;
+                }
             });
         }
     }

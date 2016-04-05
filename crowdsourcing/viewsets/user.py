@@ -210,7 +210,9 @@ class UserPreferencesViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
     def get_requester_configuration(self, request, *args, **kwargs):
         if hasattr(request.user.userprofile, 'requester') and hasattr(request.user.userprofile.requester,
                                                                       'configuration'):
-            return Response(data={"condition": request.user.userprofile.requester.configuration.condition},
+            conf = request.user.userprofile.requester.configuration
+            return Response(data={"condition": conf.condition,
+                                  "requester_id": conf.requester_id},
                             status=status.HTTP_200_OK)
 
         return Response(data={}, status=status.HTTP_204_NO_CONTENT)

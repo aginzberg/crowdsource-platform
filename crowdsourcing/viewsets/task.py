@@ -221,24 +221,24 @@ class ReviewableTaskViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewableTaskSerializer
 
     def list(self, request, *args, **kwargs):
-        requester_id = request.query_params.get('requester_id', '-1')
+        requester_id = request.user.userprofile.requester.id
         serializer = self.serializer_class(instance=self.queryset, many=True, context={'requester_id': requester_id})
 
         return Response(data=serializer.data)
 
     @list_route(methods=['post'])
     def reject(self, request, *args, **kwargs):
-        requester_id = request.data.get('requester_id')
+        requester_id = request.user.userprofile.requester.id
         assignment_id = request.data.get('assignment_id')
-        review = models.AssignmentReviews.objects.create(requester=requester_id, assignment_id=assignment_id, status=1)
+        review = models.AssignmentReviews.objects.create(requester_id=requester_id, assignment_id=assignment_id, status=1)
         return Response({"id": review.id, "status": 1})
 
     @list_route(methods=['post'])
     def accept_rest(self, request, *args, **kwargs):
-        requester_id = request.data.get('requester_id')
+        requester_id = request.user.userprofile.requester.id
         assignments = request.data.get('assignments')
         for assignment in assignments:
-            models.AssignmentReviews.objects.create(requester=requester_id, assignment_id=assignment, status=2)
+            models.AssignmentReviews.objects.create(requester_id=requester_id, assignment_id=assignment, status=2)
         return Response({"message": "SUCCESS"})
 
 

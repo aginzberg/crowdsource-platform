@@ -665,16 +665,17 @@ class RequesterFeedRankings(models.Model):
 
 class ReviewableTask(models.Model):
     entry = models.TextField(max_length=4096)
-    task_id = models.IntegerField()
+    task_id = models.IntegerField(null=True)
 
 
 class ReviewableAssignment(models.Model):
-    task_id = models.ForeignKey(ReviewableTask, related_name='assignments')
+    task_id = models.ForeignKey(ReviewableTask, related_name='assignments', on_delete=models.CASCADE)
     worker_id = models.CharField(max_length=32)
     answer = models.TextField(max_length=1024, blank=True, null=True)
+    status = models.IntegerField(default=1)
 
 
 class AssignmentReviews(models.Model):
-    requester = models.CharField(max_length=32)
-    assignment = models.ForeignKey(ReviewableAssignment, related_name='reviews')
+    requester = models.ForeignKey(Requester, related_name='requester_reviews')
+    assignment = models.ForeignKey(ReviewableAssignment, related_name='reviews', on_delete=models.CASCADE)
     status = models.IntegerField(default=0)

@@ -3,22 +3,27 @@
 
     <div class="_init-instructions">
         <div>Thanks for doing this.</div>
-        <div>In this study workers were asked to make the best title for the provided text. To make it simple you can
-            just reject the ones that you think that should be rejected and the rest will be accepted when you click "Done".</div>
-        <div ng-if="vm.condition==2" class="_important" style="margin-top: 32px">
-            IMPORTANT: Your rejection rates will be shown to the workers before they accept your future HITs. And this is shown
-            based on worker similarity i.e if you reject only bad workers only they will see a higher rejection rate on your tasks
-            and this will make them not accept the HITs which benefits you,
-            good workers will see a rejection rate of 0. <br>
-            If you reject good work all the good workers will see this rejection rate and might not be willing to do future work for you.
-
+        <div>In this study workers were asked to make the best title for the provided queries. To make it simple you can
+            just reject the ones that you think that should be rejected and the rest will be accepted when you click "Done".
+        Here is the design of the tasks that was shown to the workers, we are evaluating the "Write a headline .." responses.
+            <a target="_blank" href="https://slack-files.com/files-pri-safe/T03R8AQ66-F0Y0T98TU/editor_preview_of_task_____tasks_by_crowdflower.pdf?c=1459882854-28f94c4a22c56d467a9c5158f6753a7991a47f3b">Link to task design</a>
+        </div>
+        <div ng-if="vm.showText" class="_important" style="margin-top: 32px">
+            IMPORTANT: Boomerang displays each requester's percentage of rejected tasks to workers, personalized to the reputation score of the worker.
+            For example, a low-rated worker would see the requester's rejection rate for low-rated workers.
+            This interface encourages workers to swarm overly permissive requesters or avoid overly restrictive requesters.
+            <br/>
+            <br/>
+            This would be shown to different workers:
+            <div><img src="/static/images/rate_high.png" width="512"></div>
+            <div><img src="/static/images/rate_low.png" width="512"></div>
         </div>
         <div>Thank you!!!</div>
     </div>
     <div ng-if="!vm.done">
         <div ng-repeat="task in vm.tasks">
             <div style="margin-top: 16px; margin-bottom: 16px">
-                <div>{{ $index+1 +'. ' +task.entry }}</div>
+                {{ $index+1 }}. Queries:<div ng-bind-html="task.entry"></div>
                 <div style="margin-left: 24px; margin-top: 16px;">
                     <span class="_sub-header">Submissions</span>
                     <div style="margin-top: 8px; margin-bottom: 8px;"
@@ -38,6 +43,6 @@
             <md-divider></md-divider>
         </div>
     </div>
-    <md-button style="width: 100%" class="md-accent" ng-click="vm.acceptRest()">Done</md-button>
+    <md-button ng-if="!vm.done" style="width: 100%" class="md-accent" ng-click="vm.acceptRest()">Done</md-button>
     <div class="_important">Thank you!</div>
 </div>

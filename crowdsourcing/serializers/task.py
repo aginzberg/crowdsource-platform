@@ -321,6 +321,7 @@ class AssignmentReviewsSerializer(DynamicFieldsModelSerializer):
         model = models.AssignmentReviews
         fields = ('id', 'status', 'assignment', 'requester')
 
+
 class ReviewableAssignmentSerializer(DynamicFieldsModelSerializer):
     review = serializers.SerializerMethodField()
 
@@ -329,7 +330,7 @@ class ReviewableAssignmentSerializer(DynamicFieldsModelSerializer):
         fields = ('id', 'worker_id', 'answer', 'review')
 
     def get_review(self, obj):
-        r = obj.reviews.filter(requester=self.context['requester_id'])
+        r = obj.reviews.filter(requester_id=self.context['requester_id'])
         if not r:
             return None
         serializer = AssignmentReviewsSerializer(instance=r[0], many=False)

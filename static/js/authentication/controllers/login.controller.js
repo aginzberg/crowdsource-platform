@@ -34,9 +34,10 @@
                 $state.go('task_feed');
             }
 
-            if ($state.current.name == 'feed-init') {
+            if ($state.current.name == 'feed-init' || $state.current.name == 'requester-study-init') {
                 tokenAuth();
             }
+
         }
 
         /**
@@ -72,7 +73,12 @@
 
                 $scope.$watch(Authentication.isAuthenticated, function (newValue, oldValue) {
                     if (newValue) {
-                        $state.go('task_feed');
+                        if ($state.current.name == 'feed-init') {
+                            $state.go('task_feed');
+                        }
+                        else if ($state.current.name == 'requester-study-init') {
+                            $state.go('requester-study');
+                        }
                     }
                 });
 

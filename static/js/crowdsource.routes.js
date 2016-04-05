@@ -184,6 +184,13 @@
                 },
                 authenticate: false
             })
+            .state('requester-study-init', {
+                url: '/requester-study-init/:token',
+                views: {
+                    'content': feed_s
+                },
+                authenticate: false
+            })
             .state('feed-end', {
                 url: '/feed-end/:token',
                 views: {
@@ -196,7 +203,7 @@
                 views: {
                     'content': feed_requesters
                 },
-                authenticate: false
+                authenticate: true
             })
             .state('register', {
                 url: '/register',

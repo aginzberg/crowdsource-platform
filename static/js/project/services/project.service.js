@@ -160,33 +160,31 @@
             return HttpService.doRequest(settings);
         }
 
-        function loadRequesterStudy(requester_id) {
+        function loadRequesterStudy() {
             var settings = {
-                url: '/api/requester-study/?requester_id='+requester_id,
+                url: '/api/requester-study/',
                 method: 'GET'
             };
             return HttpService.doRequest(settings);
         }
 
-        function reject(assignmentId, requesterId) {
+        function reject(assignmentId) {
             var settings = {
                 url: '/api/requester-study/reject/',
                 method: 'POST',
                 data: {
-                    assignment_id: assignmentId,
-                    requester_id: requesterId
+                    assignment_id: assignmentId
                 }
             };
             return HttpService.doRequest(settings);
         }
 
-        function acceptRest(assignments, requesterId) {
+        function acceptRest(assignments) {
             var settings = {
                 url: '/api/requester-study/accept_rest/',
                 method: 'POST',
                 data: {
-                    assignments: assignments,
-                    requester_id: requesterId
+                    assignments: assignments
                 }
             };
             return HttpService.doRequest(settings);
