@@ -8,15 +8,15 @@
         Here is the design of the tasks that was shown to the workers, we are evaluating the "Write a headline .." responses.
             <a target="_blank" href="https://slack-files.com/files-pri-safe/T03R8AQ66-F0Y0T98TU/editor_preview_of_task_____tasks_by_crowdflower.pdf?c=1459882854-28f94c4a22c56d467a9c5158f6753a7991a47f3b">Link to task design</a>
         </div>
-        <div ng-if="vm.showText" class="_important" style="margin-top: 32px">
+        <div ng-if="!vm.showText" class="_important" style="margin-top: 32px">
             IMPORTANT: Boomerang displays each requester's percentage of rejected tasks to workers, personalized to the reputation score of the worker.
             For example, a low-rated worker would see the requester's rejection rate for low-rated workers.
             This interface encourages workers to swarm overly permissive requesters or avoid overly restrictive requesters.
             <br/>
             <br/>
             This would be shown to different workers:
-            <div><img src="/static/images/rate_high.png" width="512"></div>
-            <div><img src="/static/images/rate_low.png" width="512"></div>
+            <div class="_img-rate-low" style="width: 512px; height: 46px;"></div>
+            <div class="_img-rate-high" style="width: 512px; height: 46px;"></div>
         </div>
         <div>Thank you!!!</div>
     </div>
