@@ -67,7 +67,7 @@
                             <span class="_user-alias"
                                   style="margin-right: 4px">{{ task.taskData.project_data.owner.alias }}</span>
 
-                            <div class="_thumb">
+                            <!--div class="_thumb">
                                 <md-icon class="_clickable-icon" ng-class="{'_t': task.rating.weight != 3.0}"
                                          md-font-set="material-icons"
                                          ng-click="task.setRating(task.rating, 3.0)">thumb_up
@@ -82,10 +82,10 @@
                                 </md-icon>
                                 <md-tooltip>
                                     {{ task.rating.weight != 1.0?task.tooltipBoomerangOne : 'Undo' }}</md-tooltip>
-                            </div>
+                            </div-->
 
 
-                            <!--div ng-click="task.setRating(task.rating, 1.0)" class="_rating-circle"
+                            <div ng-click="task.setRating(task.rating, 1.0)" class="_rating-circle"
                                  ng-class="{'_unchecked': task.rating.id==null,
             '_checked': task.rating.weight>=1.0}">
                                 <md-tooltip>{{ task.tooltipBoomerangOne }}</md-tooltip>
@@ -99,7 +99,7 @@
                                  ng-class="{'_unchecked': task.rating.id==null || task.rating.weight<3.0,
             '_checked': task.rating.weight==3.0}">
                                 <md-tooltip>{{ task.tooltipBoomerangThree }}</md-tooltip>
-                            </div-->
+                            </div>
                         </div>
                     </div>
                     <!--div class="_timer">
