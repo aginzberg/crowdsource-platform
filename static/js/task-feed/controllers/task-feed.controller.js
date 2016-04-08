@@ -45,6 +45,10 @@
         self.showToolTip = false;
         self.getRateText = getRateText;
         self.requesterRatingLabel = requesterRatingLabel;
+        self.requesterPicks = false;
+        self.sampled_requesters = [];
+        self.postChoices = postChoices;
+        self.round = 1;
         /*
          (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
          (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
@@ -83,6 +87,10 @@
                         return project.available_tasks > 0;
                     });
                     self.availableTasks = self.projects.length > 0;
+                    if (!self.availableTasks) {
+                        sampleRequesters();
+                        self.requesterPicks = true;
+                    }
                 },
                 function error(errData) {
                     if (errData[1] == self.HTTP_410_GONE) {
@@ -197,7 +205,7 @@
         }
 
         function getRatingPercentage(rating, circle) {
-            if (rating==null) return 0;
+            if (rating == null) return 0;
             return rating >= circle ? 100 : rating >= circle - 1 ? (rating - circle + 1) * 100 : 0;
         }
 
@@ -238,8 +246,6 @@
                         })
                         .value();
                     self.workerProjectsRaw = projects;
-
-
                 },
                 function error(response) {
                     $mdToast.showSimple('Could not get tasks.');
@@ -269,13 +275,13 @@
         function submitRankings() {
             var ratedCount = 0;
             var request_data = self.workerRequesters.map(function (value, index) {
-                if (value.rating==null || value.rating==undefined) ratedCount++;
+                if (value.rating == null || value.rating == undefined) ratedCount++;
                 return {
                     requester: value.requester_id,
                     rank: value.rating
                 };
             });
-            if (ratedCount>0){
+            if (ratedCount > 0) {
                 $mdToast.showSimple('Please answer for all requesters.');
                 return;
             }
@@ -315,6 +321,55 @@
             if (rating == 2) return 'ok';
             else if (rating == 1) return 'disliked';
             else if (rating == 3) return 'liked it';
+        }
+
+        function postChoices() {
+            var sample = [];
+            angular.forEach(self.sampled_requesters, function (obj) {
+                sample.push(obj.requester_id);
+            });
+            Project.postChoices(sample, self.pick).then(
+                function success(data) {
+                    self.pick = null;
+                    self.round++;
+                    sampleRequesters();
+
+                },
+                function error(errData) {
+                    //$mdToast.showSimple('Please retry, something went wrong.');
+                }
+            ).finally(function () {
+            });
+        }
+
+        function sampleRequesters() {
+            Project.sampleRequesters().then(
+                function success(data) {
+                    self.sampled_requesters = data[0].data;
+                    self.sampled_requesters = _
+                        .chain(self.sampled_requesters)
+                        .groupBy('owner_id')
+                        .map(function (value, key) {
+                            return {
+                                requester_id: key,
+                                requester_name: value[0].owner.alias,
+                                project_names: _.pluck(value, 'name'),
+                                projects: value.map(function (inner_value, inner_key) {
+                                    return {
+                                        name: inner_value.name,
+                                        project_id: inner_value.id
+                                    };
+                                })
+                            }
+                        })
+                        .value();
+                    self.round = data[0].round;
+                },
+                function error(errData) {
+                    //$mdToast.showSimple('Please retry, something went wrong.');
+                }
+            ).finally(function () {
+            });
         }
     }
 

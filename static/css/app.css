@@ -1510,6 +1510,9 @@ md-list-item.rate-list-item {
   background-size: 512px 46px;
   background-repeat: no-repeat; }
 
+._selected-task {
+  background-color: #B3E5FC; }
+
 .project-form .step {
   padding-left: 15px;
   color: rgba(0, 0, 0, 0.34); }

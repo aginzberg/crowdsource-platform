@@ -37,17 +37,17 @@
                         <span class="_important">
                             "I don't like this: bury this requester's tasks at the bottom of my task feed in the future"</span>.
                     </div>
-                    <div style="margin-top: 20px" ng-if="task.isTimerTreatment">
+                    <!--div style="margin-top: 20px" ng-if="task.isTimerTreatment">
                         Note:  <span class="_important">Our algorithm uses the timer at the bottom to tell you what your hourly wage will be for other
                         tasks, so you can see how much you will make before accepting a task</span>.
                     </div>
                     <div style="margin-top: 20px" ng-if="!task.isTimerTreatment">
                         Note:  <span class="_important">The timer will tell you how long it took you to finish this task.</span>
-                    </div>
+                    </div-->
 
                     <div ng-if="task.isTimerTreatment || task.isBoomerangTreatment" class="_important" style="margin-top: 32px">
                         IMPORTANT: The data we collect during these 14 tasks trains our algorithms and will be applied to your interface
-                        in the second phase (15-minute).</div>
+                        in the second phase.</div>
                     <div>Thank you!!!</div>
                 </div>
                 <!--md-divider></md-divider-->
@@ -102,7 +102,7 @@
                             </div-->
                         </div>
                     </div>
-                    <div class="_timer">
+                    <!--div class="_timer">
                         <div class="_tooltip fx-fade-down fx-dur-1000 fx-ease-quart" ng-cloak=""
                              ng-if="!task.has_read_tooltip" ng-class="{'_treatment-t1': task.tooltipTaller}">
                             <span class="_main-text">{{ task.tooltipOneTitle }}</span> <br/>
@@ -119,7 +119,6 @@
                             <md-icon class="_clickable-icon" md-font-set="material-icons"
                                      ng-click="task.toggleTimerVisibility()">schedule
                             </md-icon>
-                            <!--span ng-hide="task.has_read_tooltip" class="fx-fade-left fx-dur-500 fx-ease-quart">00:00</span-->
                             <div ng-show="!task.has_read_tooltip || task.timerOpen" ng-cloak="" layout="row"
                                  layout-align="start center"
                                  class="fx-fade-left fx-dur-500 fx-ease-quart"
@@ -149,9 +148,7 @@
                                 </md-icon>
                             </div>
                         </div>
-
-
-                    </div>
+                    </div-->
                     <md-button ng-disabled="!task.has_read_tooltip" class="_primary _cbtn"
                                ng-click="task.submitOrSave(2)"
                                tabindex="0">{{ task.readyToSubmit?'Done':'Submit' }}

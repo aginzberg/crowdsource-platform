@@ -195,13 +195,12 @@
                 auto_accept: self.auto_accept
             };
             if (!self.readyToSubmit) {
-                self.readyToSubmit = true;
+                //self.readyToSubmit = true;
                 self.timerOpen = true;
                 stopTimer();
                 /*if (!self.rating.id) {
                     self.showRatingTooltip = true;
                 }*/
-                return;
             }
             /*if (!self.rating.id) {
                 self.showRatingTooltip = true;

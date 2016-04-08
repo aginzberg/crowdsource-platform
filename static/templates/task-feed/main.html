@@ -44,8 +44,8 @@
                         <span class="_hourly-rate"
                               ng-if="taskfeed.worker_config.phase==3 && project.completion_time && (taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_TWO__BT_TT || taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_FOUR__BC_TT)">
                             <md-icon
-                                class="_icon-18" md-font-set="material-icons">schedule
-                        </md-icon> {{ project.price*60 /project.completion_time | number: 2}} $/hr estimated rate
+                                    class="_icon-18" md-font-set="material-icons">schedule
+                            </md-icon> {{ project.price*60 /project.completion_time | number: 2}} $/hr estimated rate
 
                         </span>
 
@@ -102,12 +102,38 @@
                 <md-progress-circular md-mode="indeterminate"></md-progress-circular>
             </div>
         </div>
-        <div class="_no-tasks _task-feed-shadow" ng-if="!taskfeed.loading && !taskfeed.availableTasks">
-
-            <div ng-if="taskfeed.worker_config.phase==1">All 14 tasks completed successfully. Click below to continue with the next step!
+        <div class="_no-tasks _task-feed-shadow" ng-if="!taskfeed.loading && !taskfeed.availableTasks && false">
+            {{ taskfeed.worker_config.phase }}
+            <div ng-if="taskfeed.worker_config.phase==1">All 14 tasks completed successfully. Click below to continue
+                with the next step!
                 <a style="width: 100%;" ui-sref="feed-end" class="md-button md-accent">Continue</a>
             </div>
             <div ng-if="taskfeed.worker_config.phase==3">{{ taskfeed.emptyState }}</div>
+        </div>
+        <div class="_task-feed-shadow" ng-if="!taskfeed.availableTasks && taskfeed.round<10">
+            <!--p style="padding: 16px;">If you were going to do another task, which of this three requester would you choose.</p-->
+            <p style="padding: 16px;">Based on your experiences with each of these three requesters, which of the three
+                below is the best.</p>
+            <md-subheader>Round {{ taskfeed.round }}</md-subheader>
+            <md-progress-linear class="md-primary" md-mode="determinate"
+                                value="{{(taskfeed.round/10)*100}}"></md-progress-linear>
+            <md-list>
+                <md-list-item class="md-3-line" ng-repeat="requester in taskfeed.sampled_requesters"
+                              ng-click="taskfeed.pick = requester.requester_id"
+                              ng-class="{'_selected-task': taskfeed.pick == requester.requester_id}">
+                    <div class="md-list-item-text">
+                        <h3>{{ requester.requester_name }}</h3>
+                        <p ng-repeat="project in requester.projects">{{ project.name }}</p>
+                    </div>
+                </md-list-item>
+            </md-list>
+            <md-button ng-disabled="!taskfeed.pick" style="" class="md-accent" ng-click="taskfeed.postChoices()">Next
+            </md-button>
+        </div>
+        <div class="_no-tasks _task-feed-shadow"
+             ng-if="!taskfeed.loading && !taskfeed.availableTasks && taskfeed.round>9">
+            <div>All done, thank you for participating, your code is 7DW0KW!q4
+            </div>
         </div>
     </div>
 </div>

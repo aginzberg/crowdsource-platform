@@ -38,7 +38,9 @@
             submitRankings: submitRankings,
             loadRequesterStudy: loadRequesterStudy,
             reject: reject,
-            acceptRest: acceptRest
+            acceptRest: acceptRest,
+            sampleRequesters: sampleRequesters,
+            postChoices: postChoices
         };
 
         return Project;
@@ -185,6 +187,26 @@
                 method: 'POST',
                 data: {
                     assignments: assignments
+                }
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function sampleRequesters() {
+            var settings = {
+                url: '/api/project/sample_requesters/',
+                method: 'GET'
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function postChoices(sample, pick) {
+            var settings = {
+                url: '/api/project/post_choice/',
+                method: 'POST',
+                data: {
+                    sample: sample,
+                    pick: pick
                 }
             };
             return HttpService.doRequest(settings);

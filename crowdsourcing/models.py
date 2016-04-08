@@ -679,3 +679,10 @@ class AssignmentReviews(models.Model):
     requester = models.ForeignKey(Requester, related_name='requester_reviews')
     assignment = models.ForeignKey(ReviewableAssignment, related_name='reviews', on_delete=models.CASCADE)
     status = models.IntegerField(default=0)
+
+
+class FeedChoices(models.Model):
+    worker = models.ForeignKey(Worker, related_name='feed_choices')
+    requester = models.ForeignKey(Requester)
+    sample = ArrayField(base_field=models.IntegerField())
+    created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
