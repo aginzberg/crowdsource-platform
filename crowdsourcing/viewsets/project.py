@@ -315,7 +315,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         requester_ids = random.sample(requesters, sample_size)
         query_2 = '''
             SELECT
-              DISTINCT p.owner_id id
+             p.id id, p.owner_id, p.name
             FROM crowdsourcing_taskworker tw
               INNER JOIN crowdsourcing_task t ON tw.task_id = t.id
               INNER JOIN crowdsourcing_worker w ON tw.worker_id = w.id
