@@ -23,15 +23,23 @@
                     </div-->
                     <div>Please complete the task and rate the requester before submitting.</div>
                     <div style="margin-top: 20px" ng-if="task.isBoomerangTreatment">Note: If you give a task
-                        <md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
+                        <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
                                  md-font-set="material-icons"">thumb_up
-                        </md-icon>
+                        </md-icon-->
+                        <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                                     class="_rating-circle _checked"></div>
+                         <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                                     class="_rating-circle _checked"></div>
+                         <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                                     class="_rating-circle _checked"></div>
                         that means <span
                                 class="_important">"I like this: feature this requester's tasks at
                         the top of my task feed in the future"</span>, and if you give it
-                        <md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
+                        <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
                                  md-font-set="material-icons"">thumb_down
-                        </md-icon>
+                        </md-icon-->
+                        <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                                     class="_rating-circle _checked"></div>
                         it means
                         <span class="_important">
                             "I don't like this: bury this requester's tasks at the bottom of my task feed in the future"</span>.
