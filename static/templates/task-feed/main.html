@@ -112,8 +112,8 @@
         </div>
         <div class="_task-feed-shadow" ng-if="!taskfeed.availableTasks && taskfeed.round<10 && !taskfeed.loading">
             <!--p style="padding: 16px;">If you were going to do another task, which of this three requester would you choose.</p-->
-            <p style="padding: 16px;">Based on your experiences with each of these three requesters, which of the three
-                below is the best.</p>
+            <p style="padding: 16px;">Based on your experiences with each of the requesters below, which of the three
+                requesters is the best? We have listed the tasks you did for each requester.</p>
             <md-subheader>Round {{ taskfeed.round }}</md-subheader>
             <md-progress-linear class="md-primary" md-mode="determinate"
                                 value="{{(taskfeed.round/10)*100}}"></md-progress-linear>
@@ -123,7 +123,7 @@
                               ng-class="{'_selected-task': taskfeed.pick == requester.requester_id}">
                     <div class="md-list-item-text">
                         <h3>{{ requester.requester_name }}</h3>
-                        <p ng-repeat="project in requester.projects">{{ project.name }}</p>
+                        <p style="padding-left: 8px;" ng-repeat="project in requester.projects">{{ project.name }}</p>
                     </div>
                 </md-list-item>
             </md-list>
