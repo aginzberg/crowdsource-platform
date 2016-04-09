@@ -21,8 +21,11 @@
                     <!--div>Before you begin, please check out the timer tooltip below and click "GOT IT" after having done
                         so.
                     </div-->
-                    <div>Please complete the task and rate the requester before submitting.</div>
-                    <div style="margin-top: 20px" ng-if="task.isBoomerangTreatment">Note: If you give a task
+                    <div>After you complete all of these tasks, we will open up a new very large set of tasks.
+                        You will have 15 minutes to complete the best tasks you can find in that larger set.</div>
+                    <div style="margin-top: 20px" ng-if="task.isBoomerangTreatment">Your ratings on the current tasks will be used to
+                        filter the tasks in the larger set.
+                        If you give a task
                         <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
                                  md-font-set="material-icons"">thumb_up
                         </md-icon-->
@@ -34,7 +37,18 @@
                                      class="_rating-circle _checked"></div>
                         that means <span
                                 class="_important">"I like this: feature this requester's tasks at
-                        the top of my task feed in the future"</span>, and if you give it
+                        the top of my task feed in the future"</span>,
+                        if you give a task
+                        <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
+                                 md-font-set="material-icons"">thumb_up
+                        </md-icon-->
+                        <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                                     class="_rating-circle _checked"></div>
+                         <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                                     class="_rating-circle _checked"></div>
+                        that means <span
+                                class="_important">"Same: keep this requester's tasks in the middle of my task feed"</span>
+                        , and if you give it
                         <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
                                  md-font-set="material-icons"">thumb_down
                         </md-icon-->
@@ -52,9 +66,9 @@
                         Note:  <span class="_important">The timer will tell you how long it took you to finish this task.</span>
                     </div-->
 
-                    <div ng-if="task.isTimerTreatment || task.isBoomerangTreatment" class="_important" style="margin-top: 32px">
+                    <!--div ng-if="task.isTimerTreatment || task.isBoomerangTreatment" class="_important" style="margin-top: 32px">
                         IMPORTANT: The data we collect during these 14 tasks trains our algorithms and will be applied to your interface
-                        in the second phase.</div>
+                        in the second phase.</div-->
                     <md-button ng-click="task.gotIt()" class="_cbtn _tooltip-btn">Start</md-button>
                     <div>Thank you!!!</div>
                 </div>
