@@ -77,7 +77,7 @@
                             $state.go('task_feed');
                         }
                         else if ($state.current.name == 'requester-study-init') {
-                            $state.go('requester-study');
+                            $state.go('requester-study-r');
                         }
                     }
                 });
