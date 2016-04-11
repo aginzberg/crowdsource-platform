@@ -111,8 +111,8 @@
                             value="{{(vm.round/10)*100}}"></md-progress-linear>
         <md-list>
             <md-list-item class="md-3-line" ng-repeat="worker in vm.sampled_workers"
-                          ng-click="vm.pick = worker.profile"
-                          ng-class="{'_selected-task': vm.pick == worker.profile}">
+                          ng-click="vm.pick = worker.id"
+                          ng-class="{'_selected-task': vm.pick == worker.id}">
                 <div class="md-list-item-text">
                     <h3>{{ worker.alias }}</h3>
                     <p>{{ project.name }}</p>

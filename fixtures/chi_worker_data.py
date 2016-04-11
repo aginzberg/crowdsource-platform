@@ -2724,43 +2724,43 @@ fact_tasks = [
 marijuana_tasks = [
     {
         "id": 1581,
-        "data": "http://www.noonproposition19.com/ "
+        "data": "Input the stance that the following website give on marijuana legalization. Url:http://www.noonproposition19.com/ "
     },
     {
         "id": 1582,
-        "data": "http://medicalmarijuana.procon.org/ "
+        "data": "Input the stance that the following website give on marijuana legalization. Url:http://medicalmarijuana.procon.org/ "
     },
     {
         "id": 1583,
-        "data": "http://otfca.net/anti-legalization-of-marijuana/ "
+        "data": "Input the stance that the following website give on marijuana legalization. Url:http://otfca.net/anti-legalization-of-marijuana/ "
     },
     {
         "id": 1584,
-        "data": "http://legalizationofmarijuana.com/pros-and-cons-of-marijuana.html "
+        "data": "Input the stance that the following website give on marijuana legalization. Url:http://legalizationofmarijuana.com/pros-and-cons-of-marijuana.html "
     },
     {
         "id": 1585,
-        "data": "http://www.calmca.org/ "
+        "data": "Input the stance that the following website give on marijuana legalization. Url:http://www.calmca.org/ "
     },
     {
         "id": 1586,
-        "data": "http://www.thedailychronic.net/2015/45489/uk-parliament-to-debate-marijuana-legalization-after-petition-gathers-150k-signatures/ "
+        "data": "Input the stance that the following website give on marijuana legalization. Url:http://www.thedailychronic.net/2015/45489/uk-parliament-to-debate-marijuana-legalization-after-petition-gathers-150k-signatures/ "
     },
     {
         "id": 1587,
-        "data": "http://www.drugrehab.us/news/pros-cons-legalizing-recreational-marijuana/ "
+        "data": "Input the stance that the following website give on marijuana legalization. Url:http://www.drugrehab.us/news/pros-cons-legalizing-recreational-marijuana/ "
     },
     {
         "id": 1588,
-        "data": "http://www.pewresearch.org/fact-tank/2015/04/14/6-facts-about-marijuana/ "
+        "data": "Input the stance that the following website give on marijuana legalization. Url:http://www.pewresearch.org/fact-tank/2015/04/14/6-facts-about-marijuana/ "
     },
     {
         "id": 1589,
-        "data": "http://www.cnbc.com/id/36267223 "
+        "data": "Input the stance that the following website give on marijuana legalization. Url:http://www.cnbc.com/id/36267223 "
     },
     {
         "id": 1590,
-        "data": "https://learnaboutsam.org/wp-content/uploads/2013/05/Ten-messages-against-legalization.pdf "
+        "data": "Input the stance that the following website give on marijuana legalization. Url:https://learnaboutsam.org/wp-content/uploads/2013/05/Ten-messages-against-legalization.pdf "
     }
 ]
 

@@ -270,7 +270,7 @@
                 return;
             }
             Project.nextPhase().then(function (data) {
-                self.workerRatings = [];
+                self.tasks = [];
                 self.loading = true;
                 activate();
             });
