@@ -1,12 +1,6 @@
 <div class="_main-content _middle-content _relative">
     <div class="_init-instructions">
-        <div ng-if="vm.requester_config.phase < 4">In this study workers were asked to complete three different types of
-            HITs (Summarize a Bitcoin Video,
-            Marijuana Legalization, and Query Search).
-            <br>
-            Go through all the submissions and rate all the workers. Once done click "Done", and the next HIT will be
-            loaded automatically,
-            follow same procedure for all three HITs.
+        <div ng-if="vm.requester_config.phase < 4">You will be rating workers' results across three different tasks.
         </div>
         <div ng-if="vm.requester_config.phase>3">Based on your experiences with each of the workers below, which of the
             three
@@ -14,9 +8,7 @@
         </div>
         <div ng-if="vm.showText && vm.requester_config.phase<4" class="_important" style="margin-top: 32px">
             <div style="margin-top: 20px">
-                Your ratings on the current tasks
-                will be used to
-                filter workers for the next tasks.
+                Your ratings for each task will influence which workers return to do the next task:
                 <ul>
                     <li>If you give a worker
                         <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
@@ -29,7 +21,7 @@
                         <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
                              class="_rating-circle _checked"></div>
                         that means <span
-                                class="_important">"I like this: grant this worker first access to my tasks"</span>.
+                                class="_important">"Like: grant this worker early access to my tasks, so they do a lot of my work"</span>.
                     </li>
                     <li>If you give a worker
                         <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
@@ -40,7 +32,7 @@
                         <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
                              class="_rating-circle _checked"></div>
                         that means <span
-                                class="_important">"Same: keep this worker with normal access to my tasks"</span>.
+                                class="_important">"Default: give this worker access at the same time as normal workers, so they do a bit of my work"</span>.
                     </li>
                     <li>And if you give it
                         <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
@@ -50,7 +42,7 @@
                              class="_rating-circle _checked"></div>
                         it means
                         <span class="_important">
-                            "I don't like this: prevent this worker from doing my tasks until last"</span>.
+                            "Bury: prevent this worker from getting access to my tasks until last, so they rarely do my work"</span>.
                     </li>
                 </ul>
 

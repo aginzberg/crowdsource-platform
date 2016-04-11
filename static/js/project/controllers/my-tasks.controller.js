@@ -222,9 +222,9 @@
                 self.requester_config = data[0];
                 if (self.requester_config.condition == 2 || self.requester_config.condition == 1) {
                     self.showText = true;
-                    self.tooltipBoomerangOne = "I don't like this: prevent this worker from doing my tasks until last";
-                    self.tooltipBoomerangTwo = "Same: keep this worker with normal access to my tasks";
-                    self.tooltipBoomerangThree = "I like this: grant this worker first access to my tasks";
+                    self.tooltipBoomerangOne = "Like: grant this worker early access to my tasks, so they do a lot of my work";
+                    self.tooltipBoomerangTwo = "Default: give this worker access at the same time as normal workers, so they do a bit of my work";
+                    self.tooltipBoomerangThree = "Bury: prevent this worker from getting access to my tasks until last, so they rarely do my work";
                 }
                 else {
                     self.tooltipBoomerangOne = "I dont like this";
