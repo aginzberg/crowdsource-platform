@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from rest_framework import mixins
 from django.utils.timezone import utc
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
@@ -22,6 +23,7 @@ from crowdsourcing.models import Task, TaskWorker, TaskWorkerResult, UserPrefere
 from crowdsourcing.permissions.task import HasExceededReservedLimit
 from crowdsourcing.utils import get_model_or_none
 from mturk.tasks import mturk_hit_update, mturk_approve
+from csp import settings
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -217,7 +219,7 @@ class TaskWorkerViewSet(viewsets.ModelViewSet):
 
 
 class ReviewableTaskViewSet(viewsets.ModelViewSet):
-    queryset =  models.ReviewableTask.objects.all()
+    queryset = models.ReviewableTask.objects.all()
     serializer_class = ReviewableTaskSerializer
 
     def list(self, request, *args, **kwargs):
@@ -230,7 +232,8 @@ class ReviewableTaskViewSet(viewsets.ModelViewSet):
     def reject(self, request, *args, **kwargs):
         requester_id = request.user.userprofile.requester.id
         assignment_id = request.data.get('assignment_id')
-        review = models.AssignmentReviews.objects.create(requester_id=requester_id, assignment_id=assignment_id, status=1)
+        review = models.AssignmentReviews.objects.create(requester_id=requester_id, assignment_id=assignment_id,
+                                                         status=1)
         return Response({"id": review.id, "status": 1})
 
     @list_route(methods=['post'])
@@ -240,6 +243,46 @@ class ReviewableTaskViewSet(viewsets.ModelViewSet):
         for assignment in assignments:
             models.AssignmentReviews.objects.create(requester_id=requester_id, assignment_id=assignment, status=2)
         return Response({"message": "SUCCESS"})
+
+
+class RRatingStudyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = models.RequesterStudyTask.objects.all()
+    serializer_class = RequesterStudyTaskSerializer
+
+    def list(self, request, *args, **kwargs):
+        phase = request.user.userprofile.requester.configuration.phase
+        if phase == 1:
+            self.queryset = self.queryset.filter(original_id=1562)
+        elif phase == 2:
+            self.queryset = self.queryset.filter(original_id__gte=1457, original_id__lte=1464)
+        elif phase == 3:
+            self.queryset = self.queryset.filter(original_id__gte=1581, original_id__lte=1590)
+        else:
+            return Response(data=[])
+        serializer = self.serializer_class(instance=self.queryset, many=True, context={'request': request})
+        return Response(data=serializer.data)
+
+    @list_route(methods=['post'])
+    def load_data(self, request, *args, **kwargs):
+        from fixtures.chi_worker_data import fact_tasks, bitcoin_task, marijuana_tasks
+        from fixtures.chi_worker_data import fact_data, marijuana_data, bitcoin_data
+        task_ids = {}
+        for t in fact_tasks + bitcoin_task + marijuana_tasks:
+            m = models.RequesterStudyTask()
+            m.data = t['data']
+            m.original_id = t['id']
+            m.save()
+            task_ids[str(t['id'])] = m.id
+
+        for r in fact_data + bitcoin_data + marijuana_data:
+            m = models.RequesterStudyResults()
+            m.task_id = task_ids[str(r['task_id'])]
+            m.result = r['result']
+            m.worker_id = r['worker_id'] - settings.STUDY_WORKER_ID_DELTA
+            m.original_worker_id = r['worker_id']
+            m.save()
+
+        return Response({"message": "OK"}, status=status.HTTP_201_CREATED)
 
 
 class TaskWorkerResultViewSet(viewsets.ModelViewSet):

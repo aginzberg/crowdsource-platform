@@ -1,0 +1,127 @@
+<div class="_main-content _middle-content _relative">
+    <div class="_init-instructions">
+        <div ng-if="vm.requester_config.phase < 4">In this study workers were asked to complete three different types of
+            HITs (Summarize a Bitcoin Video,
+            Marijuana Legalization, and Query Search).
+            <br>
+            Go through all the submissions and rate all the workers. Once done click "Done", and the next HIT will be
+            loaded automatically,
+            follow same procedure for all three HITs.
+        </div>
+        <div ng-if="vm.requester_config.phase>3">Based on your experiences with each of the workers below, which of the
+            three
+            workers is the best?
+        </div>
+        <div ng-if="vm.showText && vm.requester_config.phase<4" class="_important" style="margin-top: 32px">
+            <div style="margin-top: 20px">
+                Your ratings on the current tasks
+                will be used to
+                filter workers for the next tasks.
+                <ul>
+                    <li>If you give a worker
+                        <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
+                                 md-font-set="material-icons"">thumb_up
+                        </md-icon-->
+                        <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                             class="_rating-circle _checked"></div>
+                        <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                             class="_rating-circle _checked"></div>
+                        <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                             class="_rating-circle _checked"></div>
+                        that means <span
+                                class="_important">"I like this: grant this worker first access to my tasks"</span>.
+                    </li>
+                    <li>If you give a worker
+                        <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
+                                 md-font-set="material-icons"">thumb_up
+                        </md-icon-->
+                        <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                             class="_rating-circle _checked"></div>
+                        <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                             class="_rating-circle _checked"></div>
+                        that means <span
+                                class="_important">"Same: keep this worker with normal access to my tasks"</span>.
+                    </li>
+                    <li>And if you give it
+                        <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
+                                 md-font-set="material-icons"">thumb_down
+                        </md-icon-->
+                        <div style="display: inline-block; vertical-align: middle; height: 8px; width: 8px;"
+                             class="_rating-circle _checked"></div>
+                        it means
+                        <span class="_important">
+                            "I don't like this: prevent this worker from doing my tasks until last"</span>.
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+        <!--div>Thank you!!!</div-->
+    </div>
+    <div ng-if="!vm.done">
+        <div ng-if="vm.loading" layout="row" layout-sm="column" layout-align="space-around" class="md-padding">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+        <div ng-repeat="task in vm.tasks">
+            <div style="margin-top: 16px; margin-bottom: 16px">
+                {{ $index+1 }}. Data:
+                <div ng-bind-html="task.data | linky:'_blank'"></div>
+                <div style="margin-left: 24px; margin-top: 16px;">
+                    <span class="_sub-header">Submissions</span>
+                    <div style="margin-top: 24px; margin-bottom: 24px;"
+                         ng-repeat="result in task.results">
+                        <div class="layout-row layout-align-start-center" style="margin-bottom: 8px">
+                            <span class="_user-alias" style="margin-right: 4px">{{ result.worker.alias }}</span>
+
+                            <div ng-click="vm.setRating(result.worker.profile, 1.0)" class="_rating-circle"
+                                 ng-class="{'_unchecked': vm.getRating(result.worker.profile).id==null,
+                                    '_checked': vm.getRating(result.worker.profile).weight>=1.0}">
+                                <md-tooltip>{{ vm.tooltipBoomerangOne }}</md-tooltip>
+                            </div>
+                            <div ng-click="vm.setRating(result.worker.profile, 2.0)" class="_rating-circle"
+                                 ng-class="{'_unchecked': vm.getRating(result.worker.profile).id==null || vm.getRating(result.worker.profile).weight<2.0,
+                                    '_checked': vm.getRating(result.worker.profile).weight>=2.0}">
+                                <md-tooltip>{{ vm.tooltipBoomerangTwo }}</md-tooltip>
+                            </div>
+                            <div ng-click="vm.setRating(result.worker.profile, 3.0)" class="_rating-circle"
+                                 ng-class="{'_unchecked': vm.getRating(result.worker.profile).id==null || vm.getRating(result.worker.profile).weight<3.0,
+                                    '_checked': vm.getRating(result.worker.profile).weight==3.0}">
+                                <md-tooltip>{{ vm.tooltipBoomerangThree }}</md-tooltip>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="min-width: 512px; display: inline-block">{{ result.result }}</div>
+                            <span class="_error" ng-if="assignment.review.status==1">rejected</span>
+                            <span class="_ranking-success" ng-if="assignment.review.status==2">accepted</span>
+                        </div>
+
+                        <md-divider ng-if="!$last"></md-divider>
+                    </div>
+                </div>
+            </div>
+            <md-divider></md-divider>
+        </div>
+    </div>
+    <md-button ng-if="vm.requester_config.phase<4" style="width: 100%" class="md-accent" ng-click="vm.nextStep()">Done
+    </md-button>
+
+    <div ng-if="vm.requester_config.phase>3 && vm.round<10">
+        <md-subheader>Round {{ vm.round }}</md-subheader>
+        <md-progress-linear class="md-primary" md-mode="determinate"
+                            value="{{(vm.round/10)*100}}"></md-progress-linear>
+        <md-list>
+            <md-list-item class="md-3-line" ng-repeat="worker in vm.sampled_workers"
+                          ng-click="vm.pick = worker.profile"
+                          ng-class="{'_selected-task': vm.pick == worker.profile}">
+                <div class="md-list-item-text">
+                    <h3>{{ worker.alias }}</h3>
+                    <p>{{ project.name }}</p>
+                </div>
+            </md-list-item>
+        </md-list>
+        <md-button ng-disabled="!vm.pick" style="" class="md-accent" ng-click="vm.postChoices()">Next
+        </md-button>
+    </div>
+
+    <div ng-if="vm.requester_config.phase>3 && vm.round>9" class="_important">All done, thank you for rating. Pleas return to the HIT and enter your completion code: 7DW0KW!q4!</div>
+</div>

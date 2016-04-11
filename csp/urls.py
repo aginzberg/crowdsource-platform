@@ -8,7 +8,7 @@ from crowdsourcing.viewsets.requester import RequesterViewSet, QualificationView
 from crowdsourcing.viewsets.rating import WorkerRequesterRatingViewset, RatingViewset
 from crowdsourcing.viewsets.worker import *
 from crowdsourcing.viewsets.task import TaskViewSet, TaskWorkerResultViewSet, TaskWorkerViewSet, \
-    ExternalSubmit, ReviewableTaskViewSet
+    ExternalSubmit, ReviewableTaskViewSet, RRatingStudyViewSet
 from crowdsourcing.viewsets.template import TemplateViewSet, TemplateItemViewSet, TemplateItemPropertiesViewSet
 from crowdsourcing.viewsets.drive import *
 from crowdsourcing.viewsets.google_drive import GoogleDriveOauth, GoogleDriveViewSet
@@ -49,6 +49,7 @@ router.register(r'api/payment-paypal', PayPalFlowViewSet)
 router.register(r'api/financial-accounts', FinancialAccountViewSet)
 router.register(r'^api/file', FileViewSet)
 router.register(r'^api/requester-study', ReviewableTaskViewSet)
+router.register(r'^api/requester-study-rating', RRatingStudyViewSet)
 
 mturk_router = SimpleRouter(trailing_slash=False)
 mturk_router.register(r'^api/mturk', MTurkAssignmentViewSet)

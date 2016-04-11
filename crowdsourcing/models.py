@@ -648,6 +648,8 @@ class RequesterConfig(models.Model):
     requester = models.OneToOneField(Requester, related_name='configuration')
     condition = models.SmallIntegerField(choices=STATUS, null=True)
     config = JSONField(null=True)
+    phase = models.SmallIntegerField(default=1)
+    seen_workers = ArrayField(models.IntegerField())
 
 
 class URLAuth(models.Model):
@@ -684,5 +686,24 @@ class AssignmentReviews(models.Model):
 class FeedChoices(models.Model):
     worker = models.ForeignKey(Worker, related_name='feed_choices')
     requester = models.ForeignKey(Requester)
+    sample = ArrayField(base_field=models.IntegerField())
+    created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+
+class RequesterStudyTask(models.Model):
+    original_id = models.IntegerField()
+    data = models.CharField(max_length=512)
+
+
+class RequesterStudyResults(models.Model):
+    worker = models.ForeignKey(Worker, related_name='rr_results')
+    task = models.ForeignKey(RequesterStudyTask, related_name='worker_results', on_delete=models.CASCADE)
+    result = models.CharField(max_length=16384)
+    original_worker_id = models.IntegerField(null=True)
+
+
+class FeedChoicesRequester(models.Model):
+    requester = models.ForeignKey(Requester, related_name='reputation_choices')
+    worker = models.ForeignKey(Worker)
     sample = ArrayField(base_field=models.IntegerField())
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)

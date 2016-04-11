@@ -27,6 +27,13 @@
         self.acceptRest = acceptRest;
         self.showText = false;
         self.done = false;
+        self.getRating = getRating;
+        self.nextStep = nextStep;
+        self.pick = null;
+        self.sampled_workers = [];
+        self.postChoices = postChoices;
+        self.round = 0;
+
         self.tasks = [];
         self.status = {
             RETURNED: 5,
@@ -44,9 +51,10 @@
         };
         activate();
         function activate() {
-            if ($state.current.name == 'requester-study') {
+            if ($state.current.name == 'requester-study-r') {
                 getRequesterConfig();
-                loadRequesterStudy();
+                getWorkerRatings();
+                loadRequesterReputationStudy();
                 return;
             }
             Project.listWorkerProjects().then(
@@ -93,6 +101,19 @@
             });
         }
 
+        function loadRequesterReputationStudy(requester_id) {
+            Project.loadRequesterReputationStudy().then(
+                function success(response) {
+                    self.tasks = response[0];
+                    self.loading = false;
+                },
+                function error(response) {
+                    $mdToast.showSimple('Could fetch project submissions');
+                }
+            ).finally(function () {
+            });
+        }
+
         function reject(assignment) {
             Project.reject(assignment.id).then(
                 function success(response) {
@@ -109,7 +130,7 @@
             var assignmentToAccept = [];
             angular.forEach(self.tasks, function (task) {
                 angular.forEach(task.assignments, function (assignment) {
-                    if (assignment.review==null){
+                    if (assignment.review == null) {
                         assignmentToAccept.push(assignment.id);
                     }
                 });
@@ -158,7 +179,8 @@
             });
         }
 
-        function setRating(rating, weight) {
+        function setRating(target_id, weight) {
+            var rating = getRating(target_id);
             if (rating && rating.hasOwnProperty('id') && rating.id) {
                 RatingService.updateRating(weight, rating).then(function success(resp) {
                     rating.weight = weight;
@@ -169,8 +191,7 @@
                 });
             } else {
                 RatingService.submitRating(weight, rating).then(function success(resp) {
-                    rating.id = resp[0].id;
-                    rating.weight = weight;
+                    self.workerRatings.push(resp[0]);
                 }, function error(resp) {
                     $mdToast.showSimple('Could not submit rating.')
                 }).finally(function () {
@@ -199,9 +220,90 @@
         function getRequesterConfig() {
             User.getRequesterConfiguration().then(function (data) {
                 self.requester_config = data[0];
-                if (self.requester_config.condition == 2 || self.requester_config.condition == 4){
+                if (self.requester_config.condition == 2 || self.requester_config.condition == 1) {
                     self.showText = true;
+                    self.tooltipBoomerangOne = "I don't like this: prevent this worker from doing my tasks until last";
+                    self.tooltipBoomerangTwo = "Same: keep this worker with normal access to my tasks";
+                    self.tooltipBoomerangThree = "I like this: grant this worker first access to my tasks";
                 }
+                else {
+                    self.tooltipBoomerangOne = "I dont like this";
+                    self.tooltipBoomerangTwo = "Neutral";
+                    self.tooltipBoomerangThree = "I like this";
+                }
+                if (self.requester_config.phase > 3) {
+                    sampleWorkers();
+                }
+            });
+        }
+
+        function getWorkerRatings() {
+            RatingService.listByOrigin().then(function (data) {
+                self.workerRatings = data[0];
+            });
+        }
+
+        function getRating(target_id) {
+            //console.log(target_id);
+            var r = $filter('filter')(self.workerRatings, {'target': target_id}, true);
+            //console.log(r);
+            if (r.length) {
+                return r[0];
+            }
+            return {"origin_type": "requester", "target": target_id};
+        }
+
+        function nextStep() {
+            self.submit = true;
+            angular.forEach(self.tasks, function (obj) {
+                angular.forEach(obj.results, function (inner_obj) {
+                    var r = getRating(inner_obj.worker.profile);
+                    if (r && r.hasOwnProperty('id') && r.id) {
+                    }
+                    else {
+                        self.submit = false;
+                    }
+                });
+            });
+            if (!self.submit) {
+                $mdToast.showSimple('Please rate all workers!');
+                return;
+            }
+            Project.nextPhase().then(function (data) {
+                self.workerRatings = [];
+                self.loading = true;
+                activate();
+            });
+        }
+
+        function sampleWorkers() {
+            Project.sampleWorkers().then(
+                function success(data) {
+                    self.sampled_workers = data[0].data;
+                    self.round = data[0].round;
+                },
+                function error(errData) {
+                }
+            ).finally(function () {
+            });
+        }
+
+        function postChoices() {
+            var sample = [];
+            angular.forEach(self.sampled_workers, function (obj) {
+                sample.push(obj.id);
+            });
+            Project.postChoices(sample, self.pick).then(
+                function success(data) {
+                    self.pick = null;
+                    self.round++;
+                    sampleWorkers();
+
+                },
+                function error(errData) {
+                    //$mdToast.showSimple('Please retry, something went wrong.');
+                }
+            ).finally(function () {
             });
         }
     }

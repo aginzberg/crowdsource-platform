@@ -538,11 +538,11 @@ md-list-item.list-item-with-padding {
   outline: none; }
   ._rating-circle._unchecked {
     background-color: transparent;
-    border: 1px solid #2e53ff; }
+    border: 1px solid #03A9F4; }
     ._rating-circle._unchecked:hover {
-      background-color: rgba(46, 83, 255, 0.3); }
+      background-color: rgba(3, 169, 244, 0.3); }
   ._rating-circle._checked {
-    background-color: #2e53ff; }
+    background-color: #03A9F4; }
 
 ._task-detail {
   background-color: #ededed;
@@ -1864,11 +1864,11 @@ md-list-item.list-item-with-padding {
   outline: none; }
   ._rating-circle._unchecked {
     background-color: transparent;
-    border: 1px solid #2e53ff; }
+    border: 1px solid #03A9F4; }
     ._rating-circle._unchecked:hover {
-      background-color: rgba(46, 83, 255, 0.3); }
+      background-color: rgba(3, 169, 244, 0.3); }
   ._rating-circle._checked {
-    background-color: #2e53ff; }
+    background-color: #03A9F4; }
 
 ._task-detail {
   background-color: #ededed;

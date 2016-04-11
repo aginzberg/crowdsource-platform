@@ -103,7 +103,6 @@
             </div>
         </div>
         <div class="_no-tasks _task-feed-shadow" ng-if="!taskfeed.loading && !taskfeed.availableTasks && false">
-            {{ taskfeed.worker_config.phase }}
             <div ng-if="taskfeed.worker_config.phase==1">All 14 tasks completed successfully. Click below to continue
                 with the next step!
                 <a style="width: 100%;" ui-sref="feed-end" class="md-button md-accent">Continue</a>

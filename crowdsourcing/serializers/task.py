@@ -2,12 +2,15 @@ from __future__ import division
 
 from rest_framework import serializers
 from django.db import transaction
-
+from numpy import random, concatenate
 from crowdsourcing import models
 from crowdsourcing.serializers.dynamic import DynamicFieldsModelSerializer
 from crowdsourcing.serializers.template import TemplateSerializer
 from crowdsourcing.serializers.message import CommentSerializer
 from crowdsourcing.validators.task import ItemValidator
+from crowdsourcing.serializers.worker import WorkerSerializer
+
+from csp import settings
 
 
 class TaskWorkerResultListSerializer(serializers.ListSerializer):
@@ -345,3 +348,59 @@ class ReviewableTaskSerializer(DynamicFieldsModelSerializer):
         fields = ('id', 'entry', 'assignments')
 
 
+class RequesterStudyResultsSerializer(DynamicFieldsModelSerializer):
+    worker = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.RequesterStudyResults
+        fields = ('id', 'worker', 'result', 'task')
+
+    def get_worker(self, obj):
+        return WorkerSerializer(instance=obj.worker, fields=('id', 'rating', 'alias', 'profile'), context=self.context).data
+
+
+class RequesterStudyTaskSerializer(DynamicFieldsModelSerializer):
+    results = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.RequesterStudyTask
+        fields = ('id', 'data', 'results')
+
+    def get_results(self, obj):
+        undefined_workers = [413, 414, 415, 416, 417, 418, 419]
+        undefined_workers = [x-settings.STUDY_WORKER_ID_DELTA for x in undefined_workers]
+        good_workers = [420, 421, 422, 423, 424, 425, 426]
+        good_workers = [x - settings.STUDY_WORKER_ID_DELTA for x in good_workers]
+        bad_workers = [427, 428, 429, 430, 431, 432, 433]
+        bad_workers = [x - settings.STUDY_WORKER_ID_DELTA for x in bad_workers]
+
+        requester_config = self.context.get('request').user.userprofile.requester.configuration
+        g_s, u_s, b_s = [], [], []
+        sampled_workers = []
+        w_results = obj.worker_results
+        results = []
+        if requester_config.phase == 1:
+            g_s = random.choice(good_workers, 3)
+            b_s = random.choice(bad_workers, 3)
+            u_s = random.choice(undefined_workers, 1)
+            sampled_workers = concatenate([g_s, u_s, b_s])
+            results = w_results.filter(worker_id__in=sampled_workers)
+        elif requester_config.phase in (2, 3):
+            unnorm_probs = []
+            for r in w_results.all():
+                rating = r.worker.profile.rating_target.filter(origin_id=self.context['request'].user.userprofile.id,
+                                                      origin_type='requester').last()
+                if not rating:
+                    unnorm_probs.append(1.99)
+                else:
+                    unnorm_probs.append(rating.weight)
+            summation = sum(unnorm_probs)
+            norm_probs = None
+            if summation != 0:
+                # normalize
+                norm_probs = [i / float(summation) for i in unnorm_probs]
+
+            results = random.choice(w_results.all(), 7, p=norm_probs, replace=False)
+
+        s = RequesterStudyResultsSerializer(instance=results, many=True, context=self.context)
+        return s.data

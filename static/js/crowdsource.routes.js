@@ -32,10 +32,16 @@
             templateUrl: '/static/templates/task-feed/study-ranking.html'
         };
 
-        var feed_requesters = {
+        var feed_requesters_rejection = {
             controller: 'MyTasksController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/task-feed/requester-study.html'
+        };
+
+        var feed_requesters = {
+            controller: 'MyTasksController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/task-feed/requester-study-reputation.html'
         };
 
         var register = {
@@ -198,8 +204,8 @@
                 },
                 authenticate: true
             })
-            .state('requester-study', {
-                url: '/requester-study/:token',
+            .state('requester-study-r', {
+                url: '/requester-study-r/:token',
                 views: {
                     'content': feed_requesters
                 },

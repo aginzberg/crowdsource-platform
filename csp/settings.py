@@ -353,6 +353,9 @@ STUDY_FEED_PHASE = int(os.environ.get('STUDY_FEED_PHASE', 0))
 
 STUDY_FEED_TIME = int(os.environ.get('STUDY_FEED_TIME', 16))  # minutes
 
+
+STUDY_WORKER_ID_DELTA = int(os.environ.get('STUDY_WORKER_ID_DELTA', 0))
+
 PYTHON_VERSION = 2
 STUDY_URL_AUTH = os.environ.get('STUDY_URL_AUTH', True)
 
@@ -360,7 +363,7 @@ try:
     from local_settings import *
 except Exception as e:
     if DEBUG:
-        print e.message
+        print (e.message)
 
 # Secure Settings
 if not DEBUG:

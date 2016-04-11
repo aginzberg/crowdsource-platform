@@ -159,7 +159,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             ) p;
         '''
         worker_id = request.user.userprofile.worker.id
-        factor = 1.0 # models.Worker.objects.raw(query_factor, params={'worker_id': worker_id})[0].id
+        factor = 1.0  # models.Worker.objects.raw(query_factor, params={'worker_id': worker_id})[0].id
 
         extra_query = ''
         if phase == -1:
@@ -186,7 +186,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             SELECT cp.id, cp.name, p.raw_rating, p.requester_rating, r.alias owner_name, r.rejection_rate rejection_rate,
              cp.owner_id, cp.is_prototype, cp.price, cp.task_time, available_projects.available_tasks
              FROM projects p
-        INNER JOIN crowdsourcing_project cp ON p.project_id= cp.id and cp.owner_id in (58, 59, 68, 70, 71, 61, 62) ''' + extra_query +\
+        INNER JOIN crowdsourcing_project cp ON p.project_id= cp.id AND cp.owner_id IN (58, 59, 68, 70, 71, 61, 62) ''' + extra_query + \
                 ''' INNER JOIN crowdsourcing_requester r ON r.id = cp.owner_id
         INNER JOIN (SELECT
                         project_id,
@@ -331,9 +331,36 @@ class ProjectViewSet(viewsets.ModelViewSet):
         choice_round = request.user.userprofile.worker.feed_choices.count()
         return Response(data={"data": serializer.data, "round": choice_round}, status=status.HTTP_200_OK)
 
+    @list_route(methods=['get'])
+    def sample_workers(self, request, *args, **kwargs):
+        rated_workers = models.WorkerRequesterRating.objects.values('target__worker').\
+            filter(origin=request.user.userprofile, origin_type='requester').values_list('target__worker', flat=True)
+
+        filter_w = list(set(rated_workers) - set(request.user.userprofile.requester.configuration.seen_workers))
+        rated_workers_sample = []
+        if len(filter_w)>=3:
+            rated_workers_sample = np.random.choice(filter_w, 3, replace=False)
+        else:
+            rated_workers_sample = np.random.choice(rated_workers, 3, replace=False)
+        w = models.Worker.objects.filter(id__in=rated_workers_sample)
+        serializer = WorkerSerializer(instance=w, many=True, fields=('id', 'alias', 'profile'))
+        choice_round = request.user.userprofile.requester.reputation_choices.count()
+        return Response(data={"data": serializer.data, "round": choice_round}, status=status.HTTP_200_OK)
+
+    @list_route(methods=['post'])
+    def next_phase(self, request, *args, **kwargs):
+        config = request.user.userprofile.requester.configuration
+        config.phase += 1
+        config.save()
+        return Response({"message": "OK"})
+
     @list_route(methods=['post'])
     def post_choice(self, request, *args, **kwargs):
         sample = request.data.get('sample', [])
         pick = request.data.get('pick', -1)
-        models.FeedChoices.objects.create(worker=request.user.userprofile.worker, sample=sample, requester_id=pick)
+        config = request.user.userprofile.requester.configuration
+        config.seen_workers += sample
+        config.save()
+        models.FeedChoicesRequester.objects.create(requester=request.user.userprofile.requester, sample=sample,
+                                                   worker_id=pick)
         return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)

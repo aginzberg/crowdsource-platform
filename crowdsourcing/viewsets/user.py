@@ -212,7 +212,7 @@ class UserPreferencesViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
                                                                       'configuration'):
             conf = request.user.userprofile.requester.configuration
             return Response(data={"condition": conf.condition,
-                                  "requester_id": conf.requester_id},
+                                  "requester_id": conf.requester_id, 'phase': conf.phase},
                             status=status.HTTP_200_OK)
 
         return Response(data={}, status=status.HTTP_204_NO_CONTENT)
