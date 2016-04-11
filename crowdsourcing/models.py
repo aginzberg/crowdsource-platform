@@ -649,7 +649,7 @@ class RequesterConfig(models.Model):
     condition = models.SmallIntegerField(choices=STATUS, null=True)
     config = JSONField(null=True)
     phase = models.SmallIntegerField(default=1)
-    seen_workers = ArrayField(models.IntegerField(), null=True)
+    seen_workers = ArrayField(models.IntegerField(), default=[])
 
 
 class URLAuth(models.Model):
