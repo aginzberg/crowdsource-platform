@@ -404,8 +404,6 @@ class RequesterStudyTaskSerializer(DynamicFieldsModelSerializer):
         else:
             results = random.choice(w_results.all(), 7, replace=True)
 
-        models.RequesterStudyRels.objects.filter(requester=self.context['request'].user.userprofile.requester,
-                                                 phase=requester_config.phase).delete()
         for r in results:
             m = models.RequesterStudyRels()
             m.requester = self.context['request'].user.userprofile.requester

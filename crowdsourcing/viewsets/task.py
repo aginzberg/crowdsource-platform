@@ -251,6 +251,8 @@ class RRatingStudyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         phase = request.user.userprofile.requester.configuration.phase
+        models.RequesterStudyRels.objects.filter(requester=request.user.userprofile.requester,
+                                                 phase=phase).delete()
         if phase == 1:
             self.queryset = self.queryset.filter(original_id=1562)
         elif phase == 2:
@@ -259,6 +261,7 @@ class RRatingStudyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             self.queryset = self.queryset.filter(original_id__gte=1581, original_id__lte=1590)
         else:
             return Response(data=[])
+
         serializer = self.serializer_class(instance=self.queryset, many=True, context={'request': request})
         return Response(data=serializer.data)
 
