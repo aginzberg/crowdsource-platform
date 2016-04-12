@@ -101,8 +101,8 @@
         <md-subheader>Round {{ vm.round }}</md-subheader>
         <md-progress-linear class="md-primary" md-mode="determinate"
                             value="{{(vm.round/10)*100}}"></md-progress-linear>
-        <md-list>
-            <md-list-item class="md-3-line" ng-repeat="worker in vm.sampled_workers"
+        <div>
+            <div class="md-3-line md-lis" ng-repeat="worker in vm.sampled_workers"
                           ng-click="vm.pick = worker.id"
                           ng-class="{'_selected-task': vm.pick == worker.id}">
                 <div class="md-list-item-text">
@@ -110,8 +110,8 @@
                     <p ng-repeat="sample in worker.samples">{{$index+1 +'. '}}<span style="color: rgba(0,0,0, 0.34)">{{ sample.task_data }}</span>
                         {{ sample.result }}</p>
                 </div>
-            </md-list-item>
-        </md-list>
+            </div>
+        </div>
         <md-button ng-disabled="!vm.pick" style="" class="md-accent" ng-click="vm.postChoices()">Next
         </md-button>
     </div>

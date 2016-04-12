@@ -383,9 +383,9 @@ class RequesterStudyTaskSerializer(DynamicFieldsModelSerializer):
         w_results = obj.worker_results
         results = []
         if requester_config.phase == 1:
-            g_s = random.choice(good_workers, 3, replace=True)
-            b_s = random.choice(bad_workers, 3, replace=True)
-            u_s = random.choice(undefined_workers, 1, replace=True)
+            g_s = random.choice(good_workers, 3, replace=False)
+            b_s = random.choice(bad_workers, 3, replace=False)
+            u_s = random.choice(undefined_workers, 1, replace=False)
             sampled_workers = concatenate([g_s, u_s, b_s])
             results = w_results.filter(worker_id__in=sampled_workers)
         elif requester_config.phase in (2, 3) and requester_config.condition in (1, 2):
@@ -403,9 +403,9 @@ class RequesterStudyTaskSerializer(DynamicFieldsModelSerializer):
                 # normalize
                 norm_probs = [i / float(summation) for i in unnorm_probs]
 
-            results = random.choice(w_results.all(), 7, p=norm_probs, replace=True)
+            results = random.choice(w_results.all(), 7, p=norm_probs, replace=False)
         else:
-            results = random.choice(w_results.all(), 7, replace=True)
+            results = random.choice(w_results.all(), 7, replace=False)
 
         for r in results:
             m = models.RequesterStudyRels()
