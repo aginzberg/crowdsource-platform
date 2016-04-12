@@ -2,7 +2,8 @@
     <div class="_init-instructions">
         <div ng-if="vm.requester_config.phase < 2">By continuing, you are agreeing to participate in a research study at Stanford University.
 See the following link: <a href="https://www.dropbox.com/s/yq1d9jzyhe4buwn/Daemo%20information%20sheet%20for%20consent.pdf?dl=1" target="_blank">here</a></div>
-        <div ng-if="vm.requester_config.phase < 4">You will be rating workers' results across three different tasks.
+        <br/>
+        <div class="_important" ng-if="vm.requester_config.phase < 4">We have recruited workers from Amazon Mechanical Turk to complete a series of three tasks. Please rate the workers' results.
         </div>
         <div class="_important" ng-if="vm.requester_config.phase>3">Based on your experiences with each of the workers below, which of the
             three
@@ -10,7 +11,7 @@ See the following link: <a href="https://www.dropbox.com/s/yq1d9jzyhe4buwn/Daemo
         </div>
         <div ng-if="vm.showText && vm.requester_config.phase<4" class="_important" style="margin-top: 32px">
             <div style="margin-top: 20px">
-                Your ratings for each task will influence which workers return to do the next task:
+                Your ratings for each task will influence which workers return to do the next task. Use your ratings to try and get the best results possible.
                 <ul>
                     <li>If you give a worker
                         <!--md-icon class="_clickable-icon _icon-18" ng-class="{'_t': true}"
