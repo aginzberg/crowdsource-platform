@@ -258,7 +258,7 @@ class RRatingStudyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         elif phase == 2:
             self.queryset = self.queryset.filter(original_id__gte=1457, original_id__lte=1464)
         elif phase == 3:
-            self.queryset = self.queryset.filter(original_id__gte=1581, original_id__lte=1590)
+            self.queryset = self.queryset.filter(original_id__gte=1581, original_id__lte=1585)
         else:
             return Response(data=[])
 

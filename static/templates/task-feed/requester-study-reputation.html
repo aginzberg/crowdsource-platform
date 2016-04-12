@@ -1,10 +1,10 @@
 <div class="_main-content _middle-content _relative">
     <div class="_init-instructions">
-        <div>By continuing, you are agreeing to participate in a research study at Stanford University.
+        <div ng-if="vm.requester_config.phase < 2">By continuing, you are agreeing to participate in a research study at Stanford University.
 See the following link: <a href="https://www.dropbox.com/s/yq1d9jzyhe4buwn/Daemo%20information%20sheet%20for%20consent.pdf?dl=1" target="_blank">here</a></div>
         <div ng-if="vm.requester_config.phase < 4">You will be rating workers' results across three different tasks.
         </div>
-        <div ng-if="vm.requester_config.phase>3">Based on your experiences with each of the workers below, which of the
+        <div class="_important" ng-if="vm.requester_config.phase>3">Based on your experiences with each of the workers below, which of the
             three
             workers is the best?
         </div>
@@ -118,5 +118,5 @@ See the following link: <a href="https://www.dropbox.com/s/yq1d9jzyhe4buwn/Daemo
         </md-button>
     </div>
 
-    <div ng-if="vm.requester_config.phase>3 && vm.round>9" class="_important">All done, thank you for rating. Pleas return to the HIT and enter your completion code: 7DW0KW!q4!</div>
+    <div ng-if="vm.requester_config.phase>3 && vm.round>9" class="_important">All done, thank you for rating. If you are a Mechanical Turk worker, please return to the HIT and enter your completion code: 7DW0KW!q4!. Otherwise, please notify us via email that you have finished the study. Thanks!</div>
 </div>
