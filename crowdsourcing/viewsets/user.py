@@ -196,3 +196,23 @@ class UserPreferencesViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
         user_preference = UserPreferences.objects.get(user=request.user)
         serializer = UserPreferencesSerializer(user_preference)
         return Response(serializer.data)
+
+    @list_route(methods=['get'])
+    def get_worker_configuration(self, request, *args, **kwargs):
+        if hasattr(request.user.userprofile, 'worker') and hasattr(request.user.userprofile.worker, 'configuration'):
+            config = request.user.userprofile.worker.configuration
+            return Response(data={"condition": config.condition, 'phase': config.phase},
+                            status=status.HTTP_200_OK)
+
+        return Response(data={}, status=status.HTTP_204_NO_CONTENT)
+
+    @list_route(methods=['get'])
+    def get_requester_configuration(self, request, *args, **kwargs):
+        if hasattr(request.user.userprofile, 'requester') and hasattr(request.user.userprofile.requester,
+                                                                      'configuration'):
+            conf = request.user.userprofile.requester.configuration
+            return Response(data={"condition": conf.condition,
+                                  "requester_id": conf.requester_id, 'phase': conf.phase},
+                            status=status.HTTP_200_OK)
+
+        return Response(data={}, status=status.HTTP_204_NO_CONTENT)

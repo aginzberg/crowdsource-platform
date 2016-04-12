@@ -1,73 +1,139 @@
 <div class="_main-content _middle-content" ng-class="{'_sm': $mdMedia('sm'), '_gt-sm': $mdMedia('gt-sm')}">
-  <div layout="row" class="layout-align-start-center _task-nav _task-feed-shadow" ng-class="{'_sm': $mdMedia('sm'), '_gt-sm': $mdMedia('gt-sm')}">
-    <span class="_nav-title _left-inset">Task Feed</span>
-  </div>
-  <div class="_feed-list">
-    <div ng-hide="!project.available_tasks" ng-repeat="project in taskfeed.projects" class="_task-feed-shadow">
-        <div class="_task-top" ng-click="taskfeed.showPreview(project)">
-          <div layout="row">
-            <div flex="10" class="_price">
-              {{ project.price | currency:"$":2}}
+    <div layout="row" class="layout-align-start-center _task-nav _task-feed-shadow"
+         ng-class="{'_sm': $mdMedia('sm'), '_gt-sm': $mdMedia('gt-sm')}">
+        <span class="_nav-title _left-inset">Task Feed</span>
+    </div>
+    <div class="_feed-list">
+        <div ng-hide="!project.available_tasks" ng-repeat="project in taskfeed.projects" class="_task-feed-shadow"
+             ng-class="{'_first-margin': $index==0 && !taskfeed.has_read_tooltip && taskfeed.showToolTip && false}">
+            <div class="_task-top" ng-click="taskfeed.showPreview(project)">
+                <div layout="row">
+                    <div flex="10" class="_price">
+                        {{ project.price | currency:"$":2}}
+                    </div>
+                    <div flex="70" class="_title">
+                        {{ project.name }}
+                    </div>
+                    <div flex="20" class="_author _right-offset">
+                        <div class="_user-alias _no-border">{{ project.owner_name }}</div>
+                            <span ng-if="taskfeed.worker_config.phase==3">
+                              <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
+                                   ng-style="{'background': 'linear-gradient(to right, black 0%, black
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 1)}}%, white
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 1)}}%, white 100%)'}">
+                              </div>
+                              <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
+                                   ng-style="{'background': 'linear-gradient(to right, black 0%, black
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 2)}}%, white
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 2)}}%, white 100%)'}">
+                              </div>
+                              <div class="_circle" ng-class="{_unrated: {{ project.raw_rating === null}}}"
+                                   ng-style="{'background': 'linear-gradient(to right, black 0%, black
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 3)}}%, white
+                                           {{ taskfeed.getRatingPercentage(project.raw_rating, 3)}}%, white 100%)'}">
+                              </div>
+                            </span>
+                    </div>
+                </div>
+                <div layout="row" class="layout-align-start-center">
+                    <div flex="10" class="_time">
+                        <div ng-if="!project.is_prototype">{{ project.price * 10 | number: 0}} min</div>
+                        <!--div>40 mins</div-->
+                    </div>
+                    <div flex="70">
+                        <span class="_hourly-rate"
+                              ng-if="taskfeed.worker_config.phase==3 && project.completion_time && (taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_TWO__BT_TT || taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_FOUR__BC_TT)">
+                            <md-icon
+                                    class="_icon-18" md-font-set="material-icons">schedule
+                            </md-icon> {{ project.price*60 /project.completion_time | number: 2}} $/hr estimated rate
+
+                        </span>
+
+                        <md-icon md-font-set="material-icons">list</md-icon>
+                        <ng-pluralize class="_tasks-available" count="project.available_tasks"
+                                      when="{'one': '1 available task', 'other': '{} available tasks'}"></ng-pluralize>
+                    </div>
+                    <div flex="20" class="_expand _right-offset">
+                        <span ng-if="taskfeed.worker_config.phase==3" class="_acceptance-rate"
+                              ng-class="{'_high': project.rejection_rate>=40, '_medium': project.rejection_rate<=20 && project.rejection_rate>=10, '_low': project.rejection_rate<=3}">
+                            Rejection Rate: {{ project.rejection_rate +'%'}} </span>
+                        <md-icon ng-if="project.show_preview" md-font-set="material-icons" class="_more">expand_less
+                        </md-icon>
+                        <md-icon ng-if="!project.show_preview" md-font-set="material-icons" class="_more">expand_more
+                        </md-icon>
+                    </div>
+                    <div ng-if="$index==0 && !taskfeed.has_read_tooltip && taskfeed.showToolTip && false"
+                         class="_tooltip _feed-tooltip fx-fade-down fx-dur-1000 fx-ease-quart " ng-cloak=""
+                         ng-class="{'_treatment-t1': task.tooltipTaller}">
+                        <span class="_main-text">We estimate your Hourly Rate!</span> <br/>
+                        <span>Daemo predicts how long each task will take you, based on the time you spent on previous tasks.</span>
+                        <md-button ng-click="taskfeed.gotIt($event)" class="_cbtn _tooltip-btn">Got it</md-button>
+                    </div>
+                </div>
+
+                <!--div ng-if="$index==0 && (taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_TWO__BT_TT || taskfeed.worker_config.condition === taskfeed.conditions.CONDITION_FOUR__BC_TT)"
+                     layout="column" class="layout-align-start-center _note _feed-timer-hint"
+                     style="padding: 0; margin-bottom: 8px">
+                    <div class="_main-text">We /...</div>
+                    <div>Daemo predicts how long each task will take you, based on the time you spent on previous
+                        tasks.
+                    </div>
+                </div-->
             </div>
-            <div flex="70" class="_title">
-              {{ project.name }}
-            </div>
-            <div flex="20" class="_author _right-offset">
-                <div class="_user-alias _no-border">{{ project.owner.alias }}</div>
-                <span>
-                  <div class="_circle" ng-class="{_unrated: {{project.raw_rating === null}}}"
-                        ng-style="{'background': 'linear-gradient(to right, black 0%, black {{taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 1)}}%, white {{taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 1)}}%, white 100%)'}">
-                  </div>
-                  <div class="_circle" ng-class="{_unrated: {{project.raw_rating === null}}}"
-                        ng-style="{'background': 'linear-gradient(to right, black 0%, black {{taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 2)}}%, white {{taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 2)}}%, white 100%)'}">
-                  </div>
-                  <div class="_circle" ng-class="{_unrated: {{project.raw_rating === null}}}"
-                        ng-style="{'background': 'linear-gradient(to right, black 0%, black {{taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 3)}}%, white {{taskfeed.getRatingPercentage(project.raw_rating, project.requester_rating, 3)}}%, white 100%)'}">
-                  </div>
-                </span>
-            </div>
-          </div>
-          <div layout="row" class="layout-align-start-center">
-            <div flex="10" class="_time">
-              <div>{{ project.timeout | number: 0}} min</div>
-            </div>
-            <div flex="70">
-              <text class="_hourly-rate">Hourly Rate : $6 pr/hr </text>
-              <md-icon md-font-set="material-icons">list</md-icon>
-              <ng-pluralize class="_tasks-available" count="project.available_tasks"
-                when="{'one': '1 available task', 'other': '{} available tasks'}"></ng-pluralize>
-            </div>
-            <div flex="20" class="_expand _right-offset">
-              <text class="_acceptance-rate">Acceptance Rate : 80% </text>
-              <md-icon ng-if="project.show_preview" md-font-set="material-icons" class="_more">expand_less</md-icon>
-              <md-icon ng-if="!project.show_preview" md-font-set="material-icons" class="_more">expand_more</md-icon>
-            </div>
-          </div>
-        </div>
-        <div class="_preview" ng-if="project.show_preview">
-          <div layout="row" class="layout-align-start-center">
-            <div flex="10" class="_sample">Sample</div>
+            <div class="_preview" ng-if="project.show_preview">
+                <div layout="row" class="layout-align-start-center">
+                    <div flex="10" class="_sample">Sample</div>
             <span flex="90" class="_accept">
               <md-button ui-sref="task_project({projectId:project.id})"
-                           ng-disabled="!project.available_tasks || project.status>3"
-                           aria-label="attempt" class="md-action-button no-surround">
-                Accept
+                         ng-disabled="!project.available_tasks || project.status>3"
+                         aria-label="attempt" class="md-action-button no-surround md-accent">
+                  Accept
               </md-button>
             </span>
-          </div>
-          <div ng-controller="TemplateController as template" class="template-item"
-               ng-repeat="item in project.template.template_items">
-              <div md-template-compiler="item" editor="false" instance="template"></div>
-          </div>
+                </div>
+                <div ng-controller="TemplateController as template" class="template-item"
+                     ng-repeat="item in project.template.template_items">
+                    <div md-template-compiler="item" editor="false" instance="template"></div>
+                </div>
+            </div>
+        </div>
+        <div class="_no-tasks _task-feed-shadow" ng-if="taskfeed.loading">
+            <div layout="row" layout-sm="column" layout-align="space-around" class="md-padding">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>
+        </div>
+        <div class="_no-tasks _task-feed-shadow" ng-if="!taskfeed.loading && !taskfeed.availableTasks && false">
+            <div ng-if="taskfeed.worker_config.phase==1">All 14 tasks completed successfully. Click below to continue
+                with the next step!
+                <a style="width: 100%;" ui-sref="feed-end" class="md-button md-accent">Continue</a>
+            </div>
+            <div ng-if="taskfeed.worker_config.phase==3">{{ taskfeed.emptyState }}</div>
+        </div>
+        <div class="_task-feed-shadow" ng-if="!taskfeed.availableTasks && taskfeed.round<10 && !taskfeed.loading">
+            <!--p style="padding: 16px;">If you were going to do another task, which of this three requester would you choose.</p-->
+            <p style="padding: 16px;">Based on your experiences with each of the requesters below, which of the three
+                requesters is the best? We have listed the tasks you did for each requester.</p>
+            <md-subheader>Round {{ taskfeed.round }}</md-subheader>
+            <md-progress-linear class="md-primary" md-mode="determinate"
+                                value="{{(taskfeed.round/10)*100}}"></md-progress-linear>
+            <md-list>
+                <md-list-item class="md-3-line" ng-repeat="requester in taskfeed.sampled_requesters"
+                              ng-click="taskfeed.pick = requester.requester_id"
+                              ng-class="{'_selected-task': taskfeed.pick == requester.requester_id}">
+                    <div class="md-list-item-text">
+                        <h3>{{ requester.requester_name }}</h3>
+                        <p style="padding-left: 8px;" ng-repeat="project in requester.projects">{{ project.name }}</p>
+                    </div>
+                </md-list-item>
+            </md-list>
+            <md-button ng-disabled="!taskfeed.pick" style="" class="md-accent" ng-click="taskfeed.postChoices()">Next
+            </md-button>
+        </div>
+        <div class="_no-tasks _task-feed-shadow"
+             ng-if="!taskfeed.loading && !taskfeed.availableTasks && taskfeed.round>9">
+            <div>All done, thank you for rating. Good news! you have been selected to skip the final stage of this experiment.
+                We will pay you the full amount. Pleas return to the HIT and enter your completion code: 7DW0KW!q4
+            </div>
         </div>
     </div>
-    <div class="_no-tasks _task-feed-shadow" ng-if="taskfeed.loading">
-      <div layout="row" layout-sm="column" layout-align="space-around" class="md-padding">
-        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
-      </div>
-    </div>
-    <div class="_no-tasks _task-feed-shadow" ng-if="!taskfeed.loading && !taskfeed.availableTasks">
-        No free tasks available
-    </div>
-  </div>
 </div>

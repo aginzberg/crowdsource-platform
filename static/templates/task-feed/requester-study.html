@@ -1,0 +1,48 @@
+<div class="_main-content _middle-content _relative">
+
+
+    <div class="_init-instructions">
+        <div>Thanks for doing this.</div>
+        <div>In this study workers were asked to make the best title for the provided queries. To make it simple you can
+            just reject the ones that you think that should be rejected and the rest will be accepted when you click "Done".
+        Here is the design of the tasks that was shown to the workers, we are evaluating the "Write a headline .." responses.
+            <a target="_blank" href="http://web.stanford.edu/~dmorina/daemo/rejection_task_design.pdf">Link to task design</a>
+        </div>
+        <div ng-if="!vm.showText" class="_important" style="margin-top: 32px">
+            IMPORTANT: Boomerang displays each requester's percentage of rejected tasks to workers, personalized to the reputation score of the worker.
+            For example, a low-rated worker would see the requester's rejection rate for low-rated workers.
+            This interface encourages workers to swarm overly permissive requesters or avoid overly restrictive requesters.
+            <br/>
+            <br/>
+            This would be shown to different workers:
+            <img src="http://web.stanford.edu/~dmorina/daemo/rate_high.png" width="512">
+            <img src="http://web.stanford.edu/~dmorina/daemo/rate_low.png" width="512">
+        </div>
+        <div>Thank you!!!</div>
+    </div>
+    <div ng-if="!vm.done">
+        <div ng-repeat="task in vm.tasks">
+            <div style="margin-top: 16px; margin-bottom: 16px">
+                {{ $index+1 }}. Queries:<div ng-bind-html="task.entry"></div>
+                <div style="margin-left: 24px; margin-top: 16px;">
+                    <span class="_sub-header">Submissions</span>
+                    <div style="margin-top: 8px; margin-bottom: 8px;"
+                         ng-repeat="assignment in task.assignments">
+                        <div class="_user-alias">{{ assignment.worker_id }}</div>
+                        <div>
+                            <div style="min-width: 512px; display: inline-block">{{ assignment.answer }}</div>
+                            <md-button ng-if="!assignment.review" ng-click="vm.reject(assignment)">Reject</md-button>
+                            <span class="_error" ng-if="assignment.review.status==1">rejected</span>
+                            <span class="_ranking-success" ng-if="assignment.review.status==2">accepted</span>
+                        </div>
+
+                        <md-divider ng-if="!$last"></md-divider>
+                    </div>
+                </div>
+            </div>
+            <md-divider></md-divider>
+        </div>
+    </div>
+    <md-button ng-if="!vm.done" style="width: 100%" class="md-accent" ng-click="vm.acceptRest()">Done</md-button>
+    <div class="_important">Thank you!</div>
+</div>

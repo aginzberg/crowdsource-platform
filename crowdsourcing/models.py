@@ -25,15 +25,15 @@ class PasswordResetModel(models.Model):
 
 
 class Region(models.Model):
-    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the region!', })
-    code = models.CharField(max_length=16, error_messages={'required': 'Please specify the region code!', })
+    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the region!',})
+    code = models.CharField(max_length=16, error_messages={'required': 'Please specify the region code!',})
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
 
 class Country(models.Model):
-    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the country!', })
-    code = models.CharField(max_length=8, error_messages={'required': 'Please specify the country code!', })
+    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the country!',})
+    code = models.CharField(max_length=8, error_messages={'required': 'Please specify the country code!',})
     region = models.ForeignKey(Region)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -43,7 +43,7 @@ class Country(models.Model):
 
 
 class City(models.Model):
-    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the city!', })
+    name = models.CharField(max_length=64, error_messages={'required': 'Please specify the city!',})
     country = models.ForeignKey(Country)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -53,7 +53,7 @@ class City(models.Model):
 
 
 class Address(models.Model):
-    street = models.CharField(max_length=128, error_messages={'required': 'Please specify the street name!', })
+    street = models.CharField(max_length=128, error_messages={'required': 'Please specify the street name!',})
     country = models.ForeignKey(Country)
     city = models.ForeignKey(City)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
@@ -150,6 +150,7 @@ class WorkerSkill(models.Model):
 class Requester(models.Model):
     profile = models.OneToOneField(UserProfile)
     alias = models.CharField(max_length=32, error_messages={'required': "Please enter an alias!"})
+    rejection_rate = models.FloatField(default=None, null=True)
 
 
 class UserRole(models.Model):
@@ -369,6 +370,8 @@ class TaskWorker(models.Model):
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
     is_paid = models.BooleanField(default=False)
+    completion_time = models.FloatField(null=True)
+    system_completion_time = models.FloatField(null=True)
 
     class Meta:
         unique_together = ('task', 'worker',)
@@ -440,12 +443,14 @@ class Currency(models.Model):
 
 
 class UserPreferences(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name='preferences')
     language = models.ForeignKey(Language, null=True, blank=True)
     currency = models.ForeignKey(Currency, null=True, blank=True)
     login_alerts = models.SmallIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
     auto_accept = models.BooleanField(default=False)
+    has_read_tooltip = models.BooleanField(default=False)
+    has_read_tooltip_feed = models.BooleanField(default=False)
 
 
 class FlowModel(models.Model):
@@ -607,3 +612,106 @@ class Transaction(models.Model):
     reference = models.CharField(max_length=256, null=True)
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+
+class WorkerConfig(models.Model):
+    CONDITION_ONE = 1
+    CONDITION_TWO = 2
+    CONDITION_THREE = 3
+    CONDITION_FOUR = 4
+
+    STATUS = (
+        (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
+        (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
+        (CONDITION_THREE, 'BoomerangControl:TimerControl'),
+        (CONDITION_FOUR, 'BoomerangControl:TimerTreatment')
+    )
+    worker = models.OneToOneField(Worker, related_name='configuration')
+    condition = models.SmallIntegerField(choices=STATUS, null=True)
+    phase = models.SmallIntegerField(default=1)
+    phase_changed = models.DateTimeField(auto_now_add=False, auto_now=True, null=True)
+    config = JSONField(null=True)
+
+
+class RequesterConfig(models.Model):
+    CONDITION_ONE = 1
+    CONDITION_TWO = 2
+    CONDITION_THREE = 3
+    CONDITION_FOUR = 4
+
+    STATUS = (
+        (CONDITION_ONE, "BoomerangTreatment:RejectionControl"),
+        (CONDITION_TWO, 'BoomerangTreatment:RejectionTreatment'),
+        (CONDITION_THREE, 'BoomerangControl:RejectionControl'),
+        (CONDITION_FOUR, 'BoomerangControl:RejectionTreatment')
+    )
+    requester = models.OneToOneField(Requester, related_name='configuration')
+    condition = models.SmallIntegerField(choices=STATUS, null=True)
+    config = JSONField(null=True)
+    phase = models.SmallIntegerField(default=1)
+    seen_workers = ArrayField(models.IntegerField(), default=[])
+
+
+class URLAuth(models.Model):
+    token = models.CharField(max_length=128, unique=True)
+    username = models.CharField(max_length=128)
+    password = models.CharField(max_length=64)
+
+
+class RequesterFeedRankings(models.Model):
+    worker = models.ForeignKey(Worker, related_name='requester_rankings')
+    requester = models.ForeignKey(Requester, related_name='rankings')
+    rank = models.IntegerField(default=0)
+    created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+
+class ReviewableTask(models.Model):
+    entry = models.TextField(max_length=4096)
+    task_id = models.IntegerField(null=True)
+
+
+class ReviewableAssignment(models.Model):
+    task_id = models.ForeignKey(ReviewableTask, related_name='assignments', on_delete=models.CASCADE)
+    worker_id = models.CharField(max_length=32)
+    answer = models.TextField(max_length=1024, blank=True, null=True)
+    status = models.IntegerField(default=1)
+
+
+class AssignmentReviews(models.Model):
+    requester = models.ForeignKey(Requester, related_name='requester_reviews')
+    assignment = models.ForeignKey(ReviewableAssignment, related_name='reviews', on_delete=models.CASCADE)
+    status = models.IntegerField(default=0)
+
+
+class FeedChoices(models.Model):
+    worker = models.ForeignKey(Worker, related_name='feed_choices')
+    requester = models.ForeignKey(Requester)
+    sample = ArrayField(base_field=models.IntegerField())
+    created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+
+class RequesterStudyTask(models.Model):
+    original_id = models.IntegerField()
+    data = models.CharField(max_length=512)
+
+
+class RequesterStudyResults(models.Model):
+    worker = models.ForeignKey(Worker, related_name='rr_results')
+    task = models.ForeignKey(RequesterStudyTask, related_name='worker_results', on_delete=models.CASCADE)
+    result = models.CharField(max_length=16384)
+    original_worker_id = models.IntegerField(null=True)
+
+
+class FeedChoicesRequester(models.Model):
+    requester = models.ForeignKey(Requester, related_name='reputation_choices')
+    worker = models.ForeignKey(Worker)
+    sample = ArrayField(base_field=models.IntegerField())
+    created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+
+class RequesterStudyRels(models.Model):
+    # worker = models.ForeignKey(Worker, related_name='worker_samples')
+    requester = models.ForeignKey(Requester, related_name='samples')
+    result = models.ForeignKey(RequesterStudyResults, related_name='samples')
+    phase = models.IntegerField(default=1)
+    created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)

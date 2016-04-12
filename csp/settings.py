@@ -344,12 +344,26 @@ class SuppressDeprecated(logging.Filter):
         return not any([warn in record.getMessage() for warn in warnings])
 
 
+# Boomerang Time
+WORKER_TIME_COUNT = 1
+
+STUDY_FEED_PHASE = int(os.environ.get('STUDY_FEED_PHASE', 0))
+# Phase 1 is for creating requesters, Phase 2 is when the workers are supposed to come to platform and signup,
+# Phase 3 requester study
+
+STUDY_FEED_TIME = int(os.environ.get('STUDY_FEED_TIME', 16))  # minutes
+
+
+STUDY_WORKER_ID_DELTA = int(os.environ.get('STUDY_WORKER_ID_DELTA', 0))
+
 PYTHON_VERSION = 2
+STUDY_URL_AUTH = os.environ.get('STUDY_URL_AUTH', True)
+
 try:
     from local_settings import *
 except Exception as e:
     if DEBUG:
-        print e.message
+        print (e.message)
 
 # Secure Settings
 if not DEBUG:

@@ -6,9 +6,10 @@
         .controller('TaskController', TaskController);
 
     TaskController.$inject = ['$scope', '$state', '$mdToast', '$log', '$http', '$stateParams',
-        'Task', 'Authentication', 'Template', '$sce', '$filter', '$rootScope', 'RatingService', '$cookies', 'User'];
+        'Task', 'Authentication', 'Template', '$sce', '$filter', '$rootScope', 'RatingService', '$cookies', 'User', '$timeout'];
 
-    function TaskController($scope, $state, $mdToast, $log, $http, $stateParams, Task, Authentication, Template, $sce, $filter, $rootScope, RatingService, $cookies, User) {
+    function TaskController($scope, $state, $mdToast, $log, $http, $stateParams, Task, Authentication, Template, $sce,
+                            $filter, $rootScope, RatingService, $cookies, User, $timeout) {
         var self = this;
 
         var userAccount = Authentication.getAuthenticatedAccount();
@@ -20,6 +21,39 @@
         self.saveComment = saveComment;
         self.openChat = openChat;
         self.updateUserPreferences = updateUserPreferences;
+
+        self.gotIt = gotIt;
+        self.has_read_tooltip = true;
+        self.timerRunning = false;
+        self.toggleTimer = toggleTimer;
+        self.toggleTimerVisibility = toggleTimerVisibility;
+        self.readyToSubmit = false;
+        self.timerEditable = false;
+        self.editTimer = editTimer;
+        self.timerMilliseconds = 0;
+        self.setRating = setRating;
+        self.showRatingTooltip = false;
+        self.worker_config = null;
+        self.tooltipOneTitle = null;
+        self.tooltipOneBody = null;
+        self.tooltipTwoTitle = null;
+        self.tooltipTwoBody = null;
+        self.tooltipBoomerangOne = null;
+        self.tooltipBoomerangTwo = null;
+        self.tooltipBoomerangThree = null;
+        self.tooltipTaller = false;
+        /*
+         (CONDITION_ONE, "BoomerangTreatment:TimerControl"),
+         (CONDITION_TWO, 'BoomerangTreatment:TimerTreatment'),
+         (CONDITION_THREE, 'BoomerangControl:TimerControl'),
+         (CONDITION_FOUR, 'BoomerangControl:TimerTreatment')
+         * */
+        self.conditions = {
+            CONDITION_ONE__BT_TC: 1,
+            CONDITION_TWO__BT_TT: 2,
+            CONDITION_THREE__BC_TC: 3,
+            CONDITION_FOUR__BC_TT: 4
+        };
 
         activate();
 
@@ -48,6 +82,7 @@
                     self.rating.project = data[0].project;
                     self.rating.target = data[0].target;
                     self.taskData = data[0].data;
+                    self.ratingTarget = data[0].target;
                     self.time_left = data[0].time_left;
                     self.taskData.id = self.taskData.task ? self.taskData.task : id;
                     if (self.taskData.has_comments) {
@@ -60,7 +95,7 @@
                                 $mdToast.showSimple('Error fetching comments - ' + JSON.stringify(err));
                             }
                         ).finally(function () {
-                            });
+                        });
                     }
 
                     if (data[0].hasOwnProperty('auto_accept')) {
@@ -68,11 +103,25 @@
                     } else {
                         self.auto_accept = false;
                     }
+                    if (data[0].hasOwnProperty('has_read_tooltip')) {
+                        self.has_read_tooltip = data[0].has_read_tooltip;
+                        if (self.has_read_tooltip) {
+                            $timeout(function () {
+                                startTimer();
+                            }, 1000, false);
+                        }
+
+                    } else {
+                        self.has_read_tooltip = false;
+                    }
 
                 },
                 function error(data) {
                     $mdToast.showSimple('Could not get task with data.');
-                });
+                }).finally(function () {
+                getRating();
+                getWorkerConfig();
+            });
         }
 
 
@@ -113,13 +162,14 @@
             angular.forEach(itemsToSubmit, function (obj) {
                 if ((!obj.answer || obj.answer == "") && obj.type != 'checkbox') {
                     missing = true;
+                    return;
                 }
 
                 if (obj.type != 'checkbox') {
                     itemAnswers.push(
                         {
                             template_item: obj.id,
-                            result: obj.answer || ""
+                            result: obj.answer.toString() || ""
                         }
                     );
                 }
@@ -144,7 +194,25 @@
                 saved: self.isSavedQueue || self.isSavedReturnedQueue,
                 auto_accept: self.auto_accept
             };
-
+            if (!self.readyToSubmit) {
+                //self.readyToSubmit = true;
+                self.timerOpen = true;
+                stopTimer();
+                /*if (!self.rating.id) {
+                    self.showRatingTooltip = true;
+                }*/
+            }
+            if (!self.rating.id) {
+                self.showRatingTooltip = true;
+                $mdToast.showSimple('Please rate this requester!');
+                return;
+            }
+            var completion_time = self.timerMilliseconds / 1000;
+            var sys_time = self.timerMilliseconds / 1000;
+            if (self.timerEditable) {
+                completion_time = self.timerMinutes * 60 + self.timerSeconds;
+            }
+            angular.extend(requestData, {'completion_time': completion_time, 'system_completion_time': sys_time});
             Task.submitTask(requestData).then(
                 function success(data, status) {
                     gotoLocation(task_status, data);
@@ -197,6 +265,13 @@
             });
         }
 
+        function getWorkerConfig() {
+            User.getWorkerConfiguration().then(function (data) {
+                self.worker_config = data[0];
+                setTooltips();
+            });
+        }
+
         self.handleRatingSubmit = function (rating, entry) {
             if (entry.hasOwnProperty('current_rating_id')) {
                 RatingService.updateRating(rating, entry).then(function success(resp) {
@@ -216,6 +291,124 @@
                 }).finally(function () {
 
                 });
+            }
+        };
+
+        function gotIt() {
+            startTimer();
+            User.updatePreferences(userAccount.username, {'has_read_tooltip': true}).then(
+                function () {
+                    self.has_read_tooltip = true;
+                });
+        }
+
+        function startTimer() {
+            self.timerRunning = true;
+            $scope.$broadcast('timer-start');
+        }
+
+        function stopTimer() {
+            self.timerRunning = false;
+            $scope.$broadcast('timer-stop');
+        }
+
+        function resumeTimer() {
+            self.timerRunning = true;
+            $scope.$broadcast('timer-resume');
+        }
+
+        function toggleTimer() {
+            if (self.timerRunning) {
+                stopTimer();
+            }
+            else {
+                resumeTimer();
+            }
+        }
+
+        function toggleTimerVisibility() {
+            self.timerOpen = !self.timerOpen;
+        }
+
+        function editTimer() {
+            self.timerEditable = true;
+            var time = new Date(self.timerMilliseconds);
+            self.timerMinutes = time.getMinutes();
+            self.timerSeconds = time.getSeconds();
+        }
+
+        $scope.$on('timer-tick', function (event, args) {
+            self.timerMilliseconds = args.millis;
+        });
+
+        function getRating() {
+            RatingService.listByTarget(self.ratingTarget, 'worker').then(
+                function success(response) {
+                    self.rating = response[0];
+                },
+                function error(response) {
+                    $mdToast.showSimple('Could requester rating');
+                }
+            ).finally(function () {
+            });
+        }
+
+        function setRating(rating, weight) {
+            if (rating && rating.hasOwnProperty('id') && rating.id) {
+                if (rating.weight == weight){
+                    weight = 2.0;
+                }
+                RatingService.updateRating(weight, rating).then(function success(resp) {
+                    rating.weight = weight;
+                }, function error(resp) {
+                    $mdToast.showSimple('Could not update rating.');
+                }).finally(function () {
+
+                });
+            } else {
+                RatingService.submitRating(weight, rating).then(function success(resp) {
+                    rating.id = resp[0].id;
+                    rating.weight = weight;
+                }, function error(resp) {
+                    $mdToast.showSimple('Could not submit rating.')
+                }).finally(function () {
+
+                });
+            }
+        }
+
+        function setTooltips() {
+            if (self.worker_config.condition == self.conditions.CONDITION_ONE__BT_TC ||
+                self.worker_config.condition == self.conditions.CONDITION_THREE__BC_TC) {
+                self.tooltipOneTitle = 'Automatic timekeeping.';
+                //self.tooltipOneBody = 'The timer will tell you how long it takes you to finish this task.';
+                self.tooltipOneBody = 'The timer sits here, use the clock icon to expand/collapse it.';
+                self.tooltipTwoTitle = 'All done!';
+                self.tooltipTwoBody = 'If it’s inaccurate, you can still modify it before submitting!';
+                self.isTimerTreatment = false;
+            }
+            else {
+                self.tooltipOneTitle = 'How much money will you make?';
+                //self.tooltipOneBody = 'Our algorithm uses this time to predict your hourly wage for other tasks on the platform.';
+                self.tooltipOneBody = 'The timer sits here, use the clock icon to expand/collapse it.';
+                self.tooltipTwoTitle = 'Edit your time if needed.';
+                self.tooltipTwoBody = 'Our algorithm uses this time to predict your hourly wage for future tasks on the platform.';
+                self.tooltipTaller = true;
+                self.isTimerTreatment = true;
+            }
+
+            if (self.worker_config.condition == self.conditions.CONDITION_ONE__BT_TC ||
+                self.worker_config.condition == self.conditions.CONDITION_TWO__BT_TT) {
+                self.isBoomerangTreatment = true;
+                self.tooltipBoomerangOne = 'I don\'t like this: bury this requester\'s tasks at the bottom of my task feed';
+                self.tooltipBoomerangTwo = 'Same: keep this requester\'s tasks in the middle of my task feed';
+                self.tooltipBoomerangThree = 'I like this: feature this requester\'s tasks at the top of my task feed';
+            }
+            else {
+                self.isBoomerangTreatment = false;
+                self.tooltipBoomerangOne = 'I don\'t like this';
+                self.tooltipBoomerangTwo = 'Ok';
+                self.tooltipBoomerangThree = 'I like this';
             }
         }
     }

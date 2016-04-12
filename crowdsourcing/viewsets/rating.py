@@ -50,6 +50,15 @@ class WorkerRequesterRatingViewset(viewsets.ModelViewSet):
         rating.update({'origin_type': origin_type})
         return Response(data=rating, status=status.HTTP_200_OK)
 
+    @list_route(methods=['get'], url_path='list-by-origin')
+    def list_by_origin(self, request, *args, **kwargs):
+        origin_type = 'requester'
+        rating = WorkerRequesterRating.objects \
+            .filter(origin_id=request.user.userprofile.id, origin_type=origin_type) \
+            .order_by('-last_updated')
+        d = self.serializer_class(instance=rating, many=True, fields=('id', 'weight', 'target', 'origin_type'))
+        return Response(data=d.data, status=status.HTTP_200_OK)
+
 
 class RatingViewset(viewsets.ModelViewSet):
     queryset = Project.objects.filter(deleted=False)

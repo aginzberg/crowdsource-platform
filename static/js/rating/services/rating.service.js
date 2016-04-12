@@ -27,7 +27,8 @@
             getRequesterRatings: getRequesterRatings,
             submitRating: submitRating,
             updateRating: updateRating,
-            listByTarget: listByTarget
+            listByTarget: listByTarget,
+            listByOrigin: listByOrigin
         };
 
         return RatingService;
@@ -91,6 +92,14 @@
         function listByTarget(target, origin_type) {
             var settings = {
                 url: '/api/worker-requester-rating/list-by-target/?target=' + target + '&origin_type=' + origin_type,
+                method: 'GET'
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function listByOrigin() {
+            var settings = {
+                url: '/api/worker-requester-rating/list-by-origin/',
                 method: 'GET'
             };
             return HttpService.doRequest(settings);

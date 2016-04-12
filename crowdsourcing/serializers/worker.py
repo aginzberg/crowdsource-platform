@@ -1,6 +1,8 @@
 from crowdsourcing import models
 from rest_framework import serializers
 from crowdsourcing.serializers.dynamic import DynamicFieldsModelSerializer
+from crowdsourcing.serializers.rating import WorkerRequesterRatingSerializer
+
 
 
 class SkillSerializer(serializers.ModelSerializer):
@@ -32,10 +34,12 @@ class WorkerSerializer(DynamicFieldsModelSerializer):
     Good Lord, this needs cleanup :D, yes it really does
     '''
     num_tasks = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
+    samples = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Worker
-        fields = ('profile', 'skills', 'num_tasks', 'id',)
+        fields = ('profile', 'skills', 'num_tasks', 'id', 'alias', 'rating', 'samples')
         read_only_fields = ('num_tasks',)
 
     def create(self, validated_data):
@@ -52,6 +56,24 @@ class WorkerSerializer(DynamicFieldsModelSerializer):
         # response_data = models.Worker.objects.filter(taskworker__worker = instance).count()
         response_data = models.TaskWorker.objects.filter(worker=instance).count()
         return response_data
+
+    def get_rating(self, obj):
+        r = obj.profile.rating_target.filter(origin_id=self.context['request'].user.userprofile.id,
+                                             origin_type='requester').first()
+        if r:
+            return WorkerRequesterRatingSerializer(instance=r).data
+        else:
+            return {
+                "origin_type": "requester",
+                "target": obj.profile_id
+            }
+
+    def get_samples(self, obj):
+        from crowdsourcing.serializers.task import RequesterStudyResultsSerializer
+        requester = self.context['request'].user.userprofile.requester
+        m = [x.result for x in models.RequesterStudyRels.objects.filter(requester=requester, result__worker=obj)]
+        s = RequesterStudyResultsSerializer(instance=m, many=True, context=self.context, fields=('result', 'task_data'))
+        return s.data
 
 
 class WorkerSkillSerializer(serializers.ModelSerializer):

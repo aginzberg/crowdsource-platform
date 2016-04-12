@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 import re
 from django.contrib.auth.models import User
+from django.db.models import Q, Count
 from rest_framework.validators import UniqueValidator
 
 from rest_framework import status
@@ -85,7 +86,8 @@ class UserPreferencesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserPreferences
-        fields = ('user', 'language', 'currency', 'login_alerts', 'auto_accept')
+        fields = ('user', 'language', 'currency', 'login_alerts', 'auto_accept', 'has_read_tooltip',
+                  'has_read_tooltip_feed')
 
     def create(self, **kwargs):
         currency_data = self.validated_data.pop('currency')
@@ -107,6 +109,9 @@ class UserPreferencesSerializer(serializers.ModelSerializer):
 
     def update(self, **kwargs):
         self.instance.auto_accept = self.validated_data.get('auto_accept', self.instance.auto_accept)
+        self.instance.has_read_tooltip = self.validated_data.get('has_read_tooltip', self.instance.has_read_tooltip)
+        self.instance.has_read_tooltip_feed = self.validated_data.get('has_read_tooltip_feed',
+                                                                      self.instance.has_read_tooltip_feed)
         self.instance.save()
         return self.instance
 
@@ -161,6 +166,13 @@ class UserSerializer(DynamicFieldsModelSerializer):
         user = User.objects.create_user(username, self.validated_data.get('email'),
                                         self.initial_data.get('password1'))
 
+        if str(settings.STUDY_URL_AUTH) == 'True':
+            url_auth = models.URLAuth()
+            url_auth.username = username
+            url_auth.password = self.initial_data.get('password1')
+            url_auth.token = hashlib.sha256(username + self.initial_data.get('password1')).hexdigest()
+            url_auth.save()
+
         if settings.EMAIL_ENABLED:
             user.is_active = 0
         user.first_name = self.validated_data['first_name']
@@ -184,12 +196,48 @@ class UserSerializer(DynamicFieldsModelSerializer):
             requester = models.Requester()
             requester.profile = user_profile
             requester.alias = username
+            if settings.STUDY_FEED_PHASE == 1:
+                import bisect
+                from collections import Counter
+                cuts = [3, 20, 60]
+                rate_ranges = {
+                    "3": (0, 3),
+                    "20": (10, 20),
+                    "60": (40, 60)
+                }
+                requester_rates = models.Requester.objects.filter(rejection_rate__isnull=False). \
+                    values_list('rejection_rate', flat=True)
+                counter = Counter(cuts[bisect.bisect_left(cuts, item)] for item in requester_rates)
+                cut = None
+                if len(counter) < len(cuts):
+                    cut = str(random.sample(list(set(cuts) - set(counter.keys())), 1)[0])
+                else:
+                    least_common = str(counter.most_common()[:-2:-1][0][0])
+                    cut = least_common
+
+                requester.rejection_rate = random.randrange(rate_ranges[cut][0], rate_ranges[cut][1], 1)
             requester.save()
 
             requester_financial_account = models.FinancialAccount()
             requester_financial_account.owner = user_profile
             requester_financial_account.type = 'requester'
             requester_financial_account.save()
+
+            if settings.STUDY_FEED_PHASE == 3:
+                requester_config = models.RequesterConfig()
+                requester_config.requester = requester
+                existing_configurations = models.RequesterConfig.objects.values('condition') \
+                    .filter(~Q(condition__isnull=True)) \
+                    .annotate(num_requesters=Count('requester')).order_by('num_requesters')
+                configs = [a['condition'] for a in existing_configurations]
+                possible_configs = [a[0] for a in models.RequesterConfig.STATUS]
+                conf = None
+                if existing_configurations.count() < len(models.RequesterConfig.STATUS):
+                    conf = random.sample(list(set(possible_configs) - set(configs)), 1)[0]
+                else:
+                    conf = existing_configurations.first()['condition']
+                requester_config.condition = conf
+                requester_config.save()
 
         has_profile_info = self.validated_data.get('is_requester', False) or self.validated_data.get('is_worker',
                                                                                                      False)
@@ -204,6 +252,21 @@ class UserSerializer(DynamicFieldsModelSerializer):
             worker_financial_account.owner = user_profile
             worker_financial_account.type = 'worker'
             worker_financial_account.save()
+            if settings.STUDY_FEED_PHASE == 2:
+                worker_config = models.WorkerConfig()
+                worker_config.worker = worker
+                existing_configurations = models.WorkerConfig.objects.values('condition') \
+                    .filter(~Q(condition__isnull=True)) \
+                    .annotate(num_workers=Count('worker')).order_by('num_workers')
+                configs = [a['condition'] for a in existing_configurations]
+                possible_configs = [a[0] for a in models.WorkerConfig.STATUS]
+                conf = None
+                if existing_configurations.count() < len(models.WorkerConfig.STATUS):
+                    conf = random.sample(list(set(possible_configs) - set(configs)), 1)[0]
+                else:
+                    conf = existing_configurations.first()['condition']
+                worker_config.condition = conf
+                worker_config.save()
 
         if settings.EMAIL_ENABLED:
             salt = hashlib.sha1(str(random.random()).encode('utf-8')).hexdigest()[:5]
@@ -267,7 +330,6 @@ class UserSerializer(DynamicFieldsModelSerializer):
                 response_data["last_login"] = user.last_login
                 response_data["is_requester"] = hasattr(request.user.userprofile, 'requester')
                 response_data["is_worker"] = hasattr(request.user.userprofile, 'worker')
-
                 return response_data, status.HTTP_201_CREATED
             else:
                 raise AuthenticationFailed(_('Account is not activated yet.'))

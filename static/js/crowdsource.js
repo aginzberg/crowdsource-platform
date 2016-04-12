@@ -11,6 +11,7 @@ angular
         'ng-sortable',
         'ui.router',
         'ngWebsocket',
+        'timer',
 
         // local modules
         'crowdsource.config',
@@ -81,6 +82,7 @@ function run($http, $rootScope, $state, $location, $window, $websocket, $interva
     };
 
     $rootScope.initializeWebSocket = function () {
+        return;
         $rootScope.ws = $websocket.$new({
             url: $rootScope.getWebsocketUrl() + '/ws/inbox?subscribe-user',
             lazy: true,

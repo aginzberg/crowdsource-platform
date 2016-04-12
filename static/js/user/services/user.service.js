@@ -19,8 +19,10 @@
     function User($cookies, $http, $q, HttpService) {
         var User = {
             getProfile: getProfile,
-            listUsernames: listUsernames,
             updatePreferences: updatePreferences,
+            getWorkerConfiguration: getWorkerConfiguration,
+            getRequesterConfiguration: getRequesterConfiguration,
+            listUsernames: listUsernames,
             setOnline: setOnline,
             create_or_update_aws: create_or_update_aws,
             get_aws_account: get_aws_account,
@@ -81,6 +83,21 @@
             var settings = {
                 url: '/api/mturk-account/remove',
                 method: 'DELETE'
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function getWorkerConfiguration(){
+            var settings = {
+                url: '/api/preferences/get_worker_configuration/',
+                method: 'GET'
+            };
+            return HttpService.doRequest(settings);
+        }
+        function getRequesterConfiguration(){
+            var settings = {
+                url: '/api/preferences/get_requester_configuration/',
+                method: 'GET'
             };
             return HttpService.doRequest(settings);
         }

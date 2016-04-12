@@ -55,7 +55,7 @@
                     <div class="layout-row layout-align-start-center">
                         <span class="_user-alias">{{ myTasks.selectedProject.owner.alias }}</span>
 
-                        <div ng-click="myTasks.setRating(myTasks.selectedProject.rating, 1.0)" class="_rating-circle"
+                        <!--div ng-click="myTasks.setRating(myTasks.selectedProject.rating, 1.0)" class="_rating-circle"
                              ng-class="{'_unchecked': myTasks.selectedProject.rating.id==null,
             '_checked': myTasks.selectedProject.rating.weight>=1.0}"></div>
                         <div ng-click="myTasks.setRating(myTasks.selectedProject.rating, 2.0)" class="_rating-circle"
@@ -63,7 +63,23 @@
             '_checked': myTasks.selectedProject.rating.weight>=2.0}"></div>
                         <div ng-click="myTasks.setRating(myTasks.selectedProject.rating, 3.0)" class="_rating-circle"
                              ng-class="{'_unchecked': myTasks.selectedProject.rating.id==null || myTasks.selectedProject.rating.weight<3.0,
-            '_checked': myTasks.selectedProject.rating.weight==3.0}"></div>
+            '_checked': myTasks.selectedProject.rating.weight==3.0}"></div-->
+                        <!--div class="_thumb">
+                                <md-icon class="_clickable-icon" ng-class="{'_t': myTasks.selectedProject.rating.weight != 3.0}"
+                                         md-font-set="material-icons"
+                                         ng-click="myTasks.setRating(myTasks.selectedProject.rating, 3.0)">thumb_up
+                                </md-icon>
+                                <md-tooltip>
+                                    {{ myTasks.selectedProject.rating.weight != 3.0? task.tooltipBoomerangThree: 'Unlike' }}</md-tooltip>
+                            </div>
+                            <div class="_thumb">
+                                <md-icon class="_clickable-icon" ng-class="{'_t': task.rating.weight != 1.0}"
+                                         md-font-set="material-icons"
+                                         ng-click="myTasks.setRating(myTasks.selectedProject.rating, 1.0)">thumb_down
+                                </md-icon>
+                                <md-tooltip>
+                                    {{ myTasks.selectedProject.rating.weight != 1.0?task.tooltipBoomerangOne : 'Undo' }}</md-tooltip>
+                            </div-->
                     </div>
                 </div>
             </div>

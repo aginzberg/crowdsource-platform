@@ -29,7 +29,7 @@
 }
 
 ._task-top {
-	margin: 6px;
+	//margin: 6px;
 	padding: 10px 0 0;
 	font-size: 12px;
 	cursor: pointer;
@@ -54,10 +54,23 @@
 
 	& ._hourly-rate {
 		opacity: 0.54;
+        margin-right: 16px;
 	}
 
 	& ._acceptance-rate {
-		opacity: 0.54;
+		//opacity: 0.54;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 2px;
+        &._high {
+            background-color: #FFCDD2;
+        }
+        &._medium {
+            background-color: #FFECB3;
+        }
+        &._low {
+            background-color: #C8E6C9;
+        }
 	}
 
 	& ._tasks-available {
@@ -127,6 +140,8 @@
 	padding-left:2%;
 	min-height:60px;
 	line-height:60px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.54);
 }
 
 ._task-feed-shadow {

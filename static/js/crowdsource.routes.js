@@ -20,6 +20,30 @@
             templateUrl: '/static/templates/authentication/login.html'
         };
 
+        var feed_s = {
+            controller: 'LoginController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/authentication/study-auth.html'
+        };
+
+        var feed_end = {
+            controller: 'TaskFeedController',
+            controllerAs: 'taskfeed',
+            templateUrl: '/static/templates/task-feed/study-ranking.html'
+        };
+
+        var feed_requesters_rejection = {
+            controller: 'MyTasksController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/task-feed/requester-study.html'
+        };
+
+        var feed_requesters = {
+            controller: 'MyTasksController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/task-feed/requester-study-reputation.html'
+        };
+
         var register = {
             controller: 'RegisterController',
             controllerAs: 'register',
@@ -159,7 +183,34 @@
                 },
                 authenticate: false
             })
-
+            .state('feed-init', {
+                url: '/feed-init/:token',
+                views: {
+                    'content': feed_s
+                },
+                authenticate: false
+            })
+            .state('requester-study-init', {
+                url: '/requester-study-init/:token',
+                views: {
+                    'content': feed_s
+                },
+                authenticate: false
+            })
+            .state('feed-end', {
+                url: '/feed-end/:token',
+                views: {
+                    'content': feed_end
+                },
+                authenticate: true
+            })
+            .state('requester-study-r', {
+                url: '/requester-study-r/:token',
+                views: {
+                    'content': feed_requesters
+                },
+                authenticate: true
+            })
             .state('register', {
                 url: '/register',
                 views: {

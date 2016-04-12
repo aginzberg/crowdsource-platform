@@ -9,16 +9,17 @@
         .module('crowdsource.authentication.controllers')
         .controller('LoginController', LoginController);
 
-    LoginController.$inject = ['$window', '$state', '$scope', '$rootScope', 'Authentication', 'cfpLoadingBar'];
+    LoginController.$inject = ['$window', '$state', '$scope', 'Authentication', '$stateParams'];
 
     /**
      * @namespace LoginController
      */
-    function LoginController($window, $state, $scope, $rootScope, Authentication, cfpLoadingBar) {
+    function LoginController($window, $state, $scope, Authentication, $stateParams) {
         var vm = this;
 
         vm.login = login;
         vm.Authentication = Authentication;
+        vm.tokenAuth = tokenAuth;
 
         activate();
 
@@ -32,6 +33,11 @@
             if (Authentication.isAuthenticated()) {
                 $state.go('task_feed');
             }
+
+            if ($state.current.name == 'feed-init' || $state.current.name == 'requester-study-init') {
+                tokenAuth();
+            }
+
         }
 
         /**
@@ -40,32 +46,16 @@
          * @memberOf crowdsource.authentication.controllers.LoginController
          */
         function login(isValid) {
-            if(isValid){
-                //cfpLoadingBar.start();
+            if (isValid) {
                 Authentication.login(vm.username, vm.password).then(function success(data, status) {
-
-                    //var user = {username: data.data.username, password: vm.password};
-                    //OAuth.getAccessToken(user, null, post_config);
-                    //TODO configure OAuthProvider Here so that we can set client secret and client id
-                    // will be replaced by OAuth above
                     Authentication.setAuthenticatedAccount(data.data);
 
-                    $scope.$watch(Authentication.isAuthenticated, function(newValue, oldValue) {
-                      if(newValue){
-                          $rootScope.initializeWebSocket();
-
-                          $state.go('task_feed');
-                      }
+                    $scope.$watch(Authentication.isAuthenticated, function (newValue, oldValue) {
+                        if (newValue) {
+                            $state.go('task_feed');
+                        }
                     });
 
-                    /*Authentication.getOauth2Token(data.data.username, vm.password,
-                     "password", data.data.client_id, data.data.client_secret).then(function success(data, status) {
-                     Authentication.setOauth2Token(data.data);
-                     $window.location = '/profile'
-                     }, function error(data, status) {
-                     vm.error = data.data.detail;
-                     $scope.loginForm.$setPristine();
-                     }); */
                 }, function error(data, status) {
                     vm.error = data.data.detail;
                     $scope.loginForm.$setPristine();
@@ -73,7 +63,30 @@
                 }).finally(function () {
                 });
             }
-            vm.submitted=true;
+            vm.submitted = true;
+        }
+
+        function tokenAuth() {
+            var token = $stateParams.token;
+            Authentication.login(vm.username, vm.password, token).then(function success(data, status) {
+                Authentication.setAuthenticatedAccount(data.data);
+
+                $scope.$watch(Authentication.isAuthenticated, function (newValue, oldValue) {
+                    if (newValue) {
+                        if ($state.current.name == 'feed-init') {
+                            $state.go('task_feed');
+                        }
+                        else if ($state.current.name == 'requester-study-init') {
+                            $state.go('requester-study-r');
+                        }
+                    }
+                });
+
+            }, function error(data, status) {
+                vm.error = 'Set up failed, please try again, if that does not work you may return the HIT.';
+
+            }).finally(function () {
+            });
         }
     }
 })();

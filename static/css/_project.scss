@@ -482,13 +482,13 @@ md-list-item.list-item-with-padding {
   outline: none;
   &._unchecked {
     background-color: transparent;
-    border: 1px solid $accent_blue;
+    border: 1px solid $light_blue;
     &:hover {
-      background-color: rgba($accent_blue, 0.3);
+      background-color: rgba($light_blue, 0.3);
     }
   }
   &._checked {
-    background-color: $accent_blue;
+    background-color: $light_blue;
   }
 }
 

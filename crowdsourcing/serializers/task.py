@@ -2,12 +2,15 @@ from __future__ import division
 
 from rest_framework import serializers
 from django.db import transaction
-
+from numpy import random, concatenate
 from crowdsourcing import models
 from crowdsourcing.serializers.dynamic import DynamicFieldsModelSerializer
 from crowdsourcing.serializers.template import TemplateSerializer
 from crowdsourcing.serializers.message import CommentSerializer
 from crowdsourcing.validators.task import ItemValidator
+from crowdsourcing.serializers.worker import WorkerSerializer
+
+from csp import settings
 
 
 class TaskWorkerResultListSerializer(serializers.ListSerializer):
@@ -56,7 +59,8 @@ class TaskWorkerSerializer(DynamicFieldsModelSerializer):
         fields = ('id', 'task', 'worker', 'task_status', 'created_timestamp', 'last_updated',
                   'worker_alias', 'worker_rating', 'task_worker_results',
                   'updated_delta',
-                  'requester_alias', 'project_data', 'is_paid', 'has_comments')
+                  'requester_alias', 'project_data', 'is_paid', 'has_comments', 'completion_time',
+                  'system_completion_time')
         read_only_fields = ('task', 'worker', 'task_worker_results', 'created_timestamp', 'last_updated',
                             'has_comments')
 
@@ -171,6 +175,13 @@ class TaskWorkerSerializer(DynamicFieldsModelSerializer):
     @staticmethod
     def get_has_comments(obj):
         return obj.task.taskcomment_task.count() > 0
+
+    def update(self, *args, **kwargs):
+        self.instance.completion_time = self.validated_data.get('completion_time', self.instance.completion_time)
+        self.instance.system_completion_time = self.validated_data.get('system_completion_time',
+                                                                       self.instance.system_completion_time)
+        self.instance.save()
+        return self.instance
 
 
 class TaskCommentSerializer(DynamicFieldsModelSerializer):
@@ -306,3 +317,101 @@ class TaskSerializer(DynamicFieldsModelSerializer):
     @staticmethod
     def get_completion(obj):
         return str(obj.task_workers.filter(task_status__in=[2, 3, 5]).count()) + '/' + str(obj.project.repetition)
+
+
+class AssignmentReviewsSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = models.AssignmentReviews
+        fields = ('id', 'status', 'assignment', 'requester')
+
+
+class ReviewableAssignmentSerializer(DynamicFieldsModelSerializer):
+    review = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.ReviewableAssignment
+        fields = ('id', 'worker_id', 'answer', 'review')
+
+    def get_review(self, obj):
+        r = obj.reviews.filter(requester_id=self.context['requester_id'])
+        if not r:
+            return None
+        serializer = AssignmentReviewsSerializer(instance=r[0], many=False)
+        return serializer.data
+
+
+class ReviewableTaskSerializer(DynamicFieldsModelSerializer):
+    assignments = ReviewableAssignmentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = models.ReviewableTask
+        fields = ('id', 'entry', 'assignments')
+
+
+class RequesterStudyResultsSerializer(DynamicFieldsModelSerializer):
+    worker = serializers.SerializerMethodField()
+    task_data = serializers.SerializerMethodField()
+    class Meta:
+        model = models.RequesterStudyResults
+        fields = ('id', 'worker', 'result', 'task', 'task_data')
+
+    def get_worker(self, obj):
+        return WorkerSerializer(instance=obj.worker, fields=('id', 'rating', 'alias', 'profile'), context=self.context).data
+
+    def get_task_data(self, obj):
+        return obj.task.data
+
+
+class RequesterStudyTaskSerializer(DynamicFieldsModelSerializer):
+    results = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.RequesterStudyTask
+        fields = ('id', 'data', 'results')
+
+    def get_results(self, obj):
+        undefined_workers = [413, 414, 415, 416, 417, 418, 419]
+        undefined_workers = [x-settings.STUDY_WORKER_ID_DELTA for x in undefined_workers]
+        good_workers = [420, 421, 422, 423, 424, 425, 426]
+        good_workers = [x - settings.STUDY_WORKER_ID_DELTA for x in good_workers]
+        bad_workers = [427, 428, 429, 430, 431, 432, 433]
+        bad_workers = [x - settings.STUDY_WORKER_ID_DELTA for x in bad_workers]
+
+        requester_config = self.context.get('request').user.userprofile.requester.configuration
+        g_s, u_s, b_s = [], [], []
+        sampled_workers = []
+        w_results = obj.worker_results
+        results = []
+        if requester_config.phase == 1:
+            g_s = random.choice(good_workers, 3, replace=False)
+            b_s = random.choice(bad_workers, 3, replace=False)
+            u_s = random.choice(undefined_workers, 1, replace=False)
+            sampled_workers = concatenate([g_s, u_s, b_s])
+            results = w_results.filter(worker_id__in=sampled_workers)
+        elif requester_config.phase in (2, 3) and requester_config.condition in (1, 2):
+            unnorm_probs = []
+            for r in w_results.all():
+                rating = r.worker.profile.rating_target.filter(origin_id=self.context['request'].user.userprofile.id,
+                                                      origin_type='requester').last()
+                if not rating:
+                    unnorm_probs.append(1.99)
+                else:
+                    unnorm_probs.append(rating.weight)
+            summation = sum(unnorm_probs)
+            norm_probs = None
+            if summation != 0:
+                # normalize
+                norm_probs = [i / float(summation) for i in unnorm_probs]
+
+            results = random.choice(w_results.all(), 7, p=norm_probs, replace=False)
+        else:
+            results = random.choice(w_results.all(), 7, replace=False)
+
+        for r in results:
+            m = models.RequesterStudyRels()
+            m.requester = self.context['request'].user.userprofile.requester
+            m.result_id = r.id
+            m.phase = requester_config.phase
+            m.save()
+        s = RequesterStudyResultsSerializer(instance=results, many=True, context=self.context)
+        return s.data

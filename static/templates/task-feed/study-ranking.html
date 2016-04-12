@@ -1,0 +1,54 @@
+<div layout="row" class="_main-content" layout-align="start center" layout-margin>
+    <md-content class="authentication-form _main-content-body _study-rankings" layout-padding
+                layout-align="start center"
+                layout="column">
+        <h1 class="md-headline">Welcome Back!</h1>
+        <div ng-hide="taskfeed.rankingsSubmitted" class="fx-fade-down fx-dur-1000 fx-ease-quart">
+            <div class="_note" style="text-align: left">Instructions: These are the requesters that you have worked
+                with! Now, for each requester (task)
+                let us know <span style="font-weight: 500">"How much did you like it?"</span>.
+                Use the radio buttons to answer.<br>
+                When done click "Submit", thank you!!
+            </div>
+            <div style="width: 100%;">
+                <div ng-repeat="requester in taskfeed.workerRequesters" style="margin-top: 16px;">
+                    <!--md-icon class="_clickable-icon" ng-click="taskfeed.moveDown($index)" md-font-set="material-icons">keyboard_arrow_down</md-icon>
+                    <md-icon class="_clickable-icon" ng-click="taskfeed.moveUp($index)" md-font-set="material-icons">keyboard_arrow_up</md-icon-->
+                    <div layout="row" layout-align="start center">
+                        <span class="_user-alias" style="margin-right: 32px;">{{ requester.requester_name }}</span>
+                        <!--md-slider ng-model="requester.rating" flex="33" md-discrete step="1" min="1" max="3" aria-label="rating"></md-slider>
+                        <span style="margin-left: 8px;">{{ taskfeed.requesterRatingLabel(requester.rating) }}</span-->
+                    </div>
+                    <div style="margin-top: 8px;">
+                        <md-radio-group ng-model="requester.rating" layout="row">
+                            <md-radio-button value="1">1 (Strongly dislike)</md-radio-button>
+                            <md-radio-button value="2">2</md-radio-button>
+                            <md-radio-button value="3">3</md-radio-button>
+                            <md-radio-button value="4">4 (Neutral)</md-radio-button>
+                            <md-radio-button value="5">5</md-radio-button>
+                            <md-radio-button value="6">6</md-radio-button>
+                            <md-radio-button value="7">7 (Strongly like)</md-radio-button>
+                        </md-radio-group>
+                    </div>
+
+                    <div style="font-weight: 500; font-size: 14px; color: rgba(0, 0, 0, 0.54); padding: 12px;">
+                        <md-chips ng-model="requester.projects" name="name" readonly="true">
+                            <md-chip-template>
+                                <em>{{$chip.name}}</em>
+                            </md-chip-template>
+                        </md-chips>
+                    </div>
+                </div>
+            </div>
+            <md-button style="width: 100%;" class="md-accent" ng-click="taskfeed.submitRankings()">Submit!</md-button>
+        </div>
+        <div ng-if="taskfeed.rankingsSubmitted"><div>Successfully submitted. Now, click "Next" to start Phase 2 of the study,
+            work for 15 minutes. The accepted tasks will be paid as a bonus, do as many as you can. Good luck!</div>
+            <div flex="">
+                <a style="width: 100%;" ui-sref="task_feed" class="md-button md-accent">Next</a>
+            </div>
+        </div>
+
+    </md-content>
+</div>
+

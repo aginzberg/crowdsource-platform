@@ -34,7 +34,16 @@
             fork: fork,
             getProjectComments: getProjectComments,
             listWorkerProjects: listWorkerProjects,
-            getPreview: getPreview
+            getPreview: getPreview,
+            submitRankings: submitRankings,
+            loadRequesterStudy: loadRequesterStudy,
+            loadRequesterReputationStudy: loadRequesterReputationStudy,
+            reject: reject,
+            acceptRest: acceptRest,
+            sampleRequesters: sampleRequesters,
+            sampleWorkers: sampleWorkers,
+            postChoices: postChoices,
+            nextPhase: nextPhase
         };
 
         return Project;
@@ -145,5 +154,92 @@
             return HttpService.doRequest(settings);
         }
 
+        function submitRankings(rankings) {
+            var settings = {
+                url: '/api/project/submit-rankings/',
+                method: 'POST',
+                data: {
+                    rankings: rankings
+                }
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function loadRequesterStudy() {
+            var settings = {
+                url: '/api/requester-study/',
+                method: 'GET'
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function loadRequesterReputationStudy() {
+            var settings = {
+                url: '/api/requester-study-rating/',
+                method: 'GET'
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function reject(assignmentId) {
+            var settings = {
+                url: '/api/requester-study/reject/',
+                method: 'POST',
+                data: {
+                    assignment_id: assignmentId
+                }
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function acceptRest(assignments) {
+            var settings = {
+                url: '/api/requester-study/accept_rest/',
+                method: 'POST',
+                data: {
+                    assignments: assignments
+                }
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function sampleRequesters() {
+            var settings = {
+                url: '/api/project/sample_requesters/',
+                method: 'GET'
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function sampleWorkers() {
+            var settings = {
+                url: '/api/project/sample_workers/',
+                method: 'GET'
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function postChoices(sample, pick) {
+            var settings = {
+                url: '/api/project/post_choice/',
+                method: 'POST',
+                data: {
+                    sample: sample,
+                    pick: pick
+                }
+            };
+            return HttpService.doRequest(settings);
+        }
+
+
+        function nextPhase(){
+            var settings = {
+                url: '/api/project/next_phase/',
+                method: 'POST',
+                data: {}
+
+            };
+            return HttpService.doRequest(settings);
+        }
     }
 })();

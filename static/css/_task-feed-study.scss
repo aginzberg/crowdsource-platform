@@ -1,0 +1,116 @@
+@import "variables";
+
+$timer_color: #1D8EC9;
+$timer_tooltip: #F0F0F0;
+
+._timer, ._study-rankings {
+    margin-right: 16px;
+    & md-icon:not(._t) {
+        color: rgba($timer_color, 0.87) !important;
+    }
+    position: relative;
+    & ._tooltip {
+        position: absolute;
+        right: 0;
+        top: -125px;
+        &._small {
+            top: -90px;
+        }
+        &._treatment-t2 {
+            top: -100px;
+        }
+        &._treatment-t1 {
+            top: -140px;
+        }
+        font-size: 12px;
+        padding: 4px 5px;
+        & ._main-text {
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.7);
+        }
+        color: rgba(0, 0, 0, 0.54);
+        background-color: $timer_tooltip;
+        width: 128px;
+        &:after {
+            content: ' ';
+            width: 0;
+            height: 0;
+            border-style: solid;
+            position: absolute;
+            bottom: -14px;
+            right: 0;
+            border-width: 0 13px 15px 0;
+            border-color: transparent $timer_tooltip transparent transparent;
+        }
+    }
+}
+
+._primary {
+    background-color: rgba($primary, 0.87);
+    color: #ffffff;
+    &.md-button.md-default-theme:hover:not([disabled]),
+    &.md-button:hover:not([disabled]) {
+        background-color: rgba($primary, 1);
+    }
+}
+
+._cbtn {
+    min-height: 30px;
+    line-height: 30px;
+    &._tooltip-btn {
+        color: rgba($primary, 0.87);
+        margin: 0;
+        float: right;
+    }
+}
+
+._clickable-icon {
+    outline: none;
+    cursor: pointer;
+}
+
+._ranking-success {
+    font-weight: 500;
+    font-size: 24px;
+    color: rgba($status_online, 0.7);
+}
+
+._feed-timer-hint {
+    font-size: 12px;
+    padding: 4px 5px;
+    & ._main-text {
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.7);
+    }
+    color: rgba(0, 0, 0, 0.54);
+}
+
+._thumb {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+._init-instructions {
+    background-color: #FFF9C4;
+    margin-bottom: 200px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+._important {
+    font-weight: 500;
+}
+
+._img-rate-low {
+    background-size: 512px 46px;
+    background-repeat: no-repeat;
+}
+
+._img-rate-high {
+    background-size: 512px 46px;
+    background-repeat: no-repeat;
+}
+
+._selected-task {
+    background-color: #B3E5FC;
+}

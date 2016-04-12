@@ -1,3 +1,4 @@
+import random
 from rest_framework import status, viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAuthenticated
@@ -58,7 +59,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project_object = self.get_object()
         serializer = ProjectSerializer(instance=project_object,
                                        fields=('id', 'name', 'price', 'repetition', 'deadline', 'timeout',
-                                               'is_prototype', 'templates', 'status', 'batch_files', 'post_mturk'))
+                                               'is_prototype', 'templates', 'status', 'batch_files',
+                                               'post_mturk'),
+                                       context={'request': request})
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -100,16 +103,68 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['get'], url_path='worker_projects')
     def worker_projects(self, request, *args, **kwargs):
-        projects = Project.objects.filter(Q(project_tasks__task_workers__worker_id=request.user.userprofile.worker),
-                                          ~Q(project_tasks__task_workers__task_status=TaskWorker.STATUS_SKIPPED),
-                                          deleted=False).distinct()
+        query = '''
+            SELECT
+                DISTINCT p.id, p.name, r.alias owner_name, p.owner_id
+            FROM crowdsourcing_taskworker tw
+              INNER JOIN crowdsourcing_task t ON tw.task_id = t.id
+              INNER JOIN crowdsourcing_worker w ON tw.worker_id = w.id
+              INNER JOIN crowdsourcing_project p ON t.project_id = p.id
+              INNER JOIN crowdsourcing_requester r ON r.id = p.owner_id
+            WHERE tw.worker_id = %(worker_id)s AND task_status<>6;
+        '''
+        projects = Project.objects.raw(query, params={'worker_id': request.user.userprofile.worker.id})
         serializer = ProjectSerializer(instance=projects, many=True,
-                                       fields=('id', 'name', 'owner', 'status'),
+                                       fields=('id', 'name', 'owner', 'owner_id'),
                                        context={'request': request})
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     @list_route(methods=['get'])
     def list_feed(self, request, **kwargs):
+        from django.utils.timezone import utc
+        last_login = request.user.last_login
+        now = datetime.utcnow().replace(tzinfo=utc)
+        condition = -1
+        phase = 1
+        if hasattr(request.user.userprofile.worker, 'configuration'):
+            condition = request.user.userprofile.worker.configuration.condition
+            phase = request.user.userprofile.worker.configuration.phase
+            phase_updated = request.user.userprofile.worker.configuration.phase_changed
+
+            if phase_updated is not None and (now - phase_updated).total_seconds() / 60 >= settings.STUDY_FEED_TIME \
+                and phase == 3:
+                return Response(data={"message": "Time is up, thank you so much, your code is ZPY1687QG, "
+                                                 "you may close this window now!"},
+                                status=status.HTTP_410_GONE)
+
+        query_factor = '''
+            SELECT avg(p.ratio) id
+            FROM (
+                   SELECT
+                     t.id task_id,
+                     CASE WHEN tw.completion_time / two.completion_time IS NULL
+                       THEN 1.0
+                     ELSE tw.completion_time / two.completion_time END ratio,
+                     two.completion_time completion_time
+                   FROM crowdsourcing_task t
+                     LEFT OUTER JOIN crowdsourcing_taskworker tw ON tw.task_id = t.id
+                             AND tw.task_status IN (2, 3) AND tw.worker_id = %(worker_id)s AND
+                             tw.completion_time IS NOT NULL
+                     LEFT OUTER JOIN (SELECT
+                                        task_id,
+                                        avg(completion_time) completion_time
+                                      FROM crowdsourcing_taskworker two
+                                      WHERE two.task_status IN (2, 3) AND two.completion_time IS NOT NULL
+                                      GROUP BY task_id) two ON two.task_id = t.id
+            ) p;
+        '''
+        worker_id = request.user.userprofile.worker.id
+        factor = 1.0  # models.Worker.objects.raw(query_factor, params={'worker_id': worker_id})[0].id
+
+        extra_query = ''
+        if phase == -1:
+            extra_query = ' inner join (select px.owner_id, max(px.id) id from ' \
+                          'crowdsourcing_project px GROUP BY px.owner_id) px on px.id=cp.id '
         query = '''
             WITH projects AS (
                 SELECT
@@ -118,38 +173,59 @@ class ProjectViewSet(viewsets.ModelViewSet):
                   requester_ratings.requester_rating,
                   requester_ratings.raw_rating
                 FROM get_min_project_ratings() ratings
-                  LEFT OUTER JOIN (SELECT requester_id, requester_rating as raw_rating,
+                  LEFT OUTER JOIN (SELECT requester_id, requester_rating AS raw_rating,
                                     CASE WHEN requester_rating IS NULL AND requester_avg_rating
-                                        IS NOT NULL THEN requester_avg_rating
+                                        IS NOT NULL THEN 1.99 --requester_avg_rating
                                     WHEN requester_rating IS NULL AND requester_avg_rating IS NULL THEN 1.99
                                     WHEN requester_rating IS NOT NULL AND requester_avg_rating IS NULL
                                     THEN requester_rating
                                     ELSE requester_rating + 0.1 * requester_avg_rating END requester_rating
                                    FROM get_requester_ratings(%(worker_profile)s)) requester_ratings
                     ON requester_ratings.requester_id = ratings.owner_id
-                  LEFT OUTER JOIN (SELECT requester_id, CASE WHEN worker_rating IS NULL AND worker_avg_rating
-                                        IS NOT NULL THEN worker_avg_rating
-                                    WHEN worker_rating IS NULL AND worker_avg_rating IS NULL THEN 1.99
-                                    WHEN worker_rating IS NOT NULL AND worker_avg_rating IS NULL THEN worker_rating
-                                    ELSE worker_rating + 0.1 * worker_avg_rating END worker_rating
-                                   FROM get_worker_ratings(%(worker_profile)s)) worker_ratings
-                    ON worker_ratings.requester_id = ratings.owner_id
-                    and worker_ratings.worker_rating>=ratings.min_rating
-                ORDER BY requester_rating desc)
-            UPDATE crowdsourcing_project p set min_rating=projects.new_min_rating
-            FROM projects
-            where projects.project_id=p.id
-            RETURNING p.id, p.name, p.price, p.owner_id, p.created_timestamp, p.allow_feedback,
-            p.is_prototype, projects.requester_rating, projects.raw_rating;
+                  )
+            SELECT cp.id, cp.name, p.raw_rating, p.requester_rating, r.alias owner_name, r.rejection_rate rejection_rate,
+             cp.owner_id, cp.is_prototype, cp.price, cp.task_time, available_projects.available_tasks
+             FROM projects p
+        INNER JOIN crowdsourcing_project cp ON p.project_id= cp.id AND cp.owner_id IN (58, 59, 68, 70, 71, 61, 62) ''' + extra_query + \
+                ''' INNER JOIN crowdsourcing_requester r ON r.id = cp.owner_id
+        INNER JOIN (SELECT
+                        project_id,
+                        sum(available_tasks) available_tasks
+                      FROM (
+                             SELECT
+                               t.project_id,
+                               t.id,
+                               CASE WHEN count(DISTINCT twd.id) < p.repetition AND count(DISTINCT tw.id) = 0
+                                 THEN 1
+                               ELSE 0 END available_tasks
+                             FROM crowdsourcing_project p INNER JOIN crowdsourcing_task t ON p.id = t.project_id
+                               LEFT OUTER JOIN crowdsourcing_taskworker tw
+                                 ON t.id = tw.task_id AND tw.worker_id = %(worker_id)s AND tw.task_status NOT IN (4, 6)
+                               LEFT OUTER JOIN crowdsourcing_taskworker twd
+                                 ON t.id = twd.task_id AND tw.worker_id <> %(worker_id)s AND tw.task_status NOT IN (4, 6)
+                             GROUP BY t.project_id, t.id, p.repetition) projects WHERE projects.available_tasks>0
+                      GROUP BY projects.project_id
+                ) available_projects ON available_projects.project_id=p.project_id
+        ORDER BY CASE WHEN %(worker_condition)s < 3 THEN  p.requester_rating ELSE p.project_id END DESC;
         '''
-        projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id})
+        projects = Project.objects.raw(query, params={'worker_profile': request.user.userprofile.id,
+                                                      'worker_id': worker_id, 'worker_condition': condition})
         project_serializer = ProjectSerializer(instance=projects, many=True,
-                                               fields=('id', 'name', 'age', 'total_tasks', 'deadline', 'timeout',
-                                                       'status', 'available_tasks', 'has_comments',
-                                                       'allow_feedback', 'price', 'task_time', 'owner',
-                                                       'requester_rating', 'raw_rating', 'is_prototype',),
-                                               context={'request': request})
-        return Response(data=project_serializer.data, status=status.HTTP_200_OK)
+                                               fields=('id', 'name',
+                                                       'status',
+                                                       'available_tasks',
+                                                       'price', 'task_time',
+                                                       'owner_name',
+                                                       'requester_rating',
+                                                       'raw_rating',
+                                                       'is_prototype',
+                                                       'rejection_rate',
+                                                       # 'completion_time'
+                                                       ),
+                                               context={'request': request, 'factor': factor})
+        has_read_tooltip_feed = request.user.preferences.has_read_tooltip_feed or False
+        return Response(data={'projects': project_serializer.data, 'has_read_tooltip_feed': has_read_tooltip_feed},
+                        status=status.HTTP_200_OK)
 
     @detail_route(methods=['post'])
     def attach_file(self, request, **kwargs):
@@ -173,7 +249,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['GET'])
     def requester_projects(self, request, **kwargs):
-        projects = request.user.userprofile.requester.project_owner.all().filter(deleted=False)
+        projects = request.user.userprofile.requester.project_owner.all().filter(deleted=False). \
+            order_by('-created_timestamp')
         serializer = ProjectSerializer(instance=projects, many=True,
                                        fields=('id', 'name', 'age', 'total_tasks', 'status'),
                                        context={'request': request})
@@ -198,3 +275,93 @@ class ProjectViewSet(viewsets.ModelViewSet):
         task = Task.objects.filter(project=project).first()
         task_serializer = TaskSerializer(instance=task, fields=('id', 'template'))
         return Response(data=task_serializer.data, status=status.HTTP_200_OK)
+
+    @list_route(methods=['post'], url_path='submit-rankings')
+    def submit_rankings(self, request, *args, **kwargs):
+        from django.utils import timezone
+        ranking_data = request.data.get('rankings', [])
+        models.RequesterFeedRankings.objects.filter(worker=request.user.userprofile.worker).delete()
+        ranking_obj = []
+        now = timezone.now()
+        for ranking in ranking_data:
+            ranking_obj.append(models.RequesterFeedRankings(worker=request.user.userprofile.worker,
+                                                            requester_id=ranking['requester'], rank=ranking['rank'],
+                                                            created_timestamp=now))
+        models.RequesterFeedRankings.objects.bulk_create(ranking_obj)
+        config = request.user.userprofile.worker.configuration
+        config.phase = 3
+        config.save()
+        return Response(data={"message": "Thank you"}, status=status.HTTP_201_CREATED)
+
+    @list_route(methods=['get'])
+    def sample_requesters(self, request, *args, **kwargs):
+        query_1 = '''
+            SELECT
+              DISTINCT p.owner_id id
+            FROM crowdsourcing_taskworker tw
+              INNER JOIN crowdsourcing_task t ON tw.task_id = t.id
+              INNER JOIN crowdsourcing_worker w ON tw.worker_id = w.id
+              INNER JOIN crowdsourcing_project p ON t.project_id = p.id
+              INNER JOIN crowdsourcing_requester r ON r.id = p.owner_id
+            WHERE tw.worker_id = %(worker_id)s AND task_status<>6;
+        '''
+        projects = Project.objects.raw(query_1, params={'worker_id': request.user.userprofile.worker.id})
+        requesters = []
+        for requester in projects:
+            requesters.append(requester.id)
+        sample_size = 3
+        if len(requesters) < 3:
+            sample_size = len(requesters)
+        requester_ids = random.sample(requesters, sample_size)
+        query_2 = '''
+            SELECT
+             p.id id, p.owner_id, p.name
+            FROM crowdsourcing_taskworker tw
+              INNER JOIN crowdsourcing_task t ON tw.task_id = t.id
+              INNER JOIN crowdsourcing_worker w ON tw.worker_id = w.id
+              INNER JOIN crowdsourcing_project p ON t.project_id = p.id
+              INNER JOIN crowdsourcing_requester r ON r.id = p.owner_id
+            WHERE tw.worker_id = %(worker_id)s AND task_status<>6 AND p.owner_id IN %(owner_ids)s;
+        '''
+        projects_all = Project.objects.raw(query_2, params={'worker_id': request.user.userprofile.worker.id,
+                                                            'owner_ids': tuple(requester_ids)})
+        serializer = ProjectSerializer(instance=projects_all, many=True,
+                                       fields=('id', 'name', 'owner', 'owner_id'),
+                                       context={'request': request})
+        choice_round = request.user.userprofile.worker.feed_choices.count()
+        return Response(data={"data": serializer.data, "round": choice_round}, status=status.HTTP_200_OK)
+
+    @list_route(methods=['get'])
+    def sample_workers(self, request, *args, **kwargs):
+        rated_workers = models.WorkerRequesterRating.objects.values('target__worker').\
+            filter(origin=request.user.userprofile, origin_type='requester').values_list('target__worker', flat=True)
+
+        filter_w = list(set(rated_workers) - set(request.user.userprofile.requester.configuration.seen_workers))
+        rated_workers_sample = []
+        if len(filter_w)>=3:
+            rated_workers_sample = np.random.choice(filter_w, 3, replace=False)
+        else:
+            rated_workers_sample = np.random.choice(rated_workers, 3, replace=False)
+        w = models.Worker.objects.filter(id__in=rated_workers_sample)
+        serializer = WorkerSerializer(instance=w, many=True, fields=('id', 'alias', 'profile', 'samples'),
+                                      context={'request': request})
+        choice_round = request.user.userprofile.requester.reputation_choices.count()
+        return Response(data={"data": serializer.data, "round": choice_round}, status=status.HTTP_200_OK)
+
+    @list_route(methods=['post'])
+    def next_phase(self, request, *args, **kwargs):
+        config = request.user.userprofile.requester.configuration
+        config.phase += 1
+        config.save()
+        return Response({"message": "OK"})
+
+    @list_route(methods=['post'])
+    def post_choice(self, request, *args, **kwargs):
+        sample = request.data.get('sample', [])
+        pick = request.data.get('pick', -1)
+        config = request.user.userprofile.requester.configuration
+        config.seen_workers += sample
+        config.save()
+        models.FeedChoicesRequester.objects.create(requester=request.user.userprofile.requester, sample=sample,
+                                                   worker_id=pick)
+        return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
