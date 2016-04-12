@@ -72,7 +72,7 @@ class WorkerSerializer(DynamicFieldsModelSerializer):
         from crowdsourcing.serializers.task import RequesterStudyResultsSerializer
         requester = self.context['request'].user.userprofile.requester
         m = [x.result for x in models.RequesterStudyRels.objects.filter(requester=requester, result__worker=obj)]
-        s = RequesterStudyResultsSerializer(instance=m, many=True, context=self.context, fields=('result',))
+        s = RequesterStudyResultsSerializer(instance=m, many=True, context=self.context, fields=('result', 'task_data'))
         return s.data
 
 

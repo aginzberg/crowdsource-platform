@@ -350,13 +350,16 @@ class ReviewableTaskSerializer(DynamicFieldsModelSerializer):
 
 class RequesterStudyResultsSerializer(DynamicFieldsModelSerializer):
     worker = serializers.SerializerMethodField()
-
+    task_data = serializers.SerializerMethodField()
     class Meta:
         model = models.RequesterStudyResults
-        fields = ('id', 'worker', 'result', 'task')
+        fields = ('id', 'worker', 'result', 'task', 'task_data')
 
     def get_worker(self, obj):
         return WorkerSerializer(instance=obj.worker, fields=('id', 'rating', 'alias', 'profile'), context=self.context).data
+
+    def get_task_data(self, obj):
+        return obj.task.data
 
 
 class RequesterStudyTaskSerializer(DynamicFieldsModelSerializer):

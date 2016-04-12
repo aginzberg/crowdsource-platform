@@ -107,7 +107,8 @@
                           ng-class="{'_selected-task': vm.pick == worker.id}">
                 <div class="md-list-item-text">
                     <h3>{{ worker.alias }}</h3>
-                    <p ng-repeat="sample in worker.samples">{{$index+1 +'. '+ sample.result }}</p>
+                    <p ng-repeat="sample in worker.samples">{{$index+1 +'. '}}<span style="color: rgba(0,0,0, 0.34)">{{ sample.task_data }}</span>
+                        {{ sample.result }}</p>
                 </div>
             </md-list-item>
         </md-list>
