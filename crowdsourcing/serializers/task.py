@@ -380,12 +380,12 @@ class RequesterStudyTaskSerializer(DynamicFieldsModelSerializer):
         w_results = obj.worker_results
         results = []
         if requester_config.phase == 1:
-            g_s = random.choice(good_workers, 3)
-            b_s = random.choice(bad_workers, 3)
-            u_s = random.choice(undefined_workers, 1)
+            g_s = random.choice(good_workers, 3, replace=True)
+            b_s = random.choice(bad_workers, 3, replace=True)
+            u_s = random.choice(undefined_workers, 1, replace=True)
             sampled_workers = concatenate([g_s, u_s, b_s])
             results = w_results.filter(worker_id__in=sampled_workers)
-        elif requester_config.phase in (2, 3):
+        elif requester_config.phase in (2, 3) and requester_config.condition in (1, 2):
             unnorm_probs = []
             for r in w_results.all():
                 rating = r.worker.profile.rating_target.filter(origin_id=self.context['request'].user.userprofile.id,
@@ -400,7 +400,17 @@ class RequesterStudyTaskSerializer(DynamicFieldsModelSerializer):
                 # normalize
                 norm_probs = [i / float(summation) for i in unnorm_probs]
 
-            results = random.choice(w_results.all(), 7, p=norm_probs, replace=False)
+            results = random.choice(w_results.all(), 7, p=norm_probs, replace=True)
+        else:
+            results = random.choice(w_results.all(), 7, replace=True)
 
+        models.RequesterStudyRels.objects.filter(requester=self.context['request'].user.userprofile.requester,
+                                                 phase=requester_config.phase).delete()
+        for r in results:
+            m = models.RequesterStudyRels()
+            m.requester = self.context['request'].user.userprofile.requester
+            m.result_id = r.id
+            m.phase = requester_config.phase
+            m.save()
         s = RequesterStudyResultsSerializer(instance=results, many=True, context=self.context)
         return s.data

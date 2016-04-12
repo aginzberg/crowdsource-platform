@@ -343,7 +343,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
         else:
             rated_workers_sample = np.random.choice(rated_workers, 3, replace=False)
         w = models.Worker.objects.filter(id__in=rated_workers_sample)
-        serializer = WorkerSerializer(instance=w, many=True, fields=('id', 'alias', 'profile'))
+        serializer = WorkerSerializer(instance=w, many=True, fields=('id', 'alias', 'profile', 'samples'),
+                                      context={'request': request})
         choice_round = request.user.userprofile.requester.reputation_choices.count()
         return Response(data={"data": serializer.data, "round": choice_round}, status=status.HTTP_200_OK)
 

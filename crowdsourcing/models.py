@@ -707,3 +707,11 @@ class FeedChoicesRequester(models.Model):
     worker = models.ForeignKey(Worker)
     sample = ArrayField(base_field=models.IntegerField())
     created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+
+class RequesterStudyRels(models.Model):
+    # worker = models.ForeignKey(Worker, related_name='worker_samples')
+    requester = models.ForeignKey(Requester, related_name='samples')
+    result = models.ForeignKey(RequesterStudyResults, related_name='samples')
+    phase = models.IntegerField(default=1)
+    created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)

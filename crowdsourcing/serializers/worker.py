@@ -4,6 +4,7 @@ from crowdsourcing.serializers.dynamic import DynamicFieldsModelSerializer
 from crowdsourcing.serializers.rating import WorkerRequesterRatingSerializer
 
 
+
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Skill
@@ -34,10 +35,11 @@ class WorkerSerializer(DynamicFieldsModelSerializer):
     '''
     num_tasks = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
+    samples = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Worker
-        fields = ('profile', 'skills', 'num_tasks', 'id', 'alias', 'rating')
+        fields = ('profile', 'skills', 'num_tasks', 'id', 'alias', 'rating', 'samples')
         read_only_fields = ('num_tasks',)
 
     def create(self, validated_data):
@@ -65,6 +67,13 @@ class WorkerSerializer(DynamicFieldsModelSerializer):
                 "origin_type": "requester",
                 "target": obj.profile_id
             }
+
+    def get_samples(self, obj):
+        from crowdsourcing.serializers.task import RequesterStudyResultsSerializer
+        requester = self.context['request'].user.userprofile.requester
+        m = [x.result for x in models.RequesterStudyRels.objects.filter(requester=requester, result__worker=obj)]
+        s = RequesterStudyResultsSerializer(instance=m, many=True, context=self.context, fields=('result',))
+        return s.data
 
 
 class WorkerSkillSerializer(serializers.ModelSerializer):
